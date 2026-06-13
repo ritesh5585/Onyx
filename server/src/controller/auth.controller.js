@@ -60,12 +60,7 @@ export const login = async (req, res) => {
     const { email, contact, password } = req.body
 
     try {
-        const user = await userModel.findOne({
-            $or: [
-                { email },
-                { contact }
-            ]
-        })
+        const user = await userModel.findOne({ email })
 
         if (!user) {
             return res.status(400).json({
@@ -76,7 +71,7 @@ export const login = async (req, res) => {
         const isMatch = await user.comparePassword(password)
         if (!isMatch) {
             return res.status(400).json({
-                message: "Invalid credentials"
+                message: "Invalid email or password"
             })
         }
 
