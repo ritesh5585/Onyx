@@ -1,1 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
 @import "tailwindcss";
+
+@layer components {
+  /* =========================================
+     Onyx Global UI Integration Theme (Dark Mode)
+     Matches auth.css styling
+     ========================================= */
+
+  /* Layout & Backgrounds */
+  .onyx-bg {
+    background-color: #08080a;
+    color: #eee9e1;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Typography */
+  .onyx-page-title {
+    @apply text-4xl lg:text-5xl font-semibold leading-tight;
+    color: #eee9e1;
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+
+  .onyx-divider {
+    @apply mt-4 w-14 h-px;
+    background-color: #c49a52;
+  }
+
+  /* Navigation */
+  .onyx-nav-title {
+    @apply text-xs font-bold tracking-[0.32em] uppercase;
+    color: #c49a52;
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .onyx-nav-back {
+    @apply text-lg transition-colors duration-200 leading-none;
+    color: rgba(238, 233, 225, 0.42);
+  }
+  .onyx-nav-back:hover {
+    color: #c49a52;
+  }
+
+  /* Forms & Inputs */
+  .onyx-label {
+    @apply text-[11px] uppercase tracking-[0.14em] font-semibold;
+    color: rgba(238, 233, 225, 0.42);
+  }
+
+  .onyx-input {
+    @apply w-full outline-none py-3 px-4 text-sm transition-all duration-300 border rounded-lg;
+    background-color: #15151c;
+    color: #eee9e1;
+    border-color: rgba(255, 255, 255, 0.08);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .onyx-input::placeholder {
+    color: rgba(238, 233, 225, 0.26);
+  }
+  .onyx-input:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  .onyx-input:focus {
+    border-color: #c49a52;
+    box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.15);
+  }
+
+  .onyx-textarea {
+    @apply w-full outline-none py-3 px-4 text-sm transition-all duration-300 resize-none leading-relaxed border rounded-lg;
+    background-color: #15151c;
+    color: #eee9e1;
+    border-color: rgba(255, 255, 255, 0.08);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .onyx-textarea::placeholder {
+    color: rgba(238, 233, 225, 0.26);
+  }
+  .onyx-textarea:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  .onyx-textarea:focus {
+    border-color: #c49a52;
+    box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.15);
+  }
+
+  /* Buttons */
+  .onyx-btn-primary {
+    @apply w-full py-[13px] px-5 text-[14px] font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg;
+    background-color: #c49a52;
+    color: #0b0b0d;
+    font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: 0.02em;
+  }
+  .onyx-btn-primary:hover:not(:disabled) {
+    background-color: #d4aa6a;
+    box-shadow: 0 6px 22px rgba(196, 154, 82, 0.3);
+    transform: translateY(-1px);
+  }
+
+  /* Custom Upload Dropzone */
+  .onyx-dropzone {
+    @apply border px-8 py-14 lg:py-20 flex flex-col items-center gap-4 cursor-pointer transition-all duration-300 rounded-xl;
+    background-color: #0f0f13;
+  }
+  .onyx-dropzone.active {
+    border-color: #c49a52;
+    border-style: solid;
+    background-color: #15151c;
+    box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.15);
+  }
+  .onyx-dropzone.inactive {
+    border-color: rgba(255, 255, 255, 0.15);
+    border-style: dashed;
+  }
+  .onyx-dropzone.inactive:hover {
+    border-color: #c49a52;
+    background-color: #15151c;
+  }
+}

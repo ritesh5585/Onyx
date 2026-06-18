@@ -1,7 +1,7 @@
 import productModel from '../models/product.js'
 import uploadFile from '../services/storage.service.js'
 
-export const createProduct = async (req, res, next) => {
+export const createProduct = async (req, res) => {
     try {
         const { title, description, priceAmount, priceCurrency } = req.body
         const seller = req.user
@@ -38,6 +38,19 @@ export const createProduct = async (req, res, next) => {
             product
         })
     } catch (error) {
-        next(error)
+        res.status(500).json({
+            message: 'Error while product creation',
+            error: error.message
+        })
     }
+}
+
+export const getSellerProducts = async (req, res) => {
+    const products = await productModel.find()
+
+    return res.status(200).json({
+        message: 'get your products',
+        success: true,
+        products
+    })
 }

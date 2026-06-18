@@ -1,26 +1,18 @@
-import axios from 'axios'
+import axios from "axios";
 
-const authApiInstance = axios.create({
-    baseURL: '/api/auth',
-    withCredentials: true
-})
+const api = axios.create({
+    baseURL: "/api/auth",
+    withCredentials: true,
+});
 
-export async function register({ email, contact, password, fullname, isSeller }) {
-    const respone = await authApiInstance.post('/register', {
-        email,
-        contact,
-        password,
-        fullname,
-        isSeller
-    })
-    return respone.data
-}
+export const parseError = (err) =>
+    err?.response?.data?.message ||
+    err?.message ||
+    "Something went wrong";
 
-export async function login({ email, password }) {
-    const respone = await authApiInstance.post('/login', {
-        email,
-        password
-    })
-
-    return respone.data
-}
+export const authApi = {
+    register: (body) => api.post("/register", body).then(res => res.data),
+    login: (body) => api.post("/login", body).then(res => res.data),
+    logout: () => api.post("/logout").then(res => res.data),
+    // me: () => api.get("/me").then(res => res.data),
+};

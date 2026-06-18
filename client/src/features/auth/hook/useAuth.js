@@ -1,48 +1,56 @@
-import { setUser, setLoading, setError } from '../state/auth.state.js'
-import { register, login } from '../services/auth.api.js'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from "react-redux";
+import { setUser, setLoading, setError } from "../state/auth.state";
+import { authApi, parseError } from "../services/auth.api";
 
 export const useAuth = () => {
+    const dispatch = useDispatch();
+    const { user, loading, error } = useSelector((state) => state.auth);
 
-    const dispatch = useDispatch()
+    const run = async (apiFn, onSuccess) => {
+        if (loading) return;
 
-    const handleRegister = async ({ fullname, email, contact, password, isSeller = false }) => {
-        dispatch(setLoading(true))
-        dispatch(setError(null))
-
-        try {
-            const data = await register({ fullname, email, contact, password, isSeller })
-
-            dispatch(setUser(data.user))
-            return data.user
-        } catch (error) {
-            const message = error?.response?.data?.message || error?.response?.data?.errors?.[0]?.msg || 'Registration failed'
-
-            dispatch(setError(message))
-            throw error
-        } finally {
-            dispatch(setLoading(false))
-        }
-    }
-
-    const handleLogin = async ({ email, password }) => {
-        dispatch(setLoading(true))
-        dispatch(setError(null))
+        dispatch(setLoading(true));
+        dispatch(setError(null));
 
         try {
-            const data = await login({ email, password })
-
-            dispatch(setUser(data.user))
-            return data.user
-        } catch (error) {
-            const message = error?.response?.data?.message || error?.response?.data?.errors?.[0]?.msg || 'Login failed'
-
-            dispatch(setError(message))
-            throw error
+            const data = await apiFn();
+            onSuccess?.(data);
+            return data;
+        } catch (err) {
+            dispatch(setError(parseError(err)));
+            throw err;
         } finally {
-            dispatch(setLoading(false))
+            dispatch(setLoading(false));
         }
-    }
+    };
 
-    return { handleRegister, handleLogin }
-}
+    const handleLogin = (creds) =>
+        run(() => authApi.login(creds), (data) =>
+            dispatch(setUser(data.user))
+        );
+
+    const handleRegister = (creds) =>
+        run(() => authApi.register(creds), (data) =>
+            dispatch(setUser(data.user))
+        );
+
+    const handleLogout = () =>
+        run(() => authApi.logout(), () =>
+            dispatch(setUser(null))
+        );
+
+    const checkAuth = () =>
+        run(() => authApi.me(), (data) =>
+            dispatch(setUser(data.user))
+        );
+
+    return {
+        user,
+        loading,
+        error,
+        handleLogin,
+        handleRegister,
+        handleLogout,
+        checkAuth,
+    };
+};
