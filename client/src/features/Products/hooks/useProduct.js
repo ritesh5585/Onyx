@@ -3,7 +3,7 @@ import { setSellerProduct, setProducts } from "../state/product.slice.js";
 import {
     createProduct,
     getSellerProduct,
-    // getAllProducts,
+    getAllproducts
 } from "../service/product.api";
 
 export const useProduct = () => {
@@ -32,22 +32,22 @@ export const useProduct = () => {
         }
     };
 
-    // const handleGetAllProducts = async () => {
-    //     try {
-    //         const data = await getAllProducts();
+    const handleGetAllProducts = async () => {
+        try {
+            const data = await getAllProducts();
 
-    //         dispatch(setProducts(data.products));
+            dispatch(setProducts(data.products));
 
-    //         return data.products;
-    //     } catch (error) {
-    //         console.error("Fetch all products failed:", error);
-    //         throw error;
-    //     }
-    // };
+            return data.products;
+        } catch (error) {
+            console.error("Fetch all products failed:", error);
+            throw error;
+        }
+    };
 
     return {
         handleCreateProduct,
         handleGetSellerProduct,
-        // handleGetAllProducts,
+        handleGetAllProducts,
     };
 };
