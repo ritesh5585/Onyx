@@ -43,8 +43,8 @@ const Register = () => {
     } catch (err) {
       setError(
         err?.response?.data?.message ||
-          err?.response?.data?.errors?.[0]?.msg ||
-          "Registration failed. Please check your inputs.",
+        err?.response?.data?.errors?.[0]?.msg ||
+        "Registration failed. Please check your inputs.",
       );
     } finally {
       setLoading(false);

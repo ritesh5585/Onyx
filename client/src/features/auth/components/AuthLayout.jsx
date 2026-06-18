@@ -18,13 +18,13 @@ const AuthLayout = ({ children, headline, sub, eyebrow = "Collections" }) => (
         <span className="auth-badge">Premium Store</span>
       </header>
 
-        <div className="auth-hero__body">
-          <p className="auth-hero__eyebrow">{eyebrow}</p>
-          <h1 className="auth-hero__headline">
-            {headline}
-            {sub && (<><br /><em>{sub}</em></>)}
-          </h1>
-        </div>
+      <div className="auth-hero__body">
+        <p className="auth-hero__eyebrow">{eyebrow}</p>
+        <h1 className="auth-hero__headline">
+          {headline}
+          {sub && (<><br /><em>{sub}</em></>)}
+        </h1>
+      </div>
     </aside>
 
     {/* ── RIGHT: Form panel ── */}

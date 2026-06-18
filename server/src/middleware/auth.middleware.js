@@ -6,20 +6,35 @@ import { config } from '../config/config.js'
 export const authenticateUser = async (req, res, next) => {
     try {
         const { token } = req.cookies
+
         if (!token) return res.status(401).json({ message: 'Unauthorized' })
 
         const { id } = jwt.verify(token, config.JWT)
+
         const user = await userModel.findById(id).select('-password').lean()
+
         if (!user) return res.status(401).json({ message: 'Unauthorized' })
 
         req.user = user
         next()
     } catch (err) {
-        const status = ['JsonWebTokenError', 'TokenExpiredError'].includes(err.name) ? 401 : 500
-        res.status(status).json({ message: status === 401 ? 'Unauthorized: invalid token' : 'Auth error', error: err.message })
+
+        const status = [
+            'JsonWebTokenError', 'TokenExpiredError'
+        ].includes(err.name) ? 401 : 500
+
+        res.status(status).json({
+            message: status === 401 ?
+                'Unauthorized: invalid token' :
+                'Auth error', error: err.message
+        })
     }
 }
 
 // Seller-only guard — call after authenticateUser
 export const requireSeller = (req, res, next) =>
-    req.user?.role === 'seller' ? next() : res.status(403).json({ message: 'Seller access required' })
+    req.user?.role === 'seller' ?
+        next() :
+        res.status(403).json({
+            message: 'Seller access required'
+        })

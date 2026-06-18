@@ -2,7 +2,9 @@ import { createBrowserRouter } from "react-router";
 import Register from "../features/auth/pages/Register.jsx";
 import Login from "../features/auth/pages/Login.jsx";
 import CreateProduct from "../features/Products/pages/CreatProduct.jsx";
+import Dashboard from "../features/Products/pages/Dashboard.jsx";
 import { NavLink } from "react-router";
+import Protected from "../features/auth/components/Protected.jsx";
 
 export const routes = createBrowserRouter([
   {
@@ -13,11 +15,38 @@ export const routes = createBrowserRouter([
 
         <NavLink to={"/register"}>Register</NavLink>
         <NavLink to={"/login"}>Login</NavLink>
-        <NavLink to={"/createProduct"}>Upload</NavLink>
+        <NavLink to={"/seller/create-product"}>Upload</NavLink>
+        <NavLink to={"/seller/dashboard"}>Show Product</NavLink>
       </div>
     ),
   },
-  { path: "/register", element: <Register /> },
-  { path: "/login", element: <Login /> },
-  { path: "/createProduct", element: <CreateProduct /> },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/seller",
+    children: [
+      {
+        path: "create-product",
+        element: (
+          <Protected role="seller">
+            <CreateProduct />
+          </Protected>
+        ),
+      },
+      {
+        path: "dashboard",
+        element: (
+          <Protected role="seller">
+            <Dashboard />
+          </Protected>
+        ),
+      },
+    ],
+  },
 ]);
