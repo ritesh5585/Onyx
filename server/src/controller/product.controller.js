@@ -49,9 +49,19 @@ export const getSellerProducts = async (req, res) => {
     const sellerId = req.user._id
     console.log(sellerId)
     const products = await productModel.find({ seller: sellerId })
-    
+
     return res.status(200).json({
         message: 'get your products',
+        success: true,
+        products
+    })
+}
+
+export const getAllProducts = async (req, res) => {
+    const products = await productModel.find()
+
+    return res.status(200).json({
+        message: "Availble Products",
         success: true,
         products
     })

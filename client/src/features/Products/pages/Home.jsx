@@ -1,54 +1,65 @@
 import React, { useEffect } from "react";
+import { NavLink, useNavigate } from "react-router";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 
-const Dashboard = () => {
-  const { handleGetSellerProduct } = useProduct();
-  const sellerProducts = useSelector((state) => state.product.sellerProducts);
+const Home = () => {
+  const allProduct = useSelector((state) => state.product.products);
+  const { handleGetAllProducts } = useProduct();
   const navigate = useNavigate();
 
   useEffect(() => {
-    handleGetSellerProduct();
+    handleGetAllProducts();
   }, []);
+
+  console.log(allProduct);
 
   return (
     <div className="onyx-bg min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-24">
         {/* ── Top Bar ── */}
-        <div className="py-4 md:py-5 flex items-center gap-3 border-b border-[#1f1f1f]">
-          <button
-            onClick={() => navigate(-1)}
-            className="onyx-nav-back"
-            type="button"
-            aria-label="Go back"
-          >
-            ←
-          </button>
+        <div className="py-4 md:py-5 flex items-center justify-between border-b border-[#1f1f1f]">
           <span className="onyx-nav-title">ONYX.</span>
+          <div className="flex gap-4 text-sm font-medium tracking-wide uppercase">
+            <NavLink
+              to={"/register"}
+              className="hover:text-[#C9A96E] transition-colors"
+            >
+              Register
+            </NavLink>
+            <NavLink
+              to={"/login"}
+              className="hover:text-[#C9A96E] transition-colors"
+            >
+              Login
+            </NavLink>
+            <NavLink
+              to={"/seller/create-product"}
+              className="hover:text-[#C9A96E] transition-colors"
+            >
+              Upload
+            </NavLink>
+            <NavLink
+              to={"/seller/dashboard"}
+              className="hover:text-[#C9A96E] transition-colors"
+            >
+              Dashboard
+            </NavLink>
+          </div>
         </div>
 
         {/* ── Page Header ── */}
         <div className="pt-8 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
           <div>
-            <h1 className="onyx-page-title text-3xl md:text-4xl">
-              Your Products
-            </h1>
+            <h1 className="onyx-page-title text-3xl md:text-4xl">Explore and choose.</h1>
             <div className="onyx-divider mt-2" />
           </div>
-
-          <button
-            onClick={() => navigate("/seller/create-product")}
-            className="onyx-btn-primary w-full sm:w-40 transition-transform active:scale-95"
-          >
-            New Listing
-          </button>
         </div>
 
         {/* ── Product Grid ── */}
-        {sellerProducts && sellerProducts.length > 0 ? (
+        {allProduct && allProduct.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 sm:gap-x-8 gap-y-10 sm:gap-y-16 pb-20 md:pb-24">
-            {sellerProducts.map((product) => {
+            {allProduct.map((product) => {
               const imageUrl =
                 product.images && product.images.length > 0
                   ? product.images[0].url
@@ -109,8 +120,7 @@ const Dashboard = () => {
                 fontFamily: "'Cormorant Garamond', serif",
               }}
             >
-              You haven't added any curated pieces to your archive yet. Begin by
-              creating a new listing.
+              No items are currently available in the archive.
             </p>
           </div>
         )}
@@ -119,4 +129,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Home;

@@ -1,24 +1,19 @@
 import { createBrowserRouter } from "react-router";
+import Home from "../features/Products/pages/home.jsx";
 import Register from "../features/auth/pages/Register.jsx";
 import Login from "../features/auth/pages/Login.jsx";
-import CreateProduct from "../features/Products/pages/CreatProduct.jsx";
 import Dashboard from "../features/Products/pages/Dashboard.jsx";
-import { NavLink } from "react-router";
 import Protected from "../features/auth/components/Protected.jsx";
+import CreateProduct from "../features/Products/pages/CreatProduct.jsx";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <div className="flex flex-col items-center justify-center h-screen bg-[#0a0a0a] gap-4 text-white">
-        <h1 className="text-4xl font-bold mb-4">Dashboard</h1>
-
-        <NavLink to={"/register"}>Register</NavLink>
-        <NavLink to={"/login"}>Login</NavLink>
-        <NavLink to={"/seller/create-product"}>Upload</NavLink>
-        <NavLink to={"/seller/dashboard"}>Show Product</NavLink>
-      </div>
-    ),
+    element: <Home />,
+  },
+  {
+    path: "*",
+    element: <Home/>
   },
   {
     path: "/register",

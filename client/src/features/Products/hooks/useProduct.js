@@ -38,7 +38,7 @@ export const useProduct = () => {
 
             dispatch(setProducts(data.products));
 
-            return data.products;
+            return data;
         } catch (error) {
             console.error("Fetch all products failed:", error);
             throw error;
