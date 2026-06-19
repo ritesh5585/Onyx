@@ -16,15 +16,7 @@ const App = () => {
     });
   }, []);
 
-  // const users = useSelector(state=>state.auth.user)
-
-  console.log(user);
-
-  useEffect(() => {
-    handleGetMe();
-  }, []);
-
-  return isCheckingAuth ? <Spinner /> : <RouterProvider router={routes} />;
+  return isCheckingAuth ? <Spinner /> : <RouterProvider router={routes} />
 };
 
 export default App;
