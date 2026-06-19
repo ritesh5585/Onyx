@@ -6,12 +6,12 @@ const api = axios.create({
 })
 
 export const createProduct = async (formData) => {
-    await api.post('/', formData).then(res => res.data)
+    return await api.post('/', formData).then(res => res.data)
 }
 export const getSellerProduct = async () => {
-    await api.get('/seller').then(res => res.data)
+    return await api.get('/seller').then(res => res.data)
 }
 
 export const getAllproducts = async () => {
-    await api.get('/', formData).then(res => res.data)
+    return await api.get('/').then(res => res.data)
 }

@@ -12,7 +12,7 @@
   .onyx-bg {
     background-color: #08080a;
     color: #eee9e1;
-    font-family: 'Inter', system-ui, sans-serif;
+    fontFamily: "'Inter', sans-serif";
   }
 
   /* Typography */

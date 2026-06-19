@@ -6,11 +6,13 @@ import { createProduct, getSellerProducts } from '../controller/product.controll
 
 const router = Router()
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } })
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 }
+})
 
-const sellerGuard = [authenticateUser, requireSeller]
 
-router.get('/seller', sellerGuard, getSellerProducts)
-router.post('/', sellerGuard, upload.array('images', 7), createProductValidator, createProduct)
+router.get('/seller', authenticateUser, requireSeller, getSellerProducts)
+router.post('/', authenticateUser, requireSeller, upload.array('images', 7), createProductValidator, createProduct)
 
 export default router

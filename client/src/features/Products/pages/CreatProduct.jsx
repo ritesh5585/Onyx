@@ -85,10 +85,10 @@ const CreatProduct = () => {
   return (
     <div className="onyx-bg min-h-screen">
       {/* Nav */}
-      <div className="px-10 py-5 flex items-center gap-3 border-b border-[#1f1f1f]">
+      <div className="py-4  md:py-5 lg:mx-10 mx-4 flex items-center gap-3 border-b border-[#1f1f1f]">
         <button
           onClick={() => navigate(-1)}
-          className="onyx-nav-back"
+          className="onyx-nav-back "
           type="button"
         >
           ←

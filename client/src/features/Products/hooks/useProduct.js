@@ -22,8 +22,8 @@ export const useProduct = () => {
     const handleGetSellerProduct = async () => {
         try {
             const data = await getSellerProduct();
-
-            dispatch(setSellerProduct(data.products));
+            console.log(data)
+            dispatch(setSellerProduct(data?.products));
 
             return data.products;
         } catch (error) {
@@ -34,7 +34,7 @@ export const useProduct = () => {
 
     const handleGetAllProducts = async () => {
         try {
-            const data = await getAllProducts();
+            const data = await getAllproducts();
 
             dispatch(setProducts(data.products));
 
