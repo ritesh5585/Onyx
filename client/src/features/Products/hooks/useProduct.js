@@ -1,9 +1,10 @@
 import { useDispatch } from "react-redux";
-import { setSellerProduct, setProducts } from "../state/product.slice.js";
+import { setSellerProduct, setProducts, setDetails } from "../state/product.slice.js";
 import {
     createProduct,
     getSellerProduct,
-    getAllproducts
+    getAllproducts,
+    getProductDetail
 } from "../service/product.api";
 
 export const useProduct = () => {
@@ -12,7 +13,7 @@ export const useProduct = () => {
     const handleCreateProduct = async (formData) => {
         try {
             const data = await createProduct(formData);
-            return data.products;
+            return data.product;
         } catch (error) {
             console.error("Create product failed:", error);
             throw error;
@@ -21,11 +22,12 @@ export const useProduct = () => {
 
     const handleGetSellerProduct = async () => {
         try {
+            console.log(getSellerProduct())
             const data = await getSellerProduct();
-            console.log(data)
+            console.log("first")
             dispatch(setSellerProduct(data?.products));
 
-            return data.products;
+            return data;
         } catch (error) {
             console.error("Fetch seller products failed:", error);
             throw error;
@@ -36,7 +38,7 @@ export const useProduct = () => {
         try {
             const data = await getAllproducts();
 
-            dispatch(setProducts(data.products));
+            dispatch(setProducts(data?.products));
 
             return data;
         } catch (error) {
@@ -45,9 +47,23 @@ export const useProduct = () => {
         }
     };
 
+    const handleProductDetails = async (productId) => {
+        try {
+            const data = await getProductDetail(productId)
+            console.log(data)
+
+            dispatch(setDetails(data?.product))
+            return data.product
+        } catch (error) {
+            console.error("Fetch products detail failed:", error);
+            throw error;
+        }
+    }
+
     return {
         handleCreateProduct,
         handleGetSellerProduct,
         handleGetAllProducts,
+        handleProductDetails
     };
 };

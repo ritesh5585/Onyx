@@ -7,8 +7,7 @@ const Protected = ({ children, role = "buyer" }) => {
   const user = useSelector((state) => state.auth.user);
   console.log(user)
   const loading = useSelector((state) => state.auth.loading);
-  console.log(loading)
-
+  
   if (loading) return <Spinner />;
 
   if (!user) return <Navigate to="/login" replace/>;

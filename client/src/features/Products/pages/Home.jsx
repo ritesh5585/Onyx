@@ -12,8 +12,6 @@ const Home = () => {
     handleGetAllProducts();
   }, []);
 
-  console.log(allProduct);
-
   return (
     <div className="onyx-bg min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-24">
@@ -51,42 +49,41 @@ const Home = () => {
         {/* ── Page Header ── */}
         <div className="pt-8 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
           <div>
-            <h1 className="onyx-page-title text-3xl md:text-4xl">Explore and choose.</h1>
+            <h1 className="onyx-page-title text-3xl md:text-4xl">
+              Explore and choose.
+            </h1>
             <div className="onyx-divider mt-2" />
           </div>
         </div>
 
         {/* ── Product Grid ── */}
         {allProduct && allProduct.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 sm:gap-x-8 gap-y-10 sm:gap-y-16 pb-20 md:pb-24">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 pb-20 md:pb-24">
             {allProduct.map((product) => {
               const imageUrl =
                 product.images && product.images.length > 0
                   ? product.images[0].url
-                  : "X"; // Fallback to our warm editorial
+                  : "X";
 
               return (
                 <div
-                  onClick={() => navigate(`/seller/product/${product._id}`)}
+                  onClick={() => navigate(`/product/${product._id}`)}
                   key={product._id}
-                  className="group cursor-pointer flex flex-col"
+                  className="group cursor-pointer flex flex-col w-full max-w-[260px]"
                 >
                   {/* Image Container */}
-                  <div
-                    className="aspect-[4/5] overflow-hidden mb-4 sm:mb-6 rounded-sm relative"
-                    style={{ backgroundColor: "#f5f3f0" }}
-                  >
+                  <div className="w-[220px] h-[300px] bg-[#f5f3f0] rounded-md overflow-hidden flex items-center justify-center mb-4">
                     <img
                       src={imageUrl}
                       alt={product.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-105"
                     />
                   </div>
 
                   {/* Product Details */}
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-h-[120px]">
                     <h3
-                      className="text-lg sm:text-xl leading-snug transition-colors duration-300 group-hover:text-[#C9A96E]"
+                      className="text-lg sm:text-xl leading-snug transition-colors duration-300 group-hover:text-[#C9A96E] line-clamp-2"
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
                       }}
@@ -98,7 +95,7 @@ const Home = () => {
                       {product.description}
                     </p>
 
-                    <div className="mt-1 sm:mt-2">
+                    <div className="mt-auto pt-2">
                       <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-medium">
                         {product.price?.currency || "INR"}{" "}
                         {product.price?.amount?.toLocaleString() || "0"}
