@@ -19,3 +19,4 @@ export const getAllproducts = async () => {
 export const getProductDetail = async (productId) => {
     return await api.get(`/${productId}`).then(res => res.data)
 }
+

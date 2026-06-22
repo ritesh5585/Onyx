@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { useProduct } from "../hooks/useProduct";
 import ImageUpload from "../components/imageUpload";
 import Price from "../components/Price";
+import Layout from "../../Shared/Layout";
 
 const MAX_IMAGES = 7;
 const CURRENCIES = ["INR", "USD", "EUR", "GBP"];
@@ -83,20 +84,8 @@ const CreatProduct = () => {
   };
 
   return (
-    <div className="onyx-bg min-h-screen">
-      {/* Nav */}
-      <div className="py-4  md:py-5 lg:mx-10 mx-4 flex items-center gap-3 border-b border-[#1f1f1f]">
-        <button
-          onClick={() => navigate(-1)}
-          className="onyx-nav-back "
-          type="button"
-        >
-          ←
-        </button>
-        <span className="onyx-nav-title">ONYX.</span>
-      </div>
-
-      <div className="max-w-[1100px] mx-auto px-6 py-6">
+    <Layout showBackButton={true}>
+      <div className="max-w-[1100px] mx-auto py-6">
         {/* Title */}
         <div className="mb-6">
           <h1 className="onyx-page-title">New Listing</h1>
@@ -108,7 +97,7 @@ const CreatProduct = () => {
             {/* LEFT */}
             <div className="flex flex-col gap-8">
               <div>
-                <label className="onyx-label block mb-2">Product Title</label>
+                <label className="onyx-label">Product Title</label>
                 <input
                   type="text"
                   name="title"
@@ -121,7 +110,7 @@ const CreatProduct = () => {
               </div>
 
               <div>
-                <label className="onyx-label block">Description</label>
+                <label className="onyx-label">Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
@@ -156,7 +145,7 @@ const CreatProduct = () => {
           </div>
         </form>
       </div>
-    </div>
+    </Layout>
   );
 };
 

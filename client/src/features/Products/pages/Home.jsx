@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink,useNavigate } from "react-router";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
-
+import Layout from "../../Shared/Layout.jsx";
 const Home = () => {
   const allProduct = useSelector((state) => state.product.products);
   const { handleGetAllProducts } = useProduct();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     handleGetAllProducts();
@@ -49,10 +49,10 @@ const Home = () => {
         {/* ── Page Header ── */}
         <div className="pt-8 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
           <div>
-            <h1 className="onyx-page-title text-3xl md:text-4xl">
+            <h1 className="onyx-page-title">
               Explore and choose.
             </h1>
-            <div className="onyx-divider mt-2" />
+            <div className="onyx-divider" />
           </div>
         </div>
 

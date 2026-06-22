@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router";
-
+import { Spinner } from "../../Shared/Spinner";
+import Layout from "../../Shared/Layout";
 const ProductDetails = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const detail = useSelector((state) => state.product.details);
-  const { handleProductDetails } = useProduct();
-
   const [selectedImage, setSelectedImage] = useState(0);
+
+  const detail = useSelector((state) => state.product.details);
+
+  const { handleProductDetails } = useProduct();
 
   useEffect(() => {
     if (productId) {
@@ -19,11 +21,9 @@ const ProductDetails = () => {
 
   if (!detail) {
     return (
-      <div className="onyx-bg min-h-screen flex items-center justify-center">
-        <span className="text-[10px] uppercase tracking-[0.2em] font-medium animate-pulse text-[#c49a52]">
-          Loading Details...
-        </span>
-      </div>
+      <Spinner />
+      // <div className="onyx-bg min-h-screen flex items-center justify-center">
+      // </div>
     );
   }
 
@@ -35,20 +35,8 @@ const ProductDetails = () => {
   const mainImage = imageUrls[selectedImage] || imageUrls[0];
 
   return (
-    <div className="onyx-bg min-h-screen">
-      {/* Navigation */}
-      <div className="py-4 md:py-5 lg:mx-10 mx-4 flex items-center gap-3 border-b border-[#1f1f1f]">
-        <button
-          onClick={() => navigate(-1)}
-          className="onyx-nav-back"
-          type="button"
-        >
-          ←
-        </button>
-        <span className="onyx-nav-title">ONYX.</span>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-24 py-10 md:py-16">
+    <Layout showBackButton={true}>
+      <div className="py-10 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           {/* LEFT: Image Gallery */}
           <div className="flex flex-col gap-4">
@@ -86,7 +74,7 @@ const ProductDetails = () => {
 
           {/* RIGHT: Product Details */}
           <div className="flex flex-col">
-            <h1 className="onyx-page-title mb-2">{detail.title}</h1>
+            <h1 className="onyx-page-title">{detail.title}</h1>
 
             <div
               className="text-2xl font-semibold tracking-wide text-[#c49a52] mt-4 mb-6"
@@ -96,10 +84,10 @@ const ProductDetails = () => {
               {detail.price?.amount?.toLocaleString() || "0"}
             </div>
 
-            <div className="onyx-divider mb-8" />
+            <div className="onyx-divider" />
 
             <div className="flex-grow">
-              <h3 className="onyx-label mb-3">Description</h3>
+              <h3 className="onyx-label">Description</h3>
               <p className="text-sm md:text-base leading-relaxed text-[#a09d98] whitespace-pre-line mb-8">
                 {detail.description}
               </p>
@@ -107,11 +95,11 @@ const ProductDetails = () => {
               {/* Extra Details for UI richness */}
               <div className="grid grid-cols-2 gap-6 mb-10">
                 <div>
-                  <h3 className="onyx-label mb-1">Availability</h3>
+                  <h3 className="onyx-label">Availability</h3>
                   <p className="text-sm text-[#eee9e1]">In Stock</p>
                 </div>
                 <div>
-                  <h3 className="onyx-label mb-1">Shipping</h3>
+                  <h3 className="onyx-label">Shipping</h3>
                   <p className="text-sm text-[#eee9e1]">Ships in 2-3 days</p>
                 </div>
               </div>
@@ -121,22 +109,18 @@ const ProductDetails = () => {
             <div className="flex flex-col sm:flex-row gap-4 mt-auto pt-8 border-t border-[#1f1f1f]">
               <button
                 type="button"
-                className="flex-1 py-[13px] px-5 text-[14px] font-semibold transition-all duration-200 rounded-lg border border-[#c49a52] text-[#c49a52] hover:bg-[#c49a52] hover:text-[#0b0b0d]"
-                style={{
-                  fontFamily: "'Inter', system-ui, sans-serif",
-                  letterSpacing: "0.02em",
-                }}
+                className="onyx-btn-secondary sm:flex-1"
               >
                 ADD TO CART
               </button>
-              <button type="button" className="onyx-btn-primary flex-1">
+              <button type="button" className="onyx-btn-primary sm:flex-1">
                 BUY NOW
               </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

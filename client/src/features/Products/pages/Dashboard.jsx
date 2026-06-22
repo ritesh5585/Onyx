@@ -2,10 +2,12 @@ import React, { useEffect } from "react";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import Layout from "../../Shared/Layout.jsx";
 
 const Dashboard = () => {
   const { handleGetSellerProduct } = useProduct();
   const sellerProducts = useSelector((state) => state.product.sellerProducts);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,33 +15,19 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="onyx-bg min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-24">
-        {/* ── Top Bar ── */}
-        <div className="py-4 md:py-5 flex items-center gap-3 border-b border-[#1f1f1f]">
-          <button
-            onClick={() => navigate(-1)}
-            className="onyx-nav-back"
-            type="button"
-            aria-label="Go back"
-          >
-            ←
-          </button>
-          <span className="onyx-nav-title">ONYX.</span>
-        </div>
-
+    <Layout showBackButton={true}>
         {/* ── Page Header ── */}
         <div className="pt-8 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
           <div>
-            <h1 className="onyx-page-title text-3xl md:text-4xl">
+            <h1 className="onyx-page-title">
               Your Products
             </h1>
-            <div className="onyx-divider mt-2" />
+            <div className="onyx-divider" />
           </div>
 
           <button
             onClick={() => navigate("/seller/create-product")}
-            className="onyx-btn-primary w-full sm:w-40 transition-transform active:scale-95"
+            className="onyx-btn-primary sm:w-40"
           >
             New Listing
           </button>
@@ -56,7 +44,7 @@ const Dashboard = () => {
 
               return (
                 <div
-                  onClick={() => navigate(`/seller/product/${product._id}`)}
+                  onClick={() => navigate(`/seller/dashboard/${product._id}/variant`)}
                   key={product._id}
                   className="group cursor-pointer flex flex-col"
                 >
@@ -114,8 +102,7 @@ const Dashboard = () => {
             </p>
           </div>
         )}
-      </div>
-    </div>
+    </Layout>
   );
 };
 
