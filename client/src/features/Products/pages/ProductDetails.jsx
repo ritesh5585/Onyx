@@ -76,13 +76,10 @@ const ProductDetails = () => {
           <div className="flex flex-col">
             <h1 className="onyx-page-title">{detail.title}</h1>
 
-            <div
-              className="text-2xl font-semibold tracking-wide text-[#c49a52] mt-4 mb-6"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <p className="text-2xl font-semibold tracking-wide text-[#c49a52] mt-4 mb-6 font-['Inter',system-ui,sans-serif]">
               {detail.price?.currency || "INR"}{" "}
               {detail.price?.amount?.toLocaleString() || "0"}
-            </div>
+            </p>
 
             <div className="onyx-divider" />
 

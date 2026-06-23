@@ -6,7 +6,9 @@ import {
     createProduct,
     getAllProducts,
     getSellerProducts,
-    getProductDetail
+    getProductDetail,
+    addProductvariants,
+    updateProductInfo
 } from '../controller/product.controller.js'
 
 const router = Router()
@@ -34,6 +36,19 @@ router.get('/seller', authenticateUser, requireSeller, getSellerProducts)
  * @description: view product posted by seller
  */
 router.get("/:id", getProductDetail)
+
+/**
+ * @route GET /api/products/{:id}/variants 
+ * @description: Add new Variants to the product
+ */
+router.post("/:id/variants", authenticateUser, requireSeller, addProductvariants)
+
+/**
+ * @route PATCH /api/products/{:id}
+ * @description: Update product title, description or price
+ */
+router.patch("/:id", authenticateUser, requireSeller, updateProductInfo)
+
 
 /**
  * @route POST /api/products/

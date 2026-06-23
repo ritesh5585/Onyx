@@ -20,3 +20,10 @@ export const getProductDetail = async (productId) => {
     return await api.get(`/${productId}`).then(res => res.data)
 }
 
+export const addProductvariants = async (productId, variants) => {
+    return await api.post(`/${productId}/variants`, { variants }).then(res => res.data)
+}
+
+export const updateProductInfo = async (productId, payload) => {
+    return await api.patch(`/${productId}`, payload).then(res => res.data)
+}

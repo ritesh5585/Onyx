@@ -14,7 +14,7 @@ const INITIAL_FORM = {
   priceCurrency: "INR",
 };
 
-const CreatProduct = () => {
+const CreateProduct = () => {
   const navigate = useNavigate();
   const { handleCreateProduct } = useProduct();
 
@@ -22,6 +22,7 @@ const CreatProduct = () => {
   const [images, setImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -63,20 +64,20 @@ const CreatProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!images.length) return alert("Upload at least one image");
-
+    if (!images.length) {
+      setError("Upload at least one image before publishing.");
+      return;
+    }
+    setError("");
     setIsSubmitting(true);
     try {
       const data = new FormData();
-
       Object.entries(formData).forEach(([k, v]) => data.append(k, v));
-
       images.forEach((file) => data.append("images", file));
-
-      handleCreateProduct(data);
-
+      await handleCreateProduct(data);
       navigate("/");
     } catch (err) {
+      setError("Failed to publish listing. Please try again.");
       console.error("Create product failed:", err);
     } finally {
       setIsSubmitting(false);
@@ -85,16 +86,25 @@ const CreatProduct = () => {
 
   return (
     <Layout showBackButton={true}>
-      <div className="max-w-[1100px] mx-auto py-6">
-        {/* Title */}
-        <div className="mb-6">
+      <div className="max-w-5xl py-8">
+
+        {/* Header */}
+        <div className="mb-8">
           <h1 className="onyx-page-title">New Listing</h1>
           <div className="onyx-divider" />
         </div>
 
+        {/* Error banner */}
+        {error && (
+          <p className="mb-6 text-sm text-[#cf6f6f] bg-[#1f0f0f] border border-[#6b2d2d] rounded-lg px-4 py-3">
+            {error}
+          </p>
+        )}
+
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-16 items-start">
-            {/* LEFT */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-start">
+
+            {/* LEFT — text fields */}
             <div className="flex flex-col gap-8">
               <div>
                 <label className="onyx-label">Product Title</label>
@@ -128,7 +138,7 @@ const CreatProduct = () => {
               />
             </div>
 
-            {/* RIGHT */}
+            {/* RIGHT — image upload + submit */}
             <div>
               <ImageUpload
                 images={images}
@@ -142,6 +152,7 @@ const CreatProduct = () => {
                 isSubmitting={isSubmitting}
               />
             </div>
+
           </div>
         </form>
       </div>
@@ -149,4 +160,4 @@ const CreatProduct = () => {
   );
 };
 
-export default CreatProduct;
+export default CreateProduct;

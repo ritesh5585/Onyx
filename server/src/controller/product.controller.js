@@ -87,3 +87,101 @@ export const getProductDetail = async (req, res) => {
         product
     })
 }
+
+export const addProductvariants = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { variants } = req.body
+
+        if (!variants || !Array.isArray(variants) || variants.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "variants must be a non-empty array"
+            })
+        }
+
+        const product = await productModel.findById(id)
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            })
+        }
+
+        // Ensure the logged-in seller owns this product
+        if (product.seller.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden: you do not own this product"
+            })
+        }
+
+        // Map the incoming { name, value, stock, extraPrice } shape to the schema shape
+        const mapped = variants.map(v => ({
+            attributes: { [v.name]: v.value },
+            stock: Number(v.stock) || 0,
+            price: {
+                amount: Number(v.extraPrice) || product.price.amount,
+                currency: product.price.currency || "INR"
+            }
+        }))
+
+        product.variants.push(...mapped)
+        await product.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "Variants added successfully",
+            product
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error while adding variants',
+            error: error.message
+        })
+    }
+}
+
+export const updateProductInfo = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { title, description, priceAmount, priceCurrency } = req.body
+
+        const product = await productModel.findById(id)
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            })
+        }
+
+        if (product.seller.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden: you do not own this product"
+            })
+        }
+
+        if (title) product.title = title
+        if (description) product.description = description
+        if (priceAmount) product.price.amount = Number(priceAmount)
+        if (priceCurrency) product.price.currency = priceCurrency
+
+        await product.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "Product updated successfully",
+            product
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error while updating product',
+            error: error.message
+        })
+    }
+}

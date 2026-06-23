@@ -5,7 +5,7 @@ import { Navigate } from "react-router";
 
 const Protected = ({ children, role = "buyer" }) => {
   const user = useSelector((state) => state.auth.user);
-  console.log(user)
+  // console.log(user)
   const loading = useSelector((state) => state.auth.loading);
   
   if (loading) return <Spinner />;
