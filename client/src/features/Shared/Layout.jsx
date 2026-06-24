@@ -1,9 +1,11 @@
 import { NavLink, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
+import { useAuth } from "../auth/hook/useAuth";
 
 const Layout = ({ children, showLinks = false, showBackButton = false }) => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const { handleLogout } = useAuth();
 
   return (
     <div className="onyx-bg min-h-screen">
@@ -46,13 +48,32 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
               )}
               {user?.role === "seller" && (
                 <>
-                  <NavLink to={"/seller/create-product"} className="onyx-nav-link">
+                  <NavLink
+                    to={"/seller/create-product"}
+                    className="onyx-nav-link"
+                  >
                     Upload
                   </NavLink>
                   <NavLink to={"/seller/dashboard"} className="onyx-nav-link">
                     Dashboard
                   </NavLink>
                 </>
+              )}
+              {user && (
+                <button
+                  onClick={async () => {
+                    await handleLogout();
+                    navigate("/");
+                  }}
+                  className="onyx-nav-link"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  Logout
+                </button>
               )}
             </div>
           )}
