@@ -19,14 +19,20 @@ const SellerProductdetail = () => {
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ title: "", description: "", priceAmount: "", priceCurrency: "INR" });
+  const [editForm, setEditForm] = useState({
+    title: "",
+    description: "",
+    priceAmount: "",
+    priceCurrency: "INR",
+  });
   const [saving, setSaving] = useState(false);
   const [newVariant, setNewVariant] = useState(INITIAL_VARIANT);
   const [variantSubmitting, setVariantSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
 
   const detail = useSelector((state) => state.product.details);
-  const { handleProductDetails, handleUpdateProduct, handleProductVariants } = useProduct();
+  const { handleProductDetails, handleUpdateProduct, handleProductVariants } =
+    useProduct();
 
   const showToast = useCallback((msg, type = "success") => {
     setToast({ msg, type });
@@ -67,7 +73,10 @@ const SellerProductdetail = () => {
       setIsEditing(false);
       showToast("Product details updated successfully.");
     } catch (err) {
-      showToast(err?.response?.data?.message || "Failed to update product.", "error");
+      showToast(
+        err?.response?.data?.message || "Failed to update product.",
+        "error",
+      );
     } finally {
       setSaving(false);
     }
@@ -84,7 +93,10 @@ const SellerProductdetail = () => {
       setNewVariant(INITIAL_VARIANT);
       showToast("Variant added successfully.");
     } catch (err) {
-      showToast(err?.response?.data?.message || "Failed to add variant.", "error");
+      showToast(
+        err?.response?.data?.message || "Failed to add variant.",
+        "error",
+      );
     } finally {
       setVariantSubmitting(false);
     }
@@ -94,59 +106,109 @@ const SellerProductdetail = () => {
 
   return (
     <Layout showBackButton={true}>
-      {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+      {toast && (
+        <Toast
+          msg={toast.msg}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       <div className="py-10 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-
           {/* ── Image Gallery Component ── */}
-          <ImageGallery 
-            mainImage={mainImage} 
-            imageUrls={imageUrls} 
-            selectedImage={selectedImage} 
-            setSelectedImage={setSelectedImage} 
-            title={detail.title} 
+          <ImageGallery
+            mainImage={mainImage}
+            imageUrls={imageUrls}
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+            title={detail.title}
           />
 
           {/* ── Details + Variants ── */}
           <div className="flex flex-col">
-            
             {/* ─ Edit / View Info ─ */}
             {isEditing ? (
               <div className="flex flex-col gap-4 mb-6">
                 <div>
                   <label className="onyx-label">Product Title</label>
-                  <input type="text" name="title" value={editForm.title} onChange={(e) => handleInputChange(e, setEditForm)} className="onyx-input" disabled={saving} />
+                  <input
+                    type="text"
+                    name="title"
+                    value={editForm.title}
+                    onChange={(e) => handleInputChange(e, setEditForm)}
+                    className="onyx-input"
+                    disabled={saving}
+                  />
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-1">
                     <label className="onyx-label">Price</label>
-                    <input type="number" name="priceAmount" value={editForm.priceAmount} onChange={(e) => handleInputChange(e, setEditForm)} className="onyx-input" disabled={saving} />
+                    <input
+                      type="number"
+                      name="priceAmount"
+                      value={editForm.priceAmount}
+                      onChange={(e) => handleInputChange(e, setEditForm)}
+                      className="onyx-input"
+                      disabled={saving}
+                    />
                   </div>
                   <div className="flex-1">
                     <label className="onyx-label">Currency</label>
-                    <select name="priceCurrency" value={editForm.priceCurrency} onChange={(e) => handleInputChange(e, setEditForm)} className="onyx-input" disabled={saving}>
-                      {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    <select
+                      name="priceCurrency"
+                      value={editForm.priceCurrency}
+                      onChange={(e) => handleInputChange(e, setEditForm)}
+                      className="onyx-input"
+                      disabled={saving}
+                    >
+                      {CURRENCIES.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
                 <div>
                   <label className="onyx-label">Description</label>
-                  <textarea name="description" value={editForm.description} onChange={(e) => handleInputChange(e, setEditForm)} rows={5} className="onyx-textarea" disabled={saving} />
+                  <textarea
+                    name="description"
+                    value={editForm.description}
+                    onChange={(e) => handleInputChange(e, setEditForm)}
+                    rows={5}
+                    className="onyx-textarea"
+                    disabled={saving}
+                  />
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 mt-2">
-                  <button onClick={() => setIsEditing(false)} className="onyx-btn-secondary sm:flex-1" disabled={saving}>Cancel</button>
-                  <button onClick={handleSaveDetails} className="onyx-btn-primary sm:flex-1" disabled={saving}>{saving ? "Saving…" : "Save Changes"}</button>
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="onyx-btn-secondary sm:flex-1"
+                    disabled={saving}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveDetails}
+                    className="onyx-btn-primary sm:flex-1"
+                    disabled={saving}
+                  >
+                    {saving ? "Saving…" : "Save Changes"}
+                  </button>
                 </div>
               </div>
             ) : (
-              <ProductOverview 
+              <ProductOverview
                 title={detail.title}
                 priceAmount={detail.price?.amount}
                 priceCurrency={detail.price?.currency}
                 description={detail.description}
               >
-                <button onClick={() => setIsEditing(true)} className="text-sm font-semibold text-[#c49a52] hover:underline whitespace-nowrap ml-4 transition-colors">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="text-sm font-semibold text-[#c49a52] hover:underline whitespace-nowrap ml-4 transition-colors"
+                >
                   Edit Details
                 </button>
               </ProductOverview>
@@ -154,21 +216,35 @@ const SellerProductdetail = () => {
 
             {/* ─ Variants Section ─ */}
             <div className="mt-auto pt-8 border-t border-[#1f1f1f]">
-              <h2 className="text-xl font-semibold mb-6 text-[#eee9e1] font-['Playfair_Display',Georgia,serif]">Product Variants</h2>
+              <h2 className="text-xl font-semibold mb-6 text-[#eee9e1] font-['Playfair_Display',Georgia,serif]">
+                Product Variants
+              </h2>
 
               {detail.variants?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                   {detail.variants.map((v, i) => (
-                    <div key={v._id || i} className="flex flex-col p-5 rounded-xl border bg-[#0f0f13] border-[#1f1f1f] shadow-sm hover:border-[#c49a52]/50 transition-colors">
+                    <div
+                      key={v._id || i}
+                      className="flex flex-col p-5 rounded-xl border bg-[#0f0f13] border-[#1f1f1f] shadow-sm hover:border-[#c49a52]/50 transition-colors"
+                    >
                       <div className="flex flex-wrap gap-2 mb-3">
                         {readAttributes(v.attributes).map(([key, val]) => (
-                          <span key={key} className="px-3 py-1 bg-[#1f1f1f] rounded-md text-sm text-[#eee9e1]">
-                            <span className="text-[#a09d98] mr-1">{key}:</span> {val}
+                          <span
+                            key={key}
+                            className="px-3 py-1 bg-[#1f1f1f] rounded-md text-sm text-[#eee9e1]"
+                          >
+                            <span className="text-[#a09d98] mr-1">{key}:</span>{" "}
+                            {val}
                           </span>
                         ))}
                       </div>
                       <div className="flex justify-between items-center mt-auto border-t border-[#1f1f1f] pt-3">
-                        <span className="text-sm text-[#a09d98]">Stock: <strong className="text-[#eee9e1]">{v.stock ?? "—"}</strong></span>
+                        <span className="text-sm text-[#a09d98]">
+                          Stock:{" "}
+                          <strong className="text-[#eee9e1]">
+                            {v.stock ?? "—"}
+                          </strong>
+                        </span>
                         {v.price?.amount && (
                           <span className="text-sm font-medium text-[#c49a52]">
                             {v.price.currency} {v.price.amount.toLocaleString()}
@@ -191,13 +267,20 @@ const SellerProductdetail = () => {
                   {["name", "value", "stock", "extraPrice"].map((field) => (
                     <div key={field}>
                       <input
-                        type={field === "stock" || field === "extraPrice" ? "number" : "text"}
+                        type={
+                          field === "stock" || field === "extraPrice"
+                            ? "number"
+                            : "text"
+                        }
                         name={field}
                         placeholder={
-                          field === "name" ? "Attribute (e.g. Size)" :
-                          field === "value" ? "Value (e.g. Medium)" :
-                          field === "stock" ? "Stock Quantity" :
-                          "Price for this variant (optional)"
+                          field === "name"
+                            ? "Attribute (e.g. Size)"
+                            : field === "value"
+                              ? "Value (e.g. Medium)"
+                              : field === "stock"
+                                ? "Stock Quantity"
+                                : "Price for this variant (optional)"
                         }
                         value={newVariant[field]}
                         onChange={(e) => handleInputChange(e, setNewVariant)}

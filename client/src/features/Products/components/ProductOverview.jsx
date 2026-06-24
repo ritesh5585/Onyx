@@ -2,7 +2,13 @@ import React from "react";
 
 // A reusable component for displaying the core product information
 // Works for both buyer view and seller view (with optional 'children' for actions like "Edit Details")
-const ProductOverview = ({ title, priceAmount, priceCurrency, description, children }) => {
+const ProductOverview = ({
+  title,
+  priceAmount,
+  priceCurrency,
+  description,
+  children,
+}) => {
   return (
     <>
       <div className="flex justify-between items-start mb-2">

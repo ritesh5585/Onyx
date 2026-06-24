@@ -1,4 +1,3 @@
-
 const Toast = ({ msg, type = "success", onClose }) => (
   <div className={`onyx-toast onyx-toast-${type}`} role="alert">
     <span>{type === "success" ? "✓" : "✕"}</span>

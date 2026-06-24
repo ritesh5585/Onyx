@@ -5,9 +5,10 @@ import { useSelector } from "react-redux";
 
 const Home = () => {
   const allProduct = useSelector((state) => state.product.products);
+  const { user } = useSelector((state) => state.auth);
   const { handleGetAllProducts } = useProduct();
   const navigate = useNavigate();
-  console.log(allProduct)
+  console.log(allProduct);
 
   useEffect(() => {
     handleGetAllProducts();
@@ -16,15 +17,30 @@ const Home = () => {
   return (
     <div className="onyx-bg min-h-screen">
       <div className="onyx-container">
-
         {/* ── Navbar ── */}
         <div className="onyx-navbar onyx-navbar-with-links">
           <span className="onyx-nav-title">ONYX.</span>
           <nav className="onyx-nav-menu">
-            <NavLink to="/register" className="onyx-nav-link">Register</NavLink>
-            <NavLink to="/login" className="onyx-nav-link">Login</NavLink>
-            <NavLink to="/seller/create-product" className="onyx-nav-link">Upload</NavLink>
-            <NavLink to="/seller/dashboard" className="onyx-nav-link">Dashboard</NavLink>
+            {!user && (
+              <>
+                <NavLink to="/register" className="onyx-nav-link">
+                  Register
+                </NavLink>
+                <NavLink to="/login" className="onyx-nav-link">
+                  Login
+                </NavLink>
+              </>
+            )}
+            {user?.role === "seller" && (
+              <>
+                <NavLink to="/seller/create-product" className="onyx-nav-link">
+                  Upload
+                </NavLink>
+                <NavLink to="/seller/dashboard" className="onyx-nav-link">
+                  Dashboard
+                </NavLink>
+              </>
+            )}
           </nav>
         </div>
 
@@ -89,7 +105,6 @@ const Home = () => {
             </p>
           </div>
         )}
-
       </div>
     </div>
   );

@@ -1,7 +1,9 @@
 import { NavLink, useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 const Layout = ({ children, showLinks = false, showBackButton = false }) => {
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
 
   return (
     <div className="onyx-bg min-h-screen">
@@ -32,30 +34,26 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
 
           {showLinks && (
             <div className="onyx-nav-menu">
-              <NavLink
-                to={"/register"}
-                className="onyx-nav-link"
-              >
-                Register
-              </NavLink>
-              <NavLink
-                to={"/login"}
-                className="onyx-nav-link"
-              >
-                Login
-              </NavLink>
-              <NavLink
-                to={"/seller/create-product"}
-                className="onyx-nav-link"
-              >
-                Upload
-              </NavLink>
-              <NavLink
-                to={"/seller/dashboard"}
-                className="onyx-nav-link"
-              >
-                Dashboard
-              </NavLink>
+              {!user && (
+                <>
+                  <NavLink to={"/register"} className="onyx-nav-link">
+                    Register
+                  </NavLink>
+                  <NavLink to={"/login"} className="onyx-nav-link">
+                    Login
+                  </NavLink>
+                </>
+              )}
+              {user?.role === "seller" && (
+                <>
+                  <NavLink to={"/seller/create-product"} className="onyx-nav-link">
+                    Upload
+                  </NavLink>
+                  <NavLink to={"/seller/dashboard"} className="onyx-nav-link">
+                    Dashboard
+                  </NavLink>
+                </>
+              )}
             </div>
           )}
         </div>

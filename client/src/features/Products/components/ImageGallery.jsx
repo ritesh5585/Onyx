@@ -1,7 +1,13 @@
 import React from "react";
 
 // A reusable Image Gallery component for product pages
-const ImageGallery = ({ mainImage, imageUrls, selectedImage, setSelectedImage, title }) => {
+const ImageGallery = ({
+  mainImage,
+  imageUrls,
+  selectedImage,
+  setSelectedImage,
+  title,
+}) => {
   return (
     <div className="flex flex-col gap-4">
       {/* Main Large Image */}

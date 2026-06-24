@@ -87,7 +87,6 @@ const CreateProduct = () => {
   return (
     <Layout showBackButton={true}>
       <div className="max-w-5xl py-8">
-
         {/* Header */}
         <div className="mb-8">
           <h1 className="onyx-page-title">New Listing</h1>
@@ -103,7 +102,6 @@ const CreateProduct = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-start">
-
             {/* LEFT — text fields */}
             <div className="flex flex-col gap-8">
               <div>
@@ -152,7 +150,6 @@ const CreateProduct = () => {
                 isSubmitting={isSubmitting}
               />
             </div>
-
           </div>
         </form>
       </div>

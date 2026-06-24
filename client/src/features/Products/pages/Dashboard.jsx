@@ -33,12 +33,15 @@ const Dashboard = () => {
       {sellerProducts && sellerProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12 pb-20 md:pb-24">
           {sellerProducts.map((product) => {
-            const imageUrl = product.images?.length > 0 ? product.images[0].url : null;
+            const imageUrl =
+              product.images?.length > 0 ? product.images[0].url : null;
 
             return (
               <div
                 key={product._id}
-                onClick={() => navigate(`/seller/dashboard/${product._id}/variant`)}
+                onClick={() =>
+                  navigate(`/seller/dashboard/${product._id}/variant`)
+                }
                 className="group cursor-pointer flex flex-col"
               >
                 {/* Image */}
@@ -79,7 +82,8 @@ const Dashboard = () => {
             Empty Vault
           </span>
           <p className="max-w-md text-base md:text-lg leading-relaxed font-['Cormorant_Garamond',serif]">
-            You haven't added any curated pieces yet. Begin by creating a new listing.
+            You haven't added any curated pieces yet. Begin by creating a new
+            listing.
           </p>
         </div>
       )}

@@ -1,10 +1,6 @@
 import React from "react";
 
-const Price = ({
-  formData,
-  handleChange,
-  CURRENCIES,
-}) => {
+const Price = ({ formData, handleChange, CURRENCIES }) => {
   return (
     <div>
       <label className="onyx-label block mb-2">Price</label>
