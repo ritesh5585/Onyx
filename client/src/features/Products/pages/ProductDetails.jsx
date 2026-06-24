@@ -4,10 +4,18 @@ import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router";
 import { Spinner } from "../../Shared/Spinner";
 import Layout from "../../Shared/Layout";
+
+const readAttributes = (attrs) => {
+  if (!attrs) return [];
+  if (typeof attrs.entries === "function") return Array.from(attrs.entries());
+  return Object.entries(attrs);
+};
+
 const ProductDetails = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState(null);
 
   const detail = useSelector((state) => state.product.details);
 
@@ -19,20 +27,33 @@ const ProductDetails = () => {
     }
   }, [productId]);
 
+  useEffect(() => {
+    setSelectedVariant(null);
+    setSelectedImage(0);
+  }, [detail]);
+
   if (!detail) {
-    return (
-      <Spinner />
-      // <div className="onyx-bg min-h-screen flex items-center justify-center">
-      // </div>
-    );
+    return <Spinner />;
   }
 
+  const activeImages = selectedVariant?.images?.length > 0 
+    ? selectedVariant.images 
+    : detail.images;
+
   const imageUrls =
-    detail.images && detail.images.length > 0
-      ? detail.images.map((img) => img.url)
+    activeImages && activeImages.length > 0
+      ? activeImages.map((img) => img.url)
       : ["https://placehold.co/600x800/15151c/eee9e1?text=No+Image"];
 
   const mainImage = imageUrls[selectedImage] || imageUrls[0];
+
+  const activePrice = selectedVariant?.price?.amount 
+    ? selectedVariant.price 
+    : detail.price;
+
+  const stockStatus = selectedVariant 
+    ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} In Stock` : "Out of Stock")
+    : "In Stock"; // Default for main product
 
   return (
     <Layout showBackButton={true}>
@@ -77,8 +98,8 @@ const ProductDetails = () => {
             <h1 className="onyx-page-title">{detail.title}</h1>
 
             <p className="text-2xl font-semibold tracking-wide text-[#c49a52] mt-4 mb-6 font-['Inter',system-ui,sans-serif]">
-              {detail.price?.currency || "INR"}{" "}
-              {detail.price?.amount?.toLocaleString() || "0"}
+              {activePrice?.currency || "INR"}{" "}
+              {activePrice?.amount?.toLocaleString() || "0"}
             </p>
 
             <div className="onyx-divider" />
@@ -89,11 +110,42 @@ const ProductDetails = () => {
                 {detail.description}
               </p>
 
+              {/* Variants Selection */}
+              {detail.variants?.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="onyx-label mb-3">Available Options</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {detail.variants.map((variant, index) => {
+                      const isSelected = selectedVariant?._id === variant._id || selectedVariant === variant;
+                      const attrs = readAttributes(variant.attributes);
+                      const label = attrs.map(([k, v]) => `${k}: ${v}`).join(", ") || `Variant ${index + 1}`;
+                      
+                      return (
+                        <button
+                          key={variant._id || index}
+                          onClick={() => {
+                            setSelectedVariant(variant);
+                            setSelectedImage(0);
+                          }}
+                          className={`px-4 py-2 rounded-lg border transition-colors ${
+                            isSelected 
+                              ? "border-[#c49a52] bg-[#c49a52]/10 text-[#c49a52]" 
+                              : "border-[#1f1f1f] bg-[#0f0f13] text-[#eee9e1] hover:border-[#c49a52]/50"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Extra Details for UI richness */}
               <div className="grid grid-cols-2 gap-6 mb-10">
                 <div>
                   <h3 className="onyx-label">Availability</h3>
-                  <p className="text-sm text-[#eee9e1]">In Stock</p>
+                  <p className="text-sm text-[#eee9e1]">{stockStatus}</p>
                 </div>
                 <div>
                   <h3 className="onyx-label">Shipping</h3>
