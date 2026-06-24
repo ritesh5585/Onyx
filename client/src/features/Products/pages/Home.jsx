@@ -7,6 +7,7 @@ const Home = () => {
   const allProduct = useSelector((state) => state.product.products);
   const { handleGetAllProducts } = useProduct();
   const navigate = useNavigate();
+  console.log(allProduct)
 
   useEffect(() => {
     handleGetAllProducts();

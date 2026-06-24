@@ -54,7 +54,6 @@ router.patch("/:id", authenticateUser, requireSeller, updateProductInfo)
  * @route POST /api/products/
  * @description: Create a product only from the sellers
  */
-
 router.post('/', authenticateUser, requireSeller, upload.array('images', 7), createProductValidator, createProduct)
 
 export default router
