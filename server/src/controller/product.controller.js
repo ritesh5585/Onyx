@@ -199,24 +199,19 @@ export const deleteProduct = async (req, res) => {
             return res.status(403).json({ success: false, message: "Forbidden: you do not own this product" });
         }
 
-        // Delete images from ImageKit
-        if (product.images && product.images.length > 0) {
-            await Promise.all(product.images.map(img => {
-                if(img.fileId) return deleteFile(img.fileId);
-                return Promise.resolve();
-            }));
+        // Delete product images from ImageKit (fileId fast-path; url fallback for legacy docs)
+        if (product.images?.length > 0) {
+            await Promise.all(
+                product.images.map(img => deleteFile(img.fileId, img.url))
+            );
         }
 
         // Delete variant images from ImageKit
-        if (product.variants && product.variants.length > 0) {
-            for (let v of product.variants) {
-                if (v.images && v.images.length > 0) {
-                    await Promise.all(v.images.map(img => {
-                        if(img.fileId) return deleteFile(img.fileId);
-                        return Promise.resolve();
-                    }));
-                }
-            }
+        if (product.variants?.length > 0) {
+            const variantImageDeletions = product.variants.flatMap(v =>
+                (v.images || []).map(img => deleteFile(img.fileId, img.url))
+            );
+            await Promise.all(variantImageDeletions);
         }
 
         await productModel.findByIdAndDelete(id);
@@ -248,12 +243,11 @@ export const deleteProductVariant = async (req, res) => {
 
         const variant = product.variants[variantIndex];
         
-        // Delete variant images from ImageKit if they exist
-        if (variant.images && variant.images.length > 0) {
-            await Promise.all(variant.images.map(img => {
-                if(img.fileId) return deleteFile(img.fileId);
-                return Promise.resolve();
-            }));
+        // Delete variant images from ImageKit (fileId fast-path; url fallback for legacy docs)
+        if (variant.images?.length > 0) {
+            await Promise.all(
+                variant.images.map(img => deleteFile(img.fileId, img.url))
+            );
         }
 
         product.variants.splice(variantIndex, 1);
