@@ -109,6 +109,27 @@ const SellerProductdetail = () => {
     }
   };
 
+  const onRemoveProduct = async () => {
+    if (!window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) return;
+    try {
+      await handleDeleteProduct(productId);
+      showToast("Product deleted successfully");
+      setTimeout(() => navigate(-1), 1000);
+    } catch (err) {
+      showToast(err?.response?.data?.message || "Failed to delete product.", "error");
+    }
+  };
+
+  const onRemoveVariant = async (variantId) => {
+    if (!window.confirm("Are you sure you want to remove this variant?")) return;
+    try {
+      await handleDeleteVariant(productId, variantId);
+      showToast("Variant removed successfully");
+    } catch (err) {
+      showToast(err?.response?.data?.message || "Failed to remove variant.", "error");
+    }
+  };
+
   if (!detail) return <Spinner />;
 
   return (
