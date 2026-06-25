@@ -27,3 +27,11 @@ export const addProductvariants = async (productId, variants) => {
 export const updateProductInfo = async (productId, payload) => {
     return await api.patch(`/${productId}`, payload).then(res => res.data)
 }
+
+export const deleteProduct = async (productId) => {
+    return await api.delete(`/product-deleting/${productId}`).then(res => res.data)
+}
+
+export const deleteProductVariant = async (productId, variantId) => {
+    return await api.delete(`/product-deleting/${productId}/variants/${variantId}`).then(res => res.data)
+}

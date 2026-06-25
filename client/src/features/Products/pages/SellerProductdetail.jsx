@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { useProduct } from "../hooks/useProduct";
 import { Spinner } from "../../Shared/Spinner";
@@ -16,6 +16,7 @@ const CURRENCIES = ["INR", "USD", "EUR", "GBP"];
 
 const SellerProductdetail = () => {
   const { productId } = useParams();
+  const navigate = useNavigate();
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
@@ -31,8 +32,14 @@ const SellerProductdetail = () => {
   const [toast, setToast] = useState(null);
 
   const detail = useSelector((state) => state.product.details);
-  const { handleProductDetails, handleUpdateProduct, handleProductVariants } =
-    useProduct();
+
+  const {
+    handleProductDetails,
+    handleUpdateProduct,
+    handleProductVariants,
+    handleDeleteProduct,
+    handleDeleteVariant,
+  } = useProduct();
 
   const showToast = useCallback((msg, type = "success") => {
     setToast({ msg, type });
@@ -205,12 +212,20 @@ const SellerProductdetail = () => {
                 priceCurrency={detail.price?.currency}
                 description={detail.description}
               >
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="text-sm font-semibold text-[#c49a52] hover:underline whitespace-nowrap ml-4 transition-colors"
-                >
-                  Edit Details
-                </button>
+                <div className="flex flex-col items-start gap-2 ml-4">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="text-sm font-semibold text-[#c49a52] hover:underline whitespace-nowrap transition-colors"
+                  >
+                    Edit Details
+                  </button>
+                  <button
+                    onClick={onRemoveProduct}
+                    className="text-sm font-semibold text-red-500 hover:underline whitespace-nowrap transition-colors"
+                  >
+                    Remove Product
+                  </button>
+                </div>
               </ProductOverview>
             )}
 
@@ -225,8 +240,15 @@ const SellerProductdetail = () => {
                   {detail.variants.map((v, i) => (
                     <div
                       key={v._id || i}
-                      className="flex flex-col p-5 rounded-xl border bg-[#0f0f13] border-[#1f1f1f] shadow-sm hover:border-[#c49a52]/50 transition-colors"
+                      className="relative flex flex-col p-5 rounded-xl border bg-[#0f0f13] border-[#1f1f1f] shadow-sm hover:border-[#c49a52]/50 transition-colors"
                     >
+                      <button
+                        onClick={() => onRemoveVariant(v._id)}
+                        className="absolute top-2 right-2 text-[#a09d98] hover:text-red-500 text-xl leading-none p-1 transition-colors z-10 font-bold"
+                        title="Remove Variant"
+                      >
+                        &times;
+                      </button>
                       <div className="flex flex-wrap gap-2 mb-3">
                         {readAttributes(v.attributes).map(([key, val]) => (
                           <span

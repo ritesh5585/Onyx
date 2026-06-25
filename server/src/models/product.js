@@ -24,6 +24,9 @@ const productSchema = new mongoose.Schema({
             url: {
                 type: String,
                 required: true
+            },
+            fileId: {
+                type: String
             }
         }
     ],
@@ -34,6 +37,9 @@ const productSchema = new mongoose.Schema({
                     url: {
                         type: String,
                         required: true
+                    },
+                    fileId: {
+                        type: String
                     }
                 }
             ],

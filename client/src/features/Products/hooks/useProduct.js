@@ -6,7 +6,9 @@ import {
     getAllproducts,
     getProductDetail,
     addProductvariants,
-    updateProductInfo
+    updateProductInfo,
+    deleteProduct,
+    deleteProductVariant
 } from "../service/product.api";
 
 export const useProduct = () => {
@@ -89,6 +91,28 @@ export const useProduct = () => {
         }
     };
 
+    const handleDeleteProduct = async (productId) => {
+        try {
+            const data = await deleteProduct(productId);
+            // Optionally remove from Redux list if needed, or rely on refetch
+            return data;
+        } catch (error) {
+            console.error("Delete product failed:", error);
+            throw error;
+        }
+    };
+
+    const handleDeleteVariant = async (productId, variantId) => {
+        try {
+            const data = await deleteProductVariant(productId, variantId);
+            dispatch(setDetails(data?.product));
+            return data.product;
+        } catch (error) {
+            console.error("Delete variant failed:", error);
+            throw error;
+        }
+    };
+
     return {
         handleCreateProduct,
         handleGetSellerProduct,
@@ -96,5 +120,7 @@ export const useProduct = () => {
         handleProductDetails,
         handleProductVariants,
         handleUpdateProduct,
+        handleDeleteProduct,
+        handleDeleteVariant
     };
 };

@@ -1,5 +1,5 @@
 import productModel from '../models/product.js'
-import uploadFile from '../services/storage.service.js'
+import uploadFile, { deleteFile } from '../services/storage.service.js'
 
 export const createProduct = async (req, res) => {
     try {
@@ -18,7 +18,7 @@ export const createProduct = async (req, res) => {
                 buffer: file.buffer,
                 fileName: file.originalname
             })
-            return { url: uploadResult.url }
+            return { url: uploadResult.url, fileId: uploadResult.fileId }
         }))
 
         const product = await productModel.create({
@@ -183,5 +183,84 @@ export const updateProductInfo = async (req, res) => {
             message: 'Error while updating product',
             error: error.message
         })
+    }
+}
+
+export const deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await productModel.findById(id);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
+        if (product.seller.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: "Forbidden: you do not own this product" });
+        }
+
+        // Delete images from ImageKit
+        if (product.images && product.images.length > 0) {
+            await Promise.all(product.images.map(img => {
+                if(img.fileId) return deleteFile(img.fileId);
+                return Promise.resolve();
+            }));
+        }
+
+        // Delete variant images from ImageKit
+        if (product.variants && product.variants.length > 0) {
+            for (let v of product.variants) {
+                if (v.images && v.images.length > 0) {
+                    await Promise.all(v.images.map(img => {
+                        if(img.fileId) return deleteFile(img.fileId);
+                        return Promise.resolve();
+                    }));
+                }
+            }
+        }
+
+        await productModel.findByIdAndDelete(id);
+
+        return res.status(200).json({ success: true, message: "Product deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error while deleting product', error: error.message });
+    }
+}
+
+export const deleteProductVariant = async (req, res) => {
+    try {
+        const { id, variantId } = req.params;
+        const product = await productModel.findById(id);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
+        if (product.seller.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: "Forbidden: you do not own this product" });
+        }
+
+        const variantIndex = product.variants.findIndex(v => v._id.toString() === variantId);
+        
+        if (variantIndex === -1) {
+             return res.status(404).json({ success: false, message: "Variant not found" });
+        }
+
+        const variant = product.variants[variantIndex];
+        
+        // Delete variant images from ImageKit if they exist
+        if (variant.images && variant.images.length > 0) {
+            await Promise.all(variant.images.map(img => {
+                if(img.fileId) return deleteFile(img.fileId);
+                return Promise.resolve();
+            }));
+        }
+
+        product.variants.splice(variantIndex, 1);
+        await product.save();
+
+        return res.status(200).json({ success: true, message: "Variant deleted successfully", product });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error while deleting variant', error: error.message });
     }
 }

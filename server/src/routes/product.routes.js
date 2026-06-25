@@ -8,7 +8,9 @@ import {
     getSellerProducts,
     getProductDetail,
     addProductvariants,
-    updateProductInfo
+    updateProductInfo,
+    deleteProduct,
+    deleteProductVariant
 } from '../controller/product.controller.js'
 
 const router = Router()
@@ -55,5 +57,17 @@ router.patch("/:id", authenticateUser, requireSeller, updateProductInfo)
  * @description: Create a product only from the sellers
  */
 router.post('/', authenticateUser, requireSeller, upload.array('images', 7), createProductValidator, createProduct)
+
+/**
+ * @route DELETE /api/products/product-deleting/:id
+ * @description: Delete a product and its images (only for the seller who created it)
+ */
+router.delete('/product-deleting/:id', authenticateUser, requireSeller, deleteProduct)
+
+/**
+ * @route DELETE /api/products/product-deleting/:id/variants/:variantId
+ * @description: Delete a product variant and its images (only for the seller who created it)
+ */
+router.delete('/product-deleting/:id/variants/:variantId', authenticateUser, requireSeller, deleteProductVariant)
 
 export default router
