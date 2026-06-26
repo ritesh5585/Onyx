@@ -4,10 +4,6 @@ import { config } from '../config/config.js'
 // @imagekit/nodejs v7 — only needs privateKey to authenticate
 const client = new ImageKit({ privateKey: config.IMAGEKIT });
 
-/**
- * Upload a file buffer to ImageKit.
- * Always returns the full result so callers can persist `fileId` + `url`.
- */
 const uploadFile = async ({ buffer, fileName, folder = 'Oynx' }) => {
     const result = await client.files.upload({
         file: await ImageKit.toFile(buffer),
@@ -15,7 +11,6 @@ const uploadFile = async ({ buffer, fileName, folder = 'Oynx' }) => {
         folder
     });
 
-    // Sanity-check: warn if ImageKit ever returns a result without fileId
     if (!result?.fileId) {
         console.warn('[ImageKit] Upload succeeded but no fileId in response. Image cleanup will not be possible for this file.');
     }
@@ -31,26 +26,18 @@ const uploadFile = async ({ buffer, fileName, folder = 'Oynx' }) => {
  *  2. If only `url` is available → fallback: derive the filePath from the
  *     URL and use ImageKit's Media API to locate and delete the asset.
  *
- * Errors are logged but never thrown — a failed purge must never block
- * a product/variant deletion in MongoDB.
- *
- * @param {string|undefined} fileId  - Stored ImageKit fileId (may be absent on legacy docs)
- * @param {string|undefined} url     - Stored image URL (used as fallback)
  */
 export const deleteFile = async (fileId, url) => {
-    // ── Fast path: we have the fileId ──────────────────────────────────────
+
     if (fileId && typeof fileId === 'string') {
         try {
-            console.log(`[ImageKit] Deleting asset by fileId: ${fileId}`);
             await client.files.delete(fileId);
-            console.log(`[ImageKit] ✓ Deleted fileId: ${fileId}`);
         } catch (err) {
             console.error(`[ImageKit] ✗ Failed to delete fileId "${fileId}":`, err?.message || err);
         }
         return;
     }
 
-    // ── Fallback: no fileId stored (legacy product) ────────────────────────
     if (!url) {
         console.warn('[ImageKit] Skipping deletion — neither fileId nor url provided.');
         return;
@@ -94,7 +81,6 @@ export const deleteFile = async (fileId, url) => {
         }
 
         const resolvedFileId = files[0].fileId;
-        console.log(`[ImageKit] Found asset. Deleting fileId: ${resolvedFileId}`);
         await client.files.delete(resolvedFileId);
         console.log(`[ImageKit] ✓ Deleted via URL fallback. fileId: ${resolvedFileId}`);
     } catch (err) {
