@@ -1,11 +1,5 @@
 # Onyx E-Commerce Project: Architecture & Codebase Analysis
 
-_An Engineer's Thinking Flow & Interview Prep Guide_
-
-As an engineer analyzing the Onyx e-commerce platform, here is a detailed breakdown of the application architecture, design decisions, and component interactions based on the current state of the codebase. This document serves as a comprehensive guide to answering in-depth technical questions about the project.
-
----
-
 ## 🧱 Fundamentals & Core Concepts
 
 _This section breaks down the foundational technologies powering the Onyx platform, explaining not just the "how", but the "why" behind core architectural decisions._
