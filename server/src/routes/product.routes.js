@@ -26,7 +26,6 @@ const upload = multer({
  */
 router.get("/", getAllProducts)
 
-
 /**
  * @route GET /api/products/seller 
  * @description: get all product posted by seller
@@ -50,7 +49,6 @@ router.post("/:id/variants", authenticateUser, requireSeller, addProductvariants
  * @description: Update product title, description or price
  */
 router.patch("/:id", authenticateUser, requireSeller, updateProductInfo)
-
 
 /**
  * @route POST /api/products/
