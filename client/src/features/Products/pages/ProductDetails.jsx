@@ -7,6 +7,7 @@ import Layout from "../../Shared/Layout";
 import ImageGallery from "../components/ImageGallery";
 import ProductOverview from "../components/ProductOverview";
 import { readAttributes } from "../utils/variantUtils";
+import { useCart } from "../../cart/hooks/useCart";
 
 const ProductDetails = () => {
   const { productId } = useParams();

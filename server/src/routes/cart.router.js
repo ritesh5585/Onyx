@@ -5,7 +5,7 @@ import { addToCart, viewCartProduct } from "../controller/cart.controller.js"
 
 const router = Router()
 
-router.post("/", authenticateUser, validateAddToCart, addToCart)
-router.get("/", authenticateUser, viewCartProduct)
+router.post("/add/:productId/:variantId", authenticateUser, validateAddToCart, addToCart)
+router.get("/get", authenticateUser, viewCartProduct)
 
 export default router

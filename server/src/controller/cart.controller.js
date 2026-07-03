@@ -4,32 +4,44 @@ import { getCartDetails } from '../dao/cart.dao.js';
 
 export async function addToCart(req, res) {
     try {
-        const { productId, variantId, quantity = 1 } = req.body;
+        const { productId, variantId } = req.params;
+        const { quantity = 1 } = req.body
         const userId = req.user._id;
 
         const productData = await getProductVariant(productId, variantId);
 
         if (!productData) {
-            return res.status(404).json({ success: false, message: "Product or variant not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Product or variant not found"
+            });
         }
 
         const { product, variant } = productData;
 
         if (quantity > variant.stock) {
-            return res.status(400).json({ success: false, message: `Only ${variant.stock} stocks left` });
+            return res.status(400).json({
+                success: false,
+                message: `Only ${variant.stock} stocks left`
+            });
         }
+
 
         const cart = await findOrCreateCart(userId);
 
         const existingItem = cart.items.find(
             item =>
-                item.product.toString() === productId &&
+                item.product.toString
+                    () === productId &&
                 item.variant?.toString() === variantId
         );
 
         if (existingItem) {
             if (existingItem.quantity + quantity > variant.stock) {
-                return res.status(400).json({ success: false, message: "Stock exceeded" });
+                return res.status(400).json({
+                    success: false,
+                    message: "Stock exceeded"
+                });
             }
 
             existingItem.quantity += quantity;
