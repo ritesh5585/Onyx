@@ -8,7 +8,7 @@ import ImageGallery from "../components/ImageGallery";
 import ProductOverview from "../components/ProductOverview";
 import { readAttributes } from "../utils/variantUtils";
 import { useCart } from "../../cart/hooks/useCart";
-import { VariantSelector } from "../utils/variantSelector";
+import { VariantSelector } from "../components/variantSelector";
 import Toast from "../../Shared/Toast";
 
 const ProductDetails = () => {

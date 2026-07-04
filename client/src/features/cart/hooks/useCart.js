@@ -18,6 +18,7 @@ export const useCart = () => {
     async function handleGetCart() {
         try {
              const data = await getCart()
+             console.log(data)
              dispatch(setItems(data.cart.items))
         } catch (error) {
             console.error("cart not found", error);
