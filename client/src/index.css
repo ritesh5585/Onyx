@@ -148,7 +148,7 @@
 
   /* ── Toast (global feedback — used via Shared/Toast.jsx) ── */
   .onyx-toast {
-    @apply fixed bottom-8 right-8 z-50 flex items-center gap-3
+    @apply fixed top-8 right-8 z-50 flex items-center gap-3
            px-5 py-3 rounded-xl border text-sm font-medium shadow-2xl;
     font-family: 'Inter', system-ui, sans-serif;
     animation: onyx-slide-up 0.22s ease;

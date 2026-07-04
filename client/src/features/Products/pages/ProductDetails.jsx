@@ -8,35 +8,8 @@ import ImageGallery from "../components/ImageGallery";
 import ProductOverview from "../components/ProductOverview";
 import { readAttributes } from "../utils/variantUtils";
 import { useCart } from "../../cart/hooks/useCart";
-// import { VariantSelector } from "../utils/variantSelector";
-
-const VariantSelector = ({ attributes, selectedOptions, onOptionSelect }) => (
-  <div className="mb-8 flex flex-col gap-6">
-    {Object.entries(attributes).map(([attrName, attrValues]) => (
-      <div key={attrName}>
-        <h3 className="onyx-label mb-3">{attrName}</h3>
-        <div className="flex flex-wrap gap-3">
-          {attrValues.map((val) => {
-            const isSelected = selectedOptions[attrName] === val;
-            return (
-              <button
-                key={val}
-                onClick={() => onOptionSelect(attrName, val)}
-                className={`px-4 py-2 rounded-lg border transition-colors ${
-                  isSelected
-                    ? "border-[#c49a52] bg-[#c49a52]/10 text-[#c49a52]"
-                    : "border-[#1f1f1f] bg-[#0f0f13] text-[#eee9e1] hover:border-[#c49a52]/50"
-                }`}
-              >
-                {val}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    ))}
-  </div>
-);
+import { VariantSelector } from "../utils/variantSelector";
+import Toast from "../../Shared/Toast";
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -45,6 +18,12 @@ const ProductDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [isAdding, setIsAdding] = useState(false);
+  const [toast, setToast] = useState({ msg: "", type: "", visible: false });
+
+  const showToast = (msg, type = "success") => {
+    setToast({ msg, type, visible: true });
+    setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000);
+  };
 
   const detail = useSelector((state) => state.product.details);
   const { handleProductDetails } = useProduct();
@@ -56,7 +35,6 @@ const ProductDetails = () => {
 
   const parsedVariants = useMemo(() => {
     if (!detail?.variants?.length) return { attributes: {}, variantsList: [] };
-
     const attributes = {};
     const variantsList = detail.variants.map((v) => {
       const parsedAttrs = Object.fromEntries(readAttributes(v.attributes));
@@ -103,41 +81,42 @@ const ProductDetails = () => {
 
   if (!detail) return <Spinner />;
 
-  const activeImages =
-    resolvedVariant?.images?.length > 0
-      ? resolvedVariant.images
-      : detail.images;
-  const imageUrls =
-    activeImages?.length > 0
-      ? activeImages.map((img) => img.url)
-      : ["https://placehold.co/600x800/15151c/eee9e1?text=No+Image"];
+  const imageUrls = (resolvedVariant?.images?.length
+    ? resolvedVariant.images
+    : detail.images
+  )?.map((img) => img.url) || [
+    "https://placehold.co/600x800/15151c/eee9e1?text=No+Image",
+  ];
+
   const activePrice = resolvedVariant?.price?.amount
     ? resolvedVariant.price
     : detail.price;
 
-  let stockStatus = "In Stock";
-  let isOutOfStock = false;
-  if (detail.variants?.length > 0) {
-    if (resolvedVariant) {
-      stockStatus =
-        resolvedVariant.stock > 0
-          ? `${resolvedVariant.stock} In Stock`
-          : "Out of Stock";
-      isOutOfStock = resolvedVariant.stock <= 0;
-    } else {
-      stockStatus = "Variant Unavailable";
-      isOutOfStock = true;
-    }
-  }
+  const hasVariants = detail.variants?.length > 0;
+  
+  const stockNotAvailable = hasVariants 
+    ? (!resolvedVariant || resolvedVariant.stock <= 0) 
+    : (detail.stock <= 0);
+    
+  const isOutOfStock = stockNotAvailable;
+
+  const stockStatus = !hasVariants
+    ? (detail.stock > 0 ? `${detail.stock} In Stock` : "Out of Stock")
+    : !resolvedVariant
+      ? "Variant Unavailable"
+      : resolvedVariant.stock > 0
+        ? `${resolvedVariant.stock} In Stock`
+        : "Out of Stock";
 
   const onAddToCart = async () => {
     if (isOutOfStock) return;
     setIsAdding(true);
     try {
-      const variantId = resolvedVariant?._id || null;
-      await handleAddtoCart(detail._id, variantId);
+      await handleAddtoCart(detail._id, resolvedVariant?._id || null);
+      showToast("Item added to cart successfully!", "success");
     } catch (err) {
       console.error("Add to cart failed", err);
+      showToast(err?.response?.data?.message || err?.message || "Failed to add item to cart.", "error");
     } finally {
       setIsAdding(false);
     }
@@ -147,15 +126,21 @@ const ProductDetails = () => {
     if (isOutOfStock) return;
     try {
       await onAddToCart();
-      navigate('/cart');
+      navigate("/cart");
     } catch (err) {
       console.error(err);
     }
   };
 
   return (
-    <Layout showBackButton={true}>
-      <div className="py-10 md:py-16">
+    <>
+      {toast.visible && (
+        <div className="fixed top-4 right-4 z-[9999]">
+          <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, visible: false }))} />
+        </div>
+      )}
+      <Layout showBackButton={true}>
+        <div className="pt-10 pb-28 md:pt-16 md:pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           <ImageGallery
             mainImage={imageUrls[selectedImage] || imageUrls[0]}
@@ -188,7 +173,9 @@ const ProductDetails = () => {
               <div className="grid grid-cols-2 gap-6 mb-10">
                 <div>
                   <h3 className="onyx-label">Availability</h3>
-                  <p className={`text-sm ${isOutOfStock ? "text-red-400" : "text-[#eee9e1]"}`}>
+                  <p
+                    className={`text-sm ${isOutOfStock ? "text-red-400" : "text-[#eee9e1]"}`}
+                  >
                     {stockStatus}
                   </p>
                 </div>
@@ -199,12 +186,12 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 mt-auto pt-8 border-t border-[#1f1f1f]">
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0a0a0a] border-t border-[#1f1f1f] flex flex-row gap-4 z-50 md:px-8 lg:px-20">
               <button
                 type="button"
                 onClick={onAddToCart}
-                disabled={isOutOfStock || isAdding}
-                className={`onyx-btn-secondary sm:flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={isOutOfStock || isAdding || stockNotAvailable}
+                className={`onyx-btn-secondary flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isAdding ? "ADDING..." : "ADD TO CART"}
               </button>
@@ -212,7 +199,7 @@ const ProductDetails = () => {
                 type="button"
                 onClick={onBuyNow}
                 disabled={isOutOfStock || isAdding}
-                className={`onyx-btn-primary sm:flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`onyx-btn-primary flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 BUY NOW
               </button>
@@ -220,7 +207,8 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
-    </Layout>
+      </Layout>
+    </>
   );
 };
 
