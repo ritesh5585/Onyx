@@ -7,6 +7,7 @@ import Protected from "../features/auth/components/Protected.jsx";
 import CreateProduct from "../features/Products/pages/CreatProduct.jsx";
 import SellerProductDetail from "../features/Products/pages/SellerProductdetail.jsx"
 import ProductDetails from "../features/Products/pages/ProductDetails.jsx";
+import Cart from "../features/cart/pages/Cart.jsx"
 
 export const routes = createBrowserRouter([
   {
@@ -44,13 +45,18 @@ export const routes = createBrowserRouter([
           </Protected>
         ),
       },
-      {path: "dashboard/:productId/variant",
+      {
+        path: "dashboard/:productId/variant",
         element: <SellerProductDetail/>
-      }
+      },
     ],
   },
   {
     path: "/product/:productId",
     element: <ProductDetails />,
   },
+  {
+    path: "/getyourcart",
+    element: <Cart/>
+  }
 ]);

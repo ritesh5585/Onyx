@@ -1,3 +1,6 @@
+import cartModel from "../models/cart.js"
+import mongoose from "mongoose"
+
 export const getCartDetails = async (userId) => {
     let cart = (await cartModel.aggregate([
         {

@@ -22,7 +22,7 @@ const ProductDetails = () => {
 
   const showToast = (msg, type = "success") => {
     setToast({ msg, type, visible: true });
-    setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000);
+    setTimeout(() => setToast((prev) => ({ ...prev, visible: false })), 3000);
   };
 
   const detail = useSelector((state) => state.product.details);
@@ -93,15 +93,17 @@ const ProductDetails = () => {
     : detail.price;
 
   const hasVariants = detail.variants?.length > 0;
-  
-  const stockNotAvailable = hasVariants 
-    ? (!resolvedVariant || resolvedVariant.stock <= 0) 
-    : (detail.stock <= 0);
-    
+
+  const stockNotAvailable = hasVariants
+    ? !resolvedVariant || resolvedVariant.stock <= 0
+    : detail.stock <= 0;
+
   const isOutOfStock = stockNotAvailable;
 
   const stockStatus = !hasVariants
-    ? (detail.stock > 0 ? `${detail.stock} In Stock` : "Out of Stock")
+    ? detail.stock > 0
+      ? `${detail.stock} In Stock`
+      : "Out of Stock"
     : !resolvedVariant
       ? "Variant Unavailable"
       : resolvedVariant.stock > 0
@@ -116,7 +118,12 @@ const ProductDetails = () => {
       showToast("Item added to cart successfully!", "success");
     } catch (err) {
       console.error("Add to cart failed", err);
-      showToast(err?.response?.data?.message || err?.message || "Failed to add item to cart.", "error");
+      showToast(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to add item to cart.",
+        "error",
+      );
     } finally {
       setIsAdding(false);
     }
@@ -136,77 +143,81 @@ const ProductDetails = () => {
     <>
       {toast.visible && (
         <div className="fixed top-4 right-4 z-[9999]">
-          <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, visible: false }))} />
+          <Toast
+            msg={toast.msg}
+            type={toast.type}
+            onClose={() => setToast((prev) => ({ ...prev, visible: false }))}
+          />
         </div>
       )}
       <Layout showBackButton={true}>
         <div className="pt-10 pb-28 md:pt-16 md:pb-32">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          <ImageGallery
-            mainImage={imageUrls[selectedImage] || imageUrls[0]}
-            imageUrls={imageUrls}
-            selectedImage={selectedImage}
-            setSelectedImage={setSelectedImage}
-            title={detail.title}
-          />
-
-          <div className="flex flex-col">
-            <ProductOverview
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+            <ImageGallery
+              mainImage={imageUrls[selectedImage] || imageUrls[0]}
+              imageUrls={imageUrls}
+              selectedImage={selectedImage}
+              setSelectedImage={setSelectedImage}
               title={detail.title}
-              priceAmount={activePrice?.amount}
-              priceCurrency={activePrice?.currency}
-              description={detail.description}
             />
 
-            <div className="flex-grow">
-              {Object.keys(parsedVariants.attributes).length > 0 && (
-                <VariantSelector
-                  attributes={parsedVariants.attributes}
-                  selectedOptions={selectedOptions}
-                  onOptionSelect={(attr, val) => {
-                    setSelectedOptions((prev) => ({ ...prev, [attr]: val }));
-                    setSelectedImage(0);
-                  }}
-                />
-              )}
+            <div className="flex flex-col">
+              <ProductOverview
+                title={detail.title}
+                priceAmount={activePrice?.amount}
+                priceCurrency={activePrice?.currency}
+                description={detail.description}
+              />
 
-              <div className="grid grid-cols-2 gap-6 mb-10">
-                <div>
-                  <h3 className="onyx-label">Availability</h3>
-                  <p
-                    className={`text-sm ${isOutOfStock ? "text-red-400" : "text-[#eee9e1]"}`}
-                  >
-                    {stockStatus}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="onyx-label">Shipping</h3>
-                  <p className="text-sm text-[#eee9e1]">Ships in 2-3 days</p>
+              <div className="flex-grow">
+                {Object.keys(parsedVariants.attributes).length > 0 && (
+                  <VariantSelector
+                    attributes={parsedVariants.attributes}
+                    selectedOptions={selectedOptions}
+                    onOptionSelect={(attr, val) => {
+                      setSelectedOptions((prev) => ({ ...prev, [attr]: val }));
+                      setSelectedImage(0);
+                    }}
+                  />
+                )}
+
+                <div className="grid grid-cols-2 gap-6 mb-10">
+                  <div>
+                    <h3 className="onyx-label">Availability</h3>
+                    <p
+                      className={`text-sm ${isOutOfStock ? "text-red-400" : "text-[#eee9e1]"}`}
+                    >
+                      {stockStatus}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="onyx-label">Shipping</h3>
+                    <p className="text-sm text-[#eee9e1]">Ships in 2-3 days</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0a0a0a] border-t border-[#1f1f1f] flex flex-row gap-4 z-50 md:px-8 lg:px-20">
-              <button
-                type="button"
-                onClick={onAddToCart}
-                disabled={isOutOfStock || isAdding || stockNotAvailable}
-                className={`onyx-btn-secondary flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
-                {isAdding ? "ADDING..." : "ADD TO CART"}
-              </button>
-              <button
-                type="button"
-                onClick={onBuyNow}
-                disabled={isOutOfStock || isAdding}
-                className={`onyx-btn-primary flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
-                BUY NOW
-              </button>
+              <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0a0a0a] border-t border-[#1f1f1f] flex flex-row gap-4 z-50 md:px-8 lg:px-20">
+                <button
+                  type="button"
+                  onClick={onAddToCart}
+                  disabled={isOutOfStock || isAdding || stockNotAvailable}
+                  className={`onyx-btn-secondary flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  {isAdding ? "ADDING..." : "ADD TO CART"}
+                </button>
+                <button
+                  type="button"
+                  onClick={onBuyNow}
+                  disabled={isOutOfStock || isAdding}
+                  className={`onyx-btn-primary flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  BUY NOW
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </Layout>
     </>
   );

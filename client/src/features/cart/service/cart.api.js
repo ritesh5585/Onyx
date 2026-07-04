@@ -6,6 +6,8 @@ const api = axios.create({
 })
 
 export const addToCart = async ({ productId, variantId, quantity = 1 }) => {
-    console.log("reached api")
     return await api.post(`/add/${productId}/${variantId}`, { quantity }).then(res => res.data)
+}
+export const getCart = async () => {
+    return await api.get('/get').then(res => res.data)
 }
