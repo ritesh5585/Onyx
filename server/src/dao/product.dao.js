@@ -6,14 +6,15 @@ export const getProductVariant = async (productId, variantId) => {
 
     if (!product) throw new Error("productId not found");
 
-    let variant = product.variants.find(
-        el => el._id.toString() == variantId
-    )
-
-    if (!variant) throw new Error('variantId not found')
+    let variant = null;
+    if (variantId && variantId !== 'null' && variantId !== 'undefined') {
+        variant = product.variants?.find(
+            el => el._id.toString() == variantId
+        )
+        if (!variant) throw new Error('variantId not found')
+    }
 
     return { product, variant }
-
 }
 
 export const findOrCreateCart = async (userId) => {
