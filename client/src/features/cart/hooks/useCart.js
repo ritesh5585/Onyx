@@ -1,17 +1,21 @@
 import { addToCart } from "../service/cart.api";
-import { useDispatch } from "react-redux"
-import addItems from "../state/cart.slice"
+import { useDispatch } from "react-redux";
+import { addItems } from "../state/cart.slice";
 
 export const useCart = () => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
-    function handleAddtoCart() {
+    async function handleAddtoCart(productId, variantId) {
         try {
-            const data = await addItems({ productId, variantId })
-            return data
+            console.log("handleAddtoCart hit")
+            const data = await addToCart({ productId, variantId });
+            console.log("Datafetched")
+            return data;
         } catch (error) {
-            console.error("cart not added", error)
-            throw new error
+            console.error("cart not added", error);
+            throw error;
         }
     }
+
+    return { handleAddtoCart };
 }

@@ -3,11 +3,11 @@ import { findOrCreateCart, getProductVariant } from '../dao/product.dao.js'
 import { getCartDetails } from '../dao/cart.dao.js';
 
 export async function addToCart(req, res) {
-    try {
-        const { productId, variantId } = req.params;
-        const { quantity = 1 } = req.body
-        const userId = req.user._id;
+    const { productId, variantId } = req.params;
+    const { quantity = 1 } = req.body
+    const userId = req.user._id;
 
+    try {
         const productData = await getProductVariant(productId, variantId);
 
         if (!productData) {
@@ -31,8 +31,7 @@ export async function addToCart(req, res) {
 
         const existingItem = cart.items.find(
             item =>
-                item.product.toString
-                    () === productId &&
+                item.product.toString() === productId &&
                 item.variant?.toString() === variantId
         );
 
@@ -46,11 +45,16 @@ export async function addToCart(req, res) {
 
             existingItem.quantity += quantity;
         } else {
+            console.log({
+                variantPrice: variant.price,
+                productPrice: product.price
+            })
+
             cart.items.push({
                 product: productId,
                 variant: variantId,
                 quantity,
-                price: variant.price?.amount || product.price
+                price: variant?.price || product?.price
             });
         }
 

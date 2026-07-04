@@ -8,6 +8,35 @@ import ImageGallery from "../components/ImageGallery";
 import ProductOverview from "../components/ProductOverview";
 import { readAttributes } from "../utils/variantUtils";
 import { useCart } from "../../cart/hooks/useCart";
+// import { VariantSelector } from "../utils/variantSelector";
+
+const VariantSelector = ({ attributes, selectedOptions, onOptionSelect }) => (
+  <div className="mb-8 flex flex-col gap-6">
+    {Object.entries(attributes).map(([attrName, attrValues]) => (
+      <div key={attrName}>
+        <h3 className="onyx-label mb-3">{attrName}</h3>
+        <div className="flex flex-wrap gap-3">
+          {attrValues.map((val) => {
+            const isSelected = selectedOptions[attrName] === val;
+            return (
+              <button
+                key={val}
+                onClick={() => onOptionSelect(attrName, val)}
+                className={`px-4 py-2 rounded-lg border transition-colors ${
+                  isSelected
+                    ? "border-[#c49a52] bg-[#c49a52]/10 text-[#c49a52]"
+                    : "border-[#1f1f1f] bg-[#0f0f13] text-[#eee9e1] hover:border-[#c49a52]/50"
+                }`}
+              >
+                {val}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    ))}
+  </div>
+);
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -15,30 +44,27 @@ const ProductDetails = () => {
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
+  const [isAdding, setIsAdding] = useState(false);
 
   const detail = useSelector((state) => state.product.details);
   const { handleProductDetails } = useProduct();
+  const { handleAddtoCart } = useCart();
 
   useEffect(() => {
-    if (productId) {
-      handleProductDetails(productId);
-    }
+    if (productId) handleProductDetails(productId);
   }, [productId]);
 
   const parsedVariants = useMemo(() => {
     if (!detail?.variants?.length) return { attributes: {}, variantsList: [] };
 
     const attributes = {};
-    const variantsList = detail.variants.map((v) => ({
-      ...v,
-      parsedAttrs: Object.fromEntries(readAttributes(v.attributes)),
-    }));
-
-    variantsList.forEach((variant) => {
-      Object.entries(variant.parsedAttrs).forEach(([key, value]) => {
+    const variantsList = detail.variants.map((v) => {
+      const parsedAttrs = Object.fromEntries(readAttributes(v.attributes));
+      Object.entries(parsedAttrs).forEach(([key, value]) => {
         if (!attributes[key]) attributes[key] = new Set();
         attributes[key].add(value);
       });
+      return { ...v, parsedAttrs };
     });
 
     Object.keys(attributes).forEach((key) => {
@@ -62,27 +88,20 @@ const ProductDetails = () => {
     }
   }, [parsedVariants.attributes]);
 
-  const handleOptionSelect = (attributeName, value) => {
-    setSelectedOptions((prev) => ({ ...prev, [attributeName]: value }));
-    setSelectedImage(0);
-  };
-
   const resolvedVariant = useMemo(() => {
     if (
       !parsedVariants.variantsList.length ||
-      Object.keys(selectedOptions).length === 0
+      !Object.keys(selectedOptions).length
     )
       return null;
-    return parsedVariants.variantsList.find((variant) => {
-      return Object.entries(selectedOptions).every(
+    return parsedVariants.variantsList.find((variant) =>
+      Object.entries(selectedOptions).every(
         ([key, val]) => variant.parsedAttrs[key] === val,
-      );
-    });
+      ),
+    );
   }, [parsedVariants.variantsList, selectedOptions]);
 
-  if (!detail) {
-    return <Spinner />;
-  }
+  if (!detail) return <Spinner />;
 
   const activeImages =
     resolvedVariant?.images?.length > 0
@@ -92,44 +111,61 @@ const ProductDetails = () => {
     activeImages?.length > 0
       ? activeImages.map((img) => img.url)
       : ["https://placehold.co/600x800/15151c/eee9e1?text=No+Image"];
-  const mainImage = imageUrls[selectedImage] || imageUrls[0];
   const activePrice = resolvedVariant?.price?.amount
     ? resolvedVariant.price
     : detail.price;
 
   let stockStatus = "In Stock";
   let isOutOfStock = false;
-
   if (detail.variants?.length > 0) {
     if (resolvedVariant) {
-      if (resolvedVariant.stock > 0) {
-        stockStatus = `${resolvedVariant.stock} In Stock`;
-      } else {
-        stockStatus = "Out of Stock";
-        isOutOfStock = true;
-      }
+      stockStatus =
+        resolvedVariant.stock > 0
+          ? `${resolvedVariant.stock} In Stock`
+          : "Out of Stock";
+      isOutOfStock = resolvedVariant.stock <= 0;
     } else {
       stockStatus = "Variant Unavailable";
       isOutOfStock = true;
     }
   }
 
+  const onAddToCart = async () => {
+    if (isOutOfStock) return;
+    setIsAdding(true);
+    try {
+      const variantId = resolvedVariant?._id || null;
+      await handleAddtoCart(detail._id, variantId);
+    } catch (err) {
+      console.error("Add to cart failed", err);
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  const onBuyNow = async () => {
+    if (isOutOfStock) return;
+    try {
+      await onAddToCart();
+      navigate('/cart');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <Layout showBackButton={true}>
       <div className="py-10 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          {/* ── Image Gallery Component ── */}
           <ImageGallery
-            mainImage={mainImage}
+            mainImage={imageUrls[selectedImage] || imageUrls[0]}
             imageUrls={imageUrls}
             selectedImage={selectedImage}
             setSelectedImage={setSelectedImage}
             title={detail.title}
           />
 
-          {/* ── Product Details Section ── */}
           <div className="flex flex-col">
-            {/* ── Shared Overview Component ── */}
             <ProductOverview
               title={detail.title}
               priceAmount={activePrice?.amount}
@@ -138,47 +174,21 @@ const ProductDetails = () => {
             />
 
             <div className="flex-grow">
-              {/* Dynamic Variants Selection */}
               {Object.keys(parsedVariants.attributes).length > 0 && (
-                <div className="mb-8 flex flex-col gap-6">
-                  {Object.entries(parsedVariants.attributes).map(
-                    ([attrName, attrValues]) => (
-                      <div key={attrName}>
-                        <h3 className="onyx-label mb-3">{attrName}</h3>
-                        <div className="flex flex-wrap gap-3">
-                          {attrValues.map((val) => {
-                            const isSelected =
-                              selectedOptions[attrName] === val;
-                            return (
-                              <button
-                                key={val}
-                                onClick={() =>
-                                  handleOptionSelect(attrName, val)
-                                }
-                                className={`px-4 py-2 rounded-lg border transition-colors ${
-                                  isSelected
-                                    ? "border-[#c49a52] bg-[#c49a52]/10 text-[#c49a52]"
-                                    : "border-[#1f1f1f] bg-[#0f0f13] text-[#eee9e1] hover:border-[#c49a52]/50"
-                                }`}
-                              >
-                                {val}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ),
-                  )}
-                </div>
+                <VariantSelector
+                  attributes={parsedVariants.attributes}
+                  selectedOptions={selectedOptions}
+                  onOptionSelect={(attr, val) => {
+                    setSelectedOptions((prev) => ({ ...prev, [attr]: val }));
+                    setSelectedImage(0);
+                  }}
+                />
               )}
 
-              {/* Extra Details for UI richness */}
               <div className="grid grid-cols-2 gap-6 mb-10">
                 <div>
                   <h3 className="onyx-label">Availability</h3>
-                  <p
-                    className={`text-sm ${isOutOfStock ? "text-red-400" : "text-[#eee9e1]"}`}
-                  >
+                  <p className={`text-sm ${isOutOfStock ? "text-red-400" : "text-[#eee9e1]"}`}>
                     {stockStatus}
                   </p>
                 </div>
@@ -189,19 +199,20 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mt-auto pt-8 border-t border-[#1f1f1f]">
               <button
                 type="button"
+                onClick={onAddToCart}
+                disabled={isOutOfStock || isAdding}
                 className={`onyx-btn-secondary sm:flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
-                disabled={isOutOfStock}
               >
-                ADD TO CART
+                {isAdding ? "ADDING..." : "ADD TO CART"}
               </button>
               <button
                 type="button"
+                onClick={onBuyNow}
+                disabled={isOutOfStock || isAdding}
                 className={`onyx-btn-primary sm:flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
-                disabled={isOutOfStock}
               >
                 BUY NOW
               </button>
