@@ -10,9 +10,9 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
   return (
     <div className="onyx-bg min-h-screen">
       <div className="onyx-container">
-        {/* ── Top Bar ── */}
+        {/* ── Top Bar (sticky on scroll) ── */}
         <div
-          className={`onyx-navbar ${
+          className={`onyx-navbar sticky top-0 z-40 bg-[#08080a] ${
             showLinks ? "onyx-navbar-with-links" : "onyx-navbar-no-links"
           }`}
         >
@@ -60,20 +60,25 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
                 </>
               )}
               {user && (
-                <button
-                  onClick={async () => {
-                    await handleLogout();
-                    navigate("/");
-                  }}
-                  className="onyx-nav-link"
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  Logout
-                </button>
+                <>
+                  <NavLink to={"/getyourcart"} className="onyx-nav-link">
+                    Cart
+                  </NavLink>
+                  <button
+                    onClick={async () => {
+                      await handleLogout();
+                      navigate("/");
+                    }}
+                    className="onyx-nav-link"
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Logout
+                  </button>
+                </>
               )}
             </div>
           )}

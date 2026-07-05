@@ -41,8 +41,13 @@
     border-color: #1f1f1f;
   }
 
-  .onyx-navbar-with-links { @apply justify-between; }
-  .onyx-navbar-no-links   { @apply gap-3; }
+  .onyx-navbar-with-links {
+    @apply justify-between;
+  }
+
+  .onyx-navbar-no-links {
+    @apply gap-3;
+  }
 
   .onyx-nav-title {
     @apply text-xs font-bold tracking-[0.32em] uppercase;
@@ -54,14 +59,22 @@
     @apply flex gap-4 text-sm font-medium tracking-wide uppercase;
   }
 
-  .onyx-nav-link            { @apply transition-colors; }
-  .onyx-nav-link:hover      { color: #c49a52; }
+  .onyx-nav-link {
+    @apply transition-colors;
+  }
+
+  .onyx-nav-link:hover {
+    color: #c49a52;
+  }
 
   .onyx-nav-back {
     @apply text-lg transition-colors duration-200 leading-none;
     color: rgba(238, 233, 225, 0.42);
   }
-  .onyx-nav-back:hover { color: #c49a52; }
+
+  .onyx-nav-back:hover {
+    color: #c49a52;
+  }
 
   /* ── Forms ── */
   .onyx-label {
@@ -76,8 +89,15 @@
     border-color: rgba(255, 255, 255, 0.08);
     font-family: 'Inter', system-ui, sans-serif;
   }
-  .onyx-input::placeholder  { color: rgba(238, 233, 225, 0.26); }
-  .onyx-input:hover         { border-color: rgba(255, 255, 255, 0.15); }
+
+  .onyx-input::placeholder {
+    color: rgba(238, 233, 225, 0.26);
+  }
+
+  .onyx-input:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
   .onyx-input:focus {
     border-color: #c49a52;
     box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.15);
@@ -90,8 +110,15 @@
     border-color: rgba(255, 255, 255, 0.08);
     font-family: 'Inter', system-ui, sans-serif;
   }
-  .onyx-textarea::placeholder { color: rgba(238, 233, 225, 0.26); }
-  .onyx-textarea:hover        { border-color: rgba(255, 255, 255, 0.15); }
+
+  .onyx-textarea::placeholder {
+    color: rgba(238, 233, 225, 0.26);
+  }
+
+  .onyx-textarea:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
   .onyx-textarea:focus {
     border-color: #c49a52;
     box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.15);
@@ -99,13 +126,13 @@
 
   /* ── Buttons ── */
   .onyx-btn-primary {
-    @apply w-full py-[13px] px-5 text-[14px] font-semibold transition-all duration-200
-           disabled:opacity-50 disabled:cursor-not-allowed rounded-lg;
+    @apply w-full py-[13px] px-5 text-[14px] font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg;
     background-color: #c49a52;
     color: #0b0b0d;
     font-family: 'Inter', system-ui, sans-serif;
     letter-spacing: 0.02em;
   }
+
   .onyx-btn-primary:hover:not(:disabled) {
     background-color: #d4aa6a;
     box-shadow: 0 6px 22px rgba(196, 154, 82, 0.3);
@@ -113,14 +140,14 @@
   }
 
   .onyx-btn-secondary {
-    @apply w-full py-[13px] px-5 text-[14px] font-semibold transition-all duration-200
-           disabled:opacity-50 disabled:cursor-not-allowed rounded-lg border;
+    @apply w-full py-[13px] px-5 text-[14px] font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg border;
     border-color: #c49a52;
     color: #c49a52;
     background-color: transparent;
     font-family: 'Inter', system-ui, sans-serif;
     letter-spacing: 0.02em;
   }
+
   .onyx-btn-secondary:hover:not(:disabled) {
     background-color: #c49a52;
     color: #0b0b0d;
@@ -131,16 +158,19 @@
     @apply border px-8 py-14 lg:py-20 flex flex-col items-center gap-4 cursor-pointer transition-all duration-300 rounded-xl;
     background-color: #0f0f13;
   }
+
   .onyx-dropzone.active {
     border-color: #c49a52;
     border-style: solid;
     background-color: #15151c;
     box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.15);
   }
+
   .onyx-dropzone.inactive {
     border-color: rgba(255, 255, 255, 0.15);
     border-style: dashed;
   }
+
   .onyx-dropzone.inactive:hover {
     border-color: #c49a52;
     background-color: #15151c;
@@ -148,21 +178,37 @@
 
   /* ── Toast (global feedback — used via Shared/Toast.jsx) ── */
   .onyx-toast {
-    @apply fixed top-8 right-8 z-50 flex items-center gap-3
-           px-5 py-3 rounded-xl border text-sm font-medium shadow-2xl;
+    @apply fixed top-8 right-8 z-50 flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-medium shadow-2xl;
     font-family: 'Inter', system-ui, sans-serif;
     animation: onyx-slide-up 0.22s ease;
   }
-  .onyx-toast-success { background-color: #0f1f0f; border-color: #2d6b2d; color: #6fcf6f; }
-  .onyx-toast-error   { background-color: #1f0f0f; border-color: #6b2d2d; color: #cf6f6f; }
+
+  .onyx-toast-success {
+    background-color: #0f1f0f;
+    border-color: #2d6b2d;
+    color: #6fcf6f;
+  }
+
+  .onyx-toast-error {
+    background-color: #1f0f0f;
+    border-color: #6b2d2d;
+    color: #cf6f6f;
+  }
+
   .onyx-toast-close {
-    @apply ml-2 opacity-60 hover:opacity-100 transition-opacity
-           text-base leading-none cursor-pointer bg-transparent border-none;
+    @apply ml-2 opacity-60 hover:opacity-100 transition-opacity text-base leading-none cursor-pointer bg-transparent border-none;
     color: inherit;
   }
 
   @keyframes onyx-slide-up {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
