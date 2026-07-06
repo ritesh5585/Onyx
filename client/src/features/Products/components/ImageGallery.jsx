@@ -44,10 +44,21 @@ const ImageGallery = ({
         {/* Subtle zoom indicator */}
         <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="bg-[rgba(6,6,10,0.7)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-full px-3 py-1.5 flex items-center gap-1.5">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+              <path d="M11 8v6M8 11h6" />
             </svg>
-            <span className="text-[9px] uppercase tracking-[0.1em] text-[rgba(238,233,225,0.6)]">Zoom</span>
+            <span className="text-[9px] uppercase tracking-[0.1em] text-[rgba(238,233,225,0.6)]">
+              Zoom
+            </span>
           </div>
         </div>
       </div>

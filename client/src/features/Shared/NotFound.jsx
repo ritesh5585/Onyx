@@ -16,7 +16,8 @@ const NotFound = () => {
           Page Not <br className="sm:hidden" /> Found.
         </h1>
         <p className="max-w-sm text-[13px] sm:text-[15px] leading-relaxed text-[rgba(238,233,225,0.45)] mb-10">
-          The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+          The page you are looking for might have been removed, had its name
+          changed, or is temporarily unavailable.
         </p>
         <button
           onClick={() => navigate("/")}

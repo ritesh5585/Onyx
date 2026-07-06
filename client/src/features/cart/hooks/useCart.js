@@ -18,8 +18,8 @@ export const useCart = () => {
 
     const handleGetCart = useCallback(async () => {
         try {
-             const data = await getCart();
-             dispatch(setItems(data.cart.items));
+            const data = await getCart();
+            dispatch(setItems(data.cart.items));
         } catch (error) {
             console.error("cart not found", error);
             throw error;

@@ -28,7 +28,9 @@ const ProductCard = ({ product, onClick }) => {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="text-[9px] uppercase tracking-[0.2em] text-[rgba(238,233,225,0.2)]">No Image</span>
+            <span className="text-[9px] uppercase tracking-[0.2em] text-[rgba(238,233,225,0.2)]">
+              No Image
+            </span>
           </div>
         )}
         {/* Hover overlay */}
@@ -39,7 +41,10 @@ const ProductCard = ({ product, onClick }) => {
       <div className="flex flex-col gap-1 px-0.5">
         <h3
           className="text-sm sm:text-base leading-snug line-clamp-1 transition-colors duration-300 group-hover:text-[#c49a52]"
-          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 400 }}
+          style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontWeight: 400,
+          }}
         >
           {product.title}
         </h3>

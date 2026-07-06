@@ -36,7 +36,9 @@ const ProductOverview = ({
         style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
       >
         {priceCurrency || "INR"}{" "}
-        <span className="font-medium">{priceAmount?.toLocaleString() || "0"}</span>
+        <span className="font-medium">
+          {priceAmount?.toLocaleString() || "0"}
+        </span>
       </p>
 
       {/* Divider */}

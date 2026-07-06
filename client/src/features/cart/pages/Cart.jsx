@@ -43,7 +43,11 @@ const CartItem = ({ item, navigate }) => {
         onClick={() => product._id && navigate(`/product/${product._id}`)}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => e.key === "Enter" && product._id && navigate(`/product/${product._id}`)}
+        onKeyDown={(e) =>
+          e.key === "Enter" &&
+          product._id &&
+          navigate(`/product/${product._id}`)
+        }
         aria-label={`View ${product.title}`}
       >
         {imageUrl ? (
@@ -55,7 +59,9 @@ const CartItem = ({ item, navigate }) => {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="text-[9px] uppercase tracking-[0.15em] text-[rgba(238,233,225,0.2)]">No Image</span>
+            <span className="text-[9px] uppercase tracking-[0.15em] text-[rgba(238,233,225,0.2)]">
+              No Image
+            </span>
           </div>
         )}
       </div>
@@ -69,7 +75,11 @@ const CartItem = ({ item, navigate }) => {
             onClick={() => product._id && navigate(`/product/${product._id}`)}
             role="button"
             tabIndex={0}
-            onKeyDown={(e) => e.key === "Enter" && product._id && navigate(`/product/${product._id}`)}
+            onKeyDown={(e) =>
+              e.key === "Enter" &&
+              product._id &&
+              navigate(`/product/${product._id}`)
+            }
           >
             {product.title || "Untitled Product"}
           </span>
@@ -89,7 +99,9 @@ const CartItem = ({ item, navigate }) => {
               isInStock ? "text-[#81c784]" : "text-[#e57373]"
             }`}
           >
-            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isInStock ? "bg-[#81c784]" : "bg-[#e57373]"}`} />
+            <span
+              className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isInStock ? "bg-[#81c784]" : "bg-[#e57373]"}`}
+            />
             {isInStock ? `${stock} in stock` : "Out of stock"}
           </span>
         </div>
@@ -150,8 +162,12 @@ const OrderSummary = ({ count, subtotal, shipping, total, currency }) => (
       </div>
 
       <div className="flex justify-between items-center py-3">
-        <span className="text-[12px] text-[rgba(238,233,225,0.45)] tracking-wide">Shipping</span>
-        <span className={`text-[13px] font-semibold ${shipping === 0 ? "text-[#81c784]" : "text-[#eee9e1]"}`}>
+        <span className="text-[12px] text-[rgba(238,233,225,0.45)] tracking-wide">
+          Shipping
+        </span>
+        <span
+          className={`text-[13px] font-semibold ${shipping === 0 ? "text-[#81c784]" : "text-[#eee9e1]"}`}
+        >
           {shipping === 0 ? "Free" : `${currency} ${shipping}`}
         </span>
       </div>

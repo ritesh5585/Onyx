@@ -1,4 +1,8 @@
- export const VariantSelector = ({ attributes, selectedOptions, onOptionSelect }) => (
+export const VariantSelector = ({
+  attributes,
+  selectedOptions,
+  onOptionSelect,
+}) => (
   <div className="mb-8 flex flex-col gap-7">
     {Object.entries(attributes).map(([attrName, attrValues]) => (
       <div key={attrName}>
