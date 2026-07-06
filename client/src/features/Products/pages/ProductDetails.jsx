@@ -85,7 +85,7 @@ const ProductDetails = () => {
     ? resolvedVariant.images
     : detail.images
   )?.map((img) => img.url) || [
-    "https://placehold.co/600x800/15151c/eee9e1?text=No+Image",
+    "https://placehold.co/600x800/0d0d12/eee9e1?text=No+Image",
   ];
 
   const activePrice = resolvedVariant?.price?.amount
@@ -102,13 +102,13 @@ const ProductDetails = () => {
 
   const stockStatus = !hasVariants
     ? detail.stock > 0
-      ? `${detail.stock} In Stock`
-      : "Out of Stock"
+      ? `${detail.stock} in stock`
+      : "Out of stock"
     : !resolvedVariant
-      ? "Variant Unavailable"
+      ? "Combination unavailable"
       : resolvedVariant.stock > 0
-        ? `${resolvedVariant.stock} In Stock`
-        : "Out of Stock";
+        ? `${resolvedVariant.stock} in stock`
+        : "Out of stock";
 
   const onAddToCart = async () => {
     if (isOutOfStock) return;
@@ -141,18 +141,13 @@ const ProductDetails = () => {
 
   return (
     <>
-      {toast.visible && (
-        <div className="fixed top-4 right-4 z-[9999]">
-          <Toast
-            msg={toast.msg}
-            type={toast.type}
-            onClose={() => setToast((prev) => ({ ...prev, visible: false }))}
-          />
-        </div>
-      )}
+      {toast.visible && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast((prev) => ({ ...prev, visible: false }))} />}
+
       <Layout showBackButton={true}>
-        <div className="pt-10 pb-28 md:pt-16 md:pb-32">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+        <div className="pt-8 pb-36 md:pt-12 md:pb-40">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 xl:gap-24">
+
+            {/* ── Image Gallery ── */}
             <ImageGallery
               mainImage={imageUrls[selectedImage] || imageUrls[0]}
               imageUrls={imageUrls}
@@ -161,6 +156,7 @@ const ProductDetails = () => {
               title={detail.title}
             />
 
+            {/* ── Product Info ── */}
             <div className="flex flex-col">
               <ProductOverview
                 title={detail.title}
@@ -169,53 +165,63 @@ const ProductDetails = () => {
                 description={detail.description}
               />
 
-              <div className="flex-grow">
-                {Object.keys(parsedVariants.attributes).length > 0 && (
-                  <VariantSelector
-                    attributes={parsedVariants.attributes}
-                    selectedOptions={selectedOptions}
-                    onOptionSelect={(attr, val) => {
-                      setSelectedOptions((prev) => ({ ...prev, [attr]: val }));
-                      setSelectedImage(0);
-                    }}
-                  />
-                )}
+              {/* Variants */}
+              {Object.keys(parsedVariants.attributes).length > 0 && (
+                <VariantSelector
+                  attributes={parsedVariants.attributes}
+                  selectedOptions={selectedOptions}
+                  onOptionSelect={(attr, val) => {
+                    setSelectedOptions((prev) => ({ ...prev, [attr]: val }));
+                    setSelectedImage(0);
+                  }}
+                />
+              )}
 
-                <div className="grid grid-cols-2 gap-6 mb-10">
-                  <div>
-                    <h3 className="onyx-label">Availability</h3>
-                    <p
-                      className={`text-sm ${isOutOfStock ? "text-red-400" : "text-[#eee9e1]"}`}
-                    >
-                      {stockStatus}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="onyx-label">Shipping</h3>
-                    <p className="text-sm text-[#eee9e1]">Ships in 2-3 days</p>
-                  </div>
+              {/* Availability + Shipping */}
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="p-4 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#0d0d12]">
+                  <h3 className="onyx-label mb-2">Availability</h3>
+                  <p className={`text-[13px] font-medium ${isOutOfStock ? "text-[#e57373]" : "text-[#81c784]"}`}>
+                    {stockStatus}
+                  </p>
+                </div>
+                <div className="p-4 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#0d0d12]">
+                  <h3 className="onyx-label mb-2">Shipping</h3>
+                  <p className="text-[13px] font-medium text-[rgba(238,233,225,0.65)]">Ships in 2–3 days</p>
                 </div>
               </div>
-
-              <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0a0a0a] border-t border-[#1f1f1f] flex flex-row gap-4 z-50 md:px-8 lg:px-20">
-                <button
-                  type="button"
-                  onClick={onAddToCart}
-                  disabled={isOutOfStock || isAdding || stockNotAvailable}
-                  className={`onyx-btn-secondary flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
-                >
-                  {isAdding ? "ADDING..." : "ADD TO CART"}
-                </button>
-                <button
-                  type="button"
-                  onClick={onBuyNow}
-                  disabled={isOutOfStock || isAdding}
-                  className={`onyx-btn-primary flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
-                >
-                  BUY NOW
-                </button>
-              </div>
             </div>
+          </div>
+        </div>
+
+        {/* ── Fixed Bottom CTA Bar ── */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(255,255,255,0.07)] bg-[rgba(6,6,10,0.95)] backdrop-blur-xl">
+          <div className="onyx-container py-4 flex flex-row gap-3">
+            <button
+              type="button"
+              onClick={onAddToCart}
+              disabled={isOutOfStock || isAdding || stockNotAvailable}
+              className="onyx-btn-secondary flex-1"
+              aria-label="Add to cart"
+            >
+              {isAdding ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-3.5 h-3.5 rounded-full border border-current border-t-transparent animate-spin" />
+                  Adding…
+                </span>
+              ) : (
+                "Add to Cart"
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={onBuyNow}
+              disabled={isOutOfStock || isAdding}
+              className="onyx-btn-primary flex-1"
+              aria-label="Buy now"
+            >
+              {isOutOfStock ? "Out of Stock" : "Buy Now"}
+            </button>
           </div>
         </div>
       </Layout>

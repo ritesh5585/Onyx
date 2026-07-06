@@ -3,10 +3,10 @@ import React from "react";
 const Price = ({ formData, handleChange, CURRENCIES }) => {
   return (
     <div>
-      <label className="onyx-label block mb-2">Price</label>
-      <div className="grid grid-cols-[1fr_130px] gap-3 mt-2">
-        <div>
-          <p className="onyx-label mb-1.5">Amount</p>
+      <label className="onyx-label block mb-3">Pricing</label>
+      <div className="grid grid-cols-[1fr_120px] gap-3">
+        <div className="flex flex-col gap-2">
+          <p className="onyx-label">Amount</p>
           <input
             type="number"
             name="priceAmount"
@@ -19,8 +19,8 @@ const Price = ({ formData, handleChange, CURRENCIES }) => {
             className="onyx-input"
           />
         </div>
-        <div>
-          <p className="onyx-label mb-1.5">Currency</p>
+        <div className="flex flex-col gap-2">
+          <p className="onyx-label">Currency</p>
           <select
             name="priceCurrency"
             value={formData.priceCurrency}
@@ -28,7 +28,7 @@ const Price = ({ formData, handleChange, CURRENCIES }) => {
             className="onyx-input cursor-pointer"
           >
             {CURRENCIES.map((c) => (
-              <option key={c} value={c} className="bg-[#111]">
+              <option key={c} value={c} className="bg-[#0d0d12]">
                 {c}
               </option>
             ))}

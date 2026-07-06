@@ -14,6 +14,107 @@ import { readAttributes } from "../utils/variantUtils";
 const INITIAL_VARIANT = { name: "", value: "", extraPrice: "", stock: "" };
 const CURRENCIES = ["INR", "USD", "EUR", "GBP"];
 
+/* ── Variant Card ── */
+const VariantCard = ({ v, onRemove }) => {
+  const attrs = readAttributes(v.attributes);
+  return (
+    <div className="relative flex flex-col p-5 rounded-xl border border-[rgba(255,255,255,0.07)] bg-[#0d0d12] transition-colors duration-300 hover:border-[rgba(196,154,82,0.3)] group">
+      {/* Remove button */}
+      <button
+        onClick={() => onRemove(v._id)}
+        className="absolute top-3 right-3 w-6 h-6 rounded-full border border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(238,233,225,0.3)] flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-all duration-200 hover:border-[rgba(239,83,80,0.4)] hover:text-[#e57373]"
+        aria-label="Remove variant"
+        title="Remove variant"
+      >
+        ✕
+      </button>
+
+      {/* Attribute chips */}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {attrs.map(([key, val]) => (
+          <span
+            key={key}
+            className="px-2.5 py-1 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-sm text-[11px] text-[rgba(238,233,225,0.8)]"
+          >
+            <span className="text-[rgba(238,233,225,0.4)] mr-1">{key}:</span>
+            {val}
+          </span>
+        ))}
+      </div>
+
+      {/* Stock + Price */}
+      <div className="flex justify-between items-center mt-auto pt-3 border-t border-[rgba(255,255,255,0.06)]">
+        <div className="flex items-center gap-1.5">
+          <span
+            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+              (v.stock ?? 0) > 0 ? "bg-[#81c784]" : "bg-[#e57373]"
+            }`}
+          />
+          <span className="text-[12px] text-[rgba(238,233,225,0.45)]">
+            {v.stock ?? 0} in stock
+          </span>
+        </div>
+        {v.price?.amount && (
+          <span
+            className="text-[13px] font-medium text-[#c49a52]"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          >
+            {v.price.currency} {v.price.amount.toLocaleString()}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ── Add Variant Form ── */
+const AddVariantForm = ({ newVariant, onChange, onAdd, isSubmitting }) => {
+  const fields = [
+    { key: "name", placeholder: "Attribute (e.g. Size)", type: "text" },
+    { key: "value", placeholder: "Value (e.g. Medium)", type: "text" },
+    { key: "stock", placeholder: "Stock quantity", type: "number" },
+    { key: "extraPrice", placeholder: "Extra price (optional)", type: "number" },
+  ];
+
+  return (
+    <div className="p-6 rounded-xl border border-[rgba(255,255,255,0.07)] bg-[#0a0a10]">
+      <h3 className="onyx-label mb-5">Add New Variant</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+        {fields.map(({ key, placeholder, type }) => (
+          <input
+            key={key}
+            type={type}
+            name={key}
+            placeholder={placeholder}
+            value={newVariant[key]}
+            onChange={onChange}
+            disabled={isSubmitting}
+            className="onyx-input"
+          />
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={onAdd}
+        disabled={isSubmitting}
+        className="onyx-btn-secondary w-full"
+      >
+        {isSubmitting ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="w-3.5 h-3.5 rounded-full border border-current border-t-transparent animate-spin" />
+            Adding…
+          </span>
+        ) : (
+          "+ Add Variant"
+        )}
+      </button>
+    </div>
+  );
+};
+
+/* ════════════════════════════════════
+   SELLER PRODUCT DETAIL PAGE
+════════════════════════════════════ */
 const SellerProductdetail = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
@@ -63,7 +164,7 @@ const SellerProductdetail = () => {
 
   const imageUrls = useMemo(() => {
     if (detail?.images?.length > 0) return detail.images.map((img) => img.url);
-    return ["https://placehold.co/600x800/15151c/eee9e1?text=No+Image"];
+    return ["https://placehold.co/600x800/0d0d12/eee9e1?text=No+Image"];
   }, [detail]);
 
   const mainImage = imageUrls[selectedImage] ?? imageUrls[0];
@@ -135,16 +236,13 @@ const SellerProductdetail = () => {
   return (
     <Layout showBackButton={true}>
       {toast && (
-        <Toast
-          msg={toast.msg}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
+        <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />
       )}
 
-      <div className="py-10 md:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          {/* ── Image Gallery Component ── */}
+      <div className="py-10 md:py-14">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 xl:gap-24">
+
+          {/* ── Image Gallery ── */}
           <ImageGallery
             mainImage={mainImage}
             imageUrls={imageUrls}
@@ -154,10 +252,12 @@ const SellerProductdetail = () => {
           />
 
           {/* ── Details + Variants ── */}
-          <div className="flex flex-col">
-            {/* ─ Edit / View Info ─ */}
+          <div className="flex flex-col gap-8">
+
+            {/* ─ View / Edit Info ─ */}
             {isEditing ? (
-              <div className="flex flex-col gap-4 mb-6">
+              <div className="flex flex-col gap-5 p-6 rounded-xl border border-[rgba(196,154,82,0.2)] bg-[#0d0d12]">
+                <p className="onyx-eyebrow">Editing Product</p>
                 <div>
                   <label className="onyx-label">Product Title</label>
                   <input
@@ -169,8 +269,8 @@ const SellerProductdetail = () => {
                     disabled={saving}
                   />
                 </div>
-                <div className="flex gap-4">
-                  <div className="flex-1">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
                     <label className="onyx-label">Price</label>
                     <input
                       type="number"
@@ -181,7 +281,7 @@ const SellerProductdetail = () => {
                       disabled={saving}
                     />
                   </div>
-                  <div className="flex-1">
+                  <div>
                     <label className="onyx-label">Currency</label>
                     <select
                       name="priceCurrency"
@@ -191,9 +291,7 @@ const SellerProductdetail = () => {
                       disabled={saving}
                     >
                       {CURRENCIES.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
+                        <option key={c} value={c} className="bg-[#0d0d12]">{c}</option>
                       ))}
                     </select>
                   </div>
@@ -209,7 +307,7 @@ const SellerProductdetail = () => {
                     disabled={saving}
                   />
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 mt-2">
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <button
                     onClick={() => setIsEditing(false)}
                     className="onyx-btn-secondary sm:flex-1"
@@ -222,7 +320,12 @@ const SellerProductdetail = () => {
                     className="onyx-btn-primary sm:flex-1"
                     disabled={saving}
                   >
-                    {saving ? "Saving…" : "Save Changes"}
+                    {saving ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <span className="w-3.5 h-3.5 rounded-full border border-[rgba(6,6,10,0.3)] border-t-[#06060a] animate-spin" />
+                        Saving…
+                      </span>
+                    ) : "Save Changes"}
                   </button>
                 </div>
               </div>
@@ -233,115 +336,59 @@ const SellerProductdetail = () => {
                 priceCurrency={detail.price?.currency}
                 description={detail.description}
               >
-                <div className="flex flex-col items-start gap-2 ml-4">
+                <div className="flex flex-col items-end gap-2">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="text-sm font-semibold text-[#c49a52] hover:underline whitespace-nowrap transition-colors"
+                    className="text-[12px] font-semibold text-[#c49a52] uppercase tracking-[0.1em] hover:opacity-75 transition-opacity"
                   >
-                    Edit Details
+                    Edit
                   </button>
                   <button
                     onClick={onRemoveProduct}
-                    className="text-sm font-semibold text-red-500 hover:underline whitespace-nowrap transition-colors"
+                    className="text-[12px] font-semibold text-[#e57373] uppercase tracking-[0.1em] hover:opacity-75 transition-opacity"
                   >
-                    Remove Product
+                    Delete
                   </button>
                 </div>
               </ProductOverview>
             )}
 
             {/* ─ Variants Section ─ */}
-            <div className="mt-auto pt-8 border-t border-[#1f1f1f]">
-              <h2 className="text-xl font-semibold mb-6 text-[#eee9e1] font-['Playfair_Display',Georgia,serif]">
-                Product Variants
-              </h2>
+            <div className="border-t border-[rgba(255,255,255,0.06)] pt-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2
+                  className="text-xl font-light text-[#eee9e1]"
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                >
+                  Product Variants
+                </h2>
+                {detail.variants?.length > 0 && (
+                  <span className="onyx-tag">{detail.variants.length} variants</span>
+                )}
+              </div>
 
               {detail.variants?.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                   {detail.variants.map((v, i) => (
-                    <div
+                    <VariantCard
                       key={v._id || i}
-                      className="relative flex flex-col p-5 rounded-xl border bg-[#0f0f13] border-[#1f1f1f] shadow-sm hover:border-[#c49a52]/50 transition-colors"
-                    >
-                      <button
-                        onClick={() => onRemoveVariant(v._id)}
-                        className="absolute top-2 right-2 text-[#a09d98] hover:text-red-500 text-xl leading-none p-1 transition-colors z-10 font-bold"
-                        title="Remove Variant"
-                      >
-                        &times;
-                      </button>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {readAttributes(v.attributes).map(([key, val]) => (
-                          <span
-                            key={key}
-                            className="px-3 py-1 bg-[#1f1f1f] rounded-md text-sm text-[#eee9e1]"
-                          >
-                            <span className="text-[#a09d98] mr-1">{key}:</span>{" "}
-                            {val}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="flex justify-between items-center mt-auto border-t border-[#1f1f1f] pt-3">
-                        <span className="text-sm text-[#a09d98]">
-                          Stock:{" "}
-                          <strong className="text-[#eee9e1]">
-                            {v.stock ?? "—"}
-                          </strong>
-                        </span>
-                        {v.price?.amount && (
-                          <span className="text-sm font-medium text-[#c49a52]">
-                            {v.price.currency} {v.price.amount.toLocaleString()}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                      v={v}
+                      onRemove={onRemoveVariant}
+                    />
                   ))}
                 </div>
               ) : (
-                <p className="text-sm leading-relaxed text-[#a09d98] mb-8">
+                <p className="text-[13px] leading-relaxed text-[rgba(238,233,225,0.35)] mb-6">
                   No variants yet. Add sizes, colors, or materials below.
                 </p>
               )}
 
-              {/* Add Variant Form */}
-              <div className="p-6 rounded-xl border bg-[#0b0b0d] border-[#1f1f1f]">
-                <h3 className="onyx-label mb-4">Add New Variant</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                  {["name", "value", "stock", "extraPrice"].map((field) => (
-                    <div key={field}>
-                      <input
-                        type={
-                          field === "stock" || field === "extraPrice"
-                            ? "number"
-                            : "text"
-                        }
-                        name={field}
-                        placeholder={
-                          field === "name"
-                            ? "Attribute (e.g. Size)"
-                            : field === "value"
-                              ? "Value (e.g. Medium)"
-                              : field === "stock"
-                                ? "Stock Quantity"
-                                : "Price for this variant (optional)"
-                        }
-                        value={newVariant[field]}
-                        onChange={(e) => handleInputChange(e, setNewVariant)}
-                        className="onyx-input"
-                        disabled={variantSubmitting}
-                      />
-                    </div>
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  onClick={handleAddVariant}
-                  className="onyx-btn-secondary w-full"
-                  disabled={variantSubmitting}
-                >
-                  {variantSubmitting ? "Adding…" : "+ Add Variant"}
-                </button>
-              </div>
+              <AddVariantForm
+                newVariant={newVariant}
+                onChange={(e) => handleInputChange(e, setNewVariant)}
+                onAdd={handleAddVariant}
+                isSubmitting={variantSubmitting}
+              />
             </div>
           </div>
         </div>

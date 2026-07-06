@@ -4,31 +4,11 @@ import { useNavigate, NavLink } from "react-router";
 import { useCart } from "../hooks/useCart";
 import Layout from "../../Shared/Layout";
 import Toast from "../../Shared/Toast";
+import EmptyState from "../../Shared/EmptyState";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Subcomponents
+// CartItem
 // ─────────────────────────────────────────────────────────────────────────────
-
-const EmptyCart = () => (
-  <div className="py-20 flex flex-col items-center justify-center text-center gap-4">
-    <div className="w-20 h-20 rounded-full bg-[#0f0f13] border border-white/[0.08] flex items-center justify-center text-3xl text-white/25 mb-2">
-      🛒
-    </div>
-    <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-[#a09d98]">
-      Empty Cart
-    </span>
-    <p className="max-w-xs text-base md:text-lg leading-relaxed font-['Cormorant_Garamond',serif]">
-      Your cart is waiting to be filled with curated pieces from our collection.
-    </p>
-    <NavLink
-      to="/"
-      className="onyx-btn-primary inline-flex items-center justify-center gap-2 !w-auto mt-2 px-8"
-    >
-      Explore Collection <span>→</span>
-    </NavLink>
-  </div>
-);
-
 const CartItem = ({ item, navigate }) => {
   const product = item.product || {};
   const variant = item.variant || null;
@@ -41,7 +21,6 @@ const CartItem = ({ item, navigate }) => {
   const stock = variant?.stock ?? product?.stock ?? 0;
   const isInStock = stock > 0;
 
-  // Build variant label (e.g. "Size: M · Color: Black")
   const variantLabel = useMemo(() => {
     if (!variant?.attributes) return "";
     try {
@@ -57,71 +36,89 @@ const CartItem = ({ item, navigate }) => {
   }, [variant]);
 
   return (
-    <div className="flex gap-4 sm:gap-5 py-5 sm:py-6 border-b border-white/[0.08] first:border-t">
+    <div className="flex gap-4 sm:gap-5 py-6 sm:py-7 border-b border-[rgba(255,255,255,0.06)] first:border-t">
       {/* ── Image ── */}
       <div
-        className="group/img flex-shrink-0 w-[90px] h-[115px] sm:w-[110px] sm:h-[140px] rounded-md overflow-hidden bg-[#0f0f13] border border-white/[0.08] cursor-pointer hover:border-white/[0.15]"
+        className="flex-shrink-0 w-[85px] h-[110px] sm:w-[100px] sm:h-[130px] overflow-hidden bg-[#0d0d12] border border-[rgba(255,255,255,0.07)] cursor-pointer group/img rounded-sm"
         onClick={() => product._id && navigate(`/product/${product._id}`)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && product._id && navigate(`/product/${product._id}`)}
+        aria-label={`View ${product.title}`}
       >
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={product.title}
+            loading="lazy"
             className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-[10px] text-white/25 tracking-[0.1em] uppercase">
-            No Image
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-[9px] uppercase tracking-[0.15em] text-[rgba(238,233,225,0.2)]">No Image</span>
           </div>
         )}
       </div>
 
       {/* ── Info ── */}
       <div className="flex-1 flex flex-col justify-between min-w-0">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <span
-            className="font-['Cormorant_Garamond',serif] text-base sm:text-lg font-medium text-[#eee9e1] leading-tight truncate cursor-pointer hover:text-[#c49a52]"
+            className="text-base sm:text-lg font-light text-[#eee9e1] leading-tight truncate cursor-pointer hover:text-[#c49a52] transition-colors duration-300"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
             onClick={() => product._id && navigate(`/product/${product._id}`)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && product._id && navigate(`/product/${product._id}`)}
           >
             {product.title || "Untitled Product"}
           </span>
+
           {variantLabel && (
-            <span className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#a09d98]">
+            <span className="text-[10px] font-medium tracking-[0.12em] uppercase text-[rgba(238,233,225,0.35)]">
               {variantLabel}
             </span>
           )}
-          <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#eee9e1] mt-0.5">
+
+          <span className="text-[12px] font-semibold tracking-[0.1em] uppercase text-[rgba(238,233,225,0.75)] mt-0.5">
             {itemCurrency} {(unitPrice * qty).toLocaleString()}
           </span>
+
           <span
-            className={`text-[10px] font-semibold tracking-[0.14em] uppercase mt-0.5 ${
-              isInStock ? "text-[#6fcf6f]" : "text-[#cf6f6f]"
+            className={`text-[10px] font-semibold tracking-[0.12em] uppercase mt-0.5 flex items-center gap-1.5 ${
+              isInStock ? "text-[#81c784]" : "text-[#e57373]"
             }`}
           >
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isInStock ? "bg-[#81c784]" : "bg-[#e57373]"}`} />
             {isInStock ? `${stock} in stock` : "Out of stock"}
           </span>
         </div>
 
         {/* ── Actions ── */}
         <div className="flex items-center justify-between gap-4 mt-3 flex-wrap">
-          <div className="flex items-center border border-white/[0.08] rounded-md overflow-hidden bg-[#15151c]">
+          {/* Quantity stepper */}
+          <div className="flex items-center border border-[rgba(255,255,255,0.08)] rounded-md overflow-hidden bg-[#0d0d12]">
             <button
-              className="w-8 h-8 flex items-center justify-center bg-transparent border-none text-[#a09d98] cursor-pointer hover:text-[#c49a52] hover:bg-[#c49a52]/[0.08] disabled:opacity-30"
+              className="w-8 h-8 flex items-center justify-center text-[rgba(238,233,225,0.5)] hover:text-[#c49a52] hover:bg-[rgba(196,154,82,0.07)] disabled:opacity-25 transition-all border-none bg-transparent cursor-pointer text-lg leading-none"
               disabled={qty <= 1}
+              aria-label="Decrease quantity"
             >
               −
             </button>
-            <span className="w-9 text-center text-sm font-semibold text-[#eee9e1] border-x border-white/[0.08] py-1.5">
+            <span className="w-9 text-center text-[13px] font-semibold text-[#eee9e1] border-x border-[rgba(255,255,255,0.08)] py-1.5">
               {qty}
             </span>
             <button
-              className="w-8 h-8 flex items-center justify-center bg-transparent border-none text-[#a09d98] cursor-pointer hover:text-[#c49a52] hover:bg-[#c49a52]/[0.08] disabled:opacity-30"
+              className="w-8 h-8 flex items-center justify-center text-[rgba(238,233,225,0.5)] hover:text-[#c49a52] hover:bg-[rgba(196,154,82,0.07)] disabled:opacity-25 transition-all border-none bg-transparent cursor-pointer text-lg leading-none"
               disabled={qty >= stock}
+              aria-label="Increase quantity"
             >
               +
             </button>
           </div>
-          <button className="flex items-center gap-1.5 bg-transparent border border-[#cf6f6f]/20 rounded-md px-3 py-1.5 text-[10px] font-semibold tracking-[0.1em] uppercase text-[#cf6f6f] cursor-pointer hover:bg-[#cf6f6f]/[0.08] hover:border-[#cf6f6f] transition-all">
+
+          {/* Remove */}
+          <button className="flex items-center gap-1.5 bg-transparent border border-[rgba(239,83,80,0.2)] rounded-md px-3 py-1.5 text-[10px] font-semibold tracking-[0.1em] uppercase text-[#e57373] cursor-pointer hover:bg-[rgba(239,83,80,0.07)] hover:border-[rgba(239,83,80,0.45)] transition-all">
             ✕ Remove
           </button>
         </div>
@@ -130,54 +127,78 @@ const CartItem = ({ item, navigate }) => {
   );
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// OrderSummary
+// ─────────────────────────────────────────────────────────────────────────────
 const OrderSummary = ({ count, subtotal, shipping, total, currency }) => (
-  <div className="bg-[#0f0f13] border border-white/[0.08] rounded-xl p-6 sm:p-8 sticky top-20">
-    <h2 className="font-['Playfair_Display',Georgia,serif] text-lg font-semibold text-[#eee9e1] tracking-tight mb-6 pb-4 border-b border-white/[0.08]">
+  <div className="bg-[#0d0d12] border border-[rgba(255,255,255,0.07)] rounded-2xl p-6 sm:p-8 sticky top-20">
+    <h2
+      className="text-xl font-light text-[#eee9e1] tracking-tight mb-6 pb-5 border-b border-[rgba(255,255,255,0.07)]"
+      style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+    >
       Order Summary
     </h2>
-    <div className="flex justify-between items-center py-2.5">
-      <span className="text-xs text-[#a09d98] tracking-wide">
-        Subtotal ({count} {count === 1 ? "item" : "items"})
-      </span>
-      <span className="text-sm font-semibold text-[#eee9e1] tracking-wide">
-        {currency} {subtotal.toLocaleString()}
-      </span>
+
+    <div className="flex flex-col gap-0">
+      <div className="flex justify-between items-center py-3 border-b border-[rgba(255,255,255,0.05)]">
+        <span className="text-[12px] text-[rgba(238,233,225,0.45)] tracking-wide">
+          Subtotal ({count} {count === 1 ? "item" : "items"})
+        </span>
+        <span className="text-[13px] font-semibold text-[#eee9e1]">
+          {currency} {subtotal.toLocaleString()}
+        </span>
+      </div>
+
+      <div className="flex justify-between items-center py-3">
+        <span className="text-[12px] text-[rgba(238,233,225,0.45)] tracking-wide">Shipping</span>
+        <span className={`text-[13px] font-semibold ${shipping === 0 ? "text-[#81c784]" : "text-[#eee9e1]"}`}>
+          {shipping === 0 ? "Free" : `${currency} ${shipping}`}
+        </span>
+      </div>
     </div>
-    <div className="flex justify-between items-center py-2.5">
-      <span className="text-xs text-[#a09d98] tracking-wide">Shipping</span>
-      <span className="text-sm font-semibold text-[#eee9e1] tracking-wide">
-        {shipping === 0 ? "Free" : `${currency} ${shipping}`}
-      </span>
-    </div>
-    <div className="h-px bg-white/[0.08] my-3" />
-    <div className="flex justify-between items-center pt-4">
-      <span className="font-['Playfair_Display',Georgia,serif] text-base font-semibold text-[#eee9e1]">
+
+    <div className="h-px bg-[rgba(255,255,255,0.07)] my-1" />
+
+    <div className="flex justify-between items-center pt-4 pb-6">
+      <span
+        className="text-base font-light text-[#eee9e1]"
+        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+      >
         Total
       </span>
-      <span className="font-['Playfair_Display',Georgia,serif] text-xl font-bold text-[#c49a52] tracking-tight">
+      <span
+        className="text-2xl font-semibold text-[#c49a52] tracking-tight"
+        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+      >
         {currency} {total.toLocaleString()}
       </span>
     </div>
-    <button className="onyx-btn-primary flex items-center justify-between mt-6 w-full">
-      Proceed to Checkout <span className="text-lg">→</span>
+
+    <button className="onyx-btn-primary w-full flex items-center justify-between px-6">
+      <span>Proceed to Checkout</span>
+      <span className="text-lg leading-none">→</span>
     </button>
+
     <NavLink
       to="/"
-      className="onyx-btn-secondary block text-center mt-3 !text-xs !tracking-[0.08em] uppercase"
+      className="onyx-btn-secondary block text-center mt-3 !text-[11px] !tracking-[0.1em] uppercase"
     >
       Continue Shopping
     </NavLink>
-    <div className="flex items-center gap-2 mt-4 px-3.5 py-2.5 bg-[#15151c] border border-white/[0.08] rounded-lg text-[11px] text-[#a09d98]">
-      <span className="text-[#c49a52] text-sm">🔒</span> Secure checkout ·
-      256-bit SSL encryption
+
+    {/* Trust badge */}
+    <div className="flex items-center gap-2.5 mt-4 px-4 py-3 bg-[rgba(255,255,255,0.025)] border border-[rgba(255,255,255,0.06)] rounded-xl">
+      <span className="text-[#c49a52] text-sm flex-shrink-0">🔒</span>
+      <span className="text-[11px] text-[rgba(238,233,225,0.35)] tracking-wide leading-relaxed">
+        Secure checkout · 256-bit SSL encryption
+      </span>
     </div>
   </div>
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Main Component
+// Main Cart Page
 // ─────────────────────────────────────────────────────────────────────────────
-
 const Cart = () => {
   const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart.items) || [];
@@ -193,7 +214,6 @@ const Cart = () => {
     setTimeout(() => setToast((p) => ({ ...p, visible: false })), 3000);
   };
 
-  // Performance Optimization: Cache totals calculation
   const { subtotal, currency } = useMemo(
     () => ({
       subtotal: cartItems.reduce(
@@ -224,23 +244,31 @@ const Cart = () => {
       )}
 
       <Layout showBackButton={true}>
-        <div className="pt-8 pb-32 min-h-[60vh]">
-          {/* Header */}
-          <div className="mb-10">
+        <div className="pt-8 pb-24 min-h-[60vh]">
+          {/* ── Header ── */}
+          <div className="mb-10 pb-8 border-b border-[rgba(255,255,255,0.06)]">
+            <p className="onyx-eyebrow mb-3">Shopping Bag</p>
             <h1 className="onyx-page-title">Your Cart</h1>
             <div className="onyx-divider" />
             {!isEmpty && (
-              <span className="mt-2 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c49a52] block">
+              <span className="mt-4 block text-[11px] uppercase tracking-[0.18em] font-semibold text-[rgba(238,233,225,0.4)]">
                 {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
               </span>
             )}
           </div>
 
-          {/* Content */}
+          {/* ── Content ── */}
           {isEmpty ? (
-            <EmptyCart />
+            <EmptyState
+              icon="🛒"
+              eyebrow="Empty Cart"
+              title="Your cart is waiting to be filled."
+              body="Browse our curated collection and discover your next piece."
+              cta={{ label: "Explore Collection", to: "/" }}
+            />
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 lg:gap-12 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 lg:gap-12 items-start">
+              {/* Items list */}
               <div className="flex flex-col">
                 {cartItems.map((item, i) => (
                   <CartItem
@@ -250,6 +278,8 @@ const Cart = () => {
                   />
                 ))}
               </div>
+
+              {/* Summary */}
               <OrderSummary
                 count={cartItems.length}
                 subtotal={subtotal}

@@ -86,45 +86,52 @@ const CreateProduct = () => {
 
   return (
     <Layout showBackButton={true}>
-      <div className="max-w-5xl py-8">
-        {/* Header */}
-        <div className="mb-8">
+      <div className="py-10 max-w-5xl">
+        {/* ── Header ── */}
+        <div className="mb-10 pb-8 border-b border-[rgba(255,255,255,0.06)]">
+          <p className="onyx-eyebrow mb-3">Seller Portal</p>
           <h1 className="onyx-page-title">New Listing</h1>
           <div className="onyx-divider" />
         </div>
 
-        {/* Error banner */}
+        {/* ── Error Banner ── */}
         {error && (
-          <p className="mb-6 text-sm text-[#cf6f6f] bg-[#1f0f0f] border border-[#6b2d2d] rounded-lg px-4 py-3">
+          <div
+            className="mb-8 flex items-center gap-3 text-[13px] text-[#e57373] bg-[#1a0a0a] border border-[rgba(239,83,80,0.2)] rounded-xl px-5 py-4"
+            role="alert"
+          >
+            <span className="text-base flex-shrink-0">✕</span>
             {error}
-          </p>
+          </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-start">
-            {/* LEFT — text fields */}
-            <div className="flex flex-col gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-10 lg:gap-16 items-start">
+            {/* ── LEFT — Text fields ── */}
+            <div className="flex flex-col gap-7">
               <div>
-                <label className="onyx-label">Product Title</label>
+                <label className="onyx-label" htmlFor="cp-title">Product Title</label>
                 <input
+                  id="cp-title"
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  placeholder="e.g. Oversized Casual Shirt"
+                  placeholder="e.g. Oversized Cashmere Coat"
                   required
                   className="onyx-input"
                 />
               </div>
 
               <div>
-                <label className="onyx-label">Description</label>
+                <label className="onyx-label" htmlFor="cp-desc">Description</label>
                 <textarea
+                  id="cp-desc"
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="Describe the product — material, fit, details..."
-                  rows={6}
+                  placeholder="Describe the product — material, fit, silhouette, care instructions…"
+                  rows={7}
                   className="onyx-textarea"
                 />
               </div>
@@ -134,10 +141,27 @@ const CreateProduct = () => {
                 handleChange={handleChange}
                 CURRENCIES={CURRENCIES}
               />
+
+              {/* Tips */}
+              <div className="p-5 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[#0d0d12]">
+                <p className="onyx-label mb-3">Listing Tips</p>
+                <ul className="flex flex-col gap-2">
+                  {[
+                    "Use clean, well-lit photography on neutral backgrounds.",
+                    "Mention material composition and care instructions.",
+                    "Add multiple size/color variants after publishing.",
+                  ].map((tip, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-[12px] text-[rgba(238,233,225,0.4)] leading-relaxed">
+                      <span className="text-[#c49a52] mt-0.5 flex-shrink-0">—</span>
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
-            {/* RIGHT — image upload + submit */}
-            <div>
+            {/* ── RIGHT — Image upload + submit ── */}
+            <div className="lg:sticky lg:top-24">
               <ImageUpload
                 images={images}
                 MAX_IMAGES={MAX_IMAGES}

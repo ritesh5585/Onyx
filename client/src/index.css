@@ -1,44 +1,82 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
-@layer components {
-  /* =========================================
-     ONYX Design System — Global Tokens Only
-     Rule: a class lives here only if it is
-     used in 3+ files OR has pseudo-states /
-     complex values that Tailwind can't inline.
-     Everything else → plain Tailwind in-file.
-     ========================================= */
+@theme {
+  --color-onyx-black: #06060a;
+  --color-onyx-surface: #0d0d12;
+  --color-onyx-card: #13131a;
+  --color-onyx-border: rgba(255, 255, 255, 0.07);
+  --color-onyx-border-hover: rgba(255, 255, 255, 0.14);
+  --color-onyx-gold: #c49a52;
+  --color-onyx-gold-lt: #d4aa6a;
+  --color-onyx-gold-glow: rgba(196, 154, 82, 0.15);
+  --color-onyx-text: #eee9e1;
+  --color-onyx-muted: rgba(238, 233, 225, 0.45);
+  --color-onyx-muted2: rgba(238, 233, 225, 0.22);
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
 
-  /* ── Layout ── */
+@layer components {
+
+  /* ═══════════════════════════════════════════
+     ONYX Design System v2 — Global Token Layer
+     Rule: class lives here if used in 3+ files
+     OR has pseudo-states Tailwind can't inline.
+  ═══════════════════════════════════════════ */
+
+  /* ── Base ── */
   .onyx-bg {
-    background-color: #08080a;
+    background-color: #06060a;
     color: #eee9e1;
     font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   .onyx-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-24;
+    @apply max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 xl:px-20;
   }
 
   /* ── Typography ── */
   .onyx-page-title {
-    @apply text-4xl lg:text-5xl font-semibold leading-tight;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    @apply text-4xl lg:text-5xl xl:text-6xl font-light leading-[1.1] tracking-tight;
     color: #eee9e1;
-    font-family: 'Playfair Display', Georgia, serif;
-    letter-spacing: -0.01em;
+  }
+
+  .onyx-section-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    @apply text-3xl lg:text-4xl font-light leading-tight tracking-tight;
+    color: #eee9e1;
+  }
+
+  .onyx-eyebrow {
+    @apply text-[10px] uppercase tracking-[0.28em] font-semibold;
+    color: #c49a52;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   .onyx-divider {
-    @apply mt-4 w-14 h-px;
+    @apply mt-5 w-10 h-px;
     background-color: #c49a52;
+  }
+
+  .onyx-tag {
+    @apply inline-flex items-center px-3 py-1 text-[10px] uppercase tracking-[0.18em] font-semibold rounded-full border;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(238, 233, 225, 0.55);
+    background-color: rgba(255, 255, 255, 0.03);
   }
 
   /* ── Navigation ── */
   .onyx-navbar {
     @apply py-4 md:py-5 flex items-center border-b;
-    border-color: #1f1f1f;
+    border-color: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background-color: rgba(6, 6, 10, 0.88);
   }
 
   .onyx-navbar-with-links {
@@ -46,169 +84,235 @@
   }
 
   .onyx-navbar-no-links {
-    @apply gap-3;
+    @apply gap-4;
   }
 
   .onyx-nav-title {
-    @apply text-xs font-bold tracking-[0.32em] uppercase;
-    color: #c49a52;
-    font-family: 'Playfair Display', Georgia, serif;
+    @apply text-[11px] font-bold tracking-[0.38em] uppercase;
+    color: #eee9e1;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    @apply text-xl font-semibold tracking-[0.1em];
+    letter-spacing: 0.08em;
   }
 
   .onyx-nav-menu {
-    @apply flex gap-4 text-sm font-medium tracking-wide uppercase;
+    @apply flex items-center gap-6 text-[11px] font-medium tracking-[0.12em] uppercase;
   }
 
   .onyx-nav-link {
-    @apply transition-colors;
+    @apply transition-colors duration-300;
+    color: rgba(238, 233, 225, 0.6);
   }
 
   .onyx-nav-link:hover {
-    color: #c49a52;
+    color: #eee9e1;
   }
 
   .onyx-nav-back {
-    @apply text-lg transition-colors duration-200 leading-none;
-    color: rgba(238, 233, 225, 0.42);
+    @apply text-xl transition-all duration-300 leading-none flex items-center justify-center w-9 h-9 rounded-full border;
+    color: rgba(238, 233, 225, 0.35);
+    border-color: rgba(255, 255, 255, 0.07);
   }
 
   .onyx-nav-back:hover {
     color: #c49a52;
+    border-color: rgba(196, 154, 82, 0.35);
+    background-color: rgba(196, 154, 82, 0.06);
+  }
+
+  /* ── Cards ── */
+  .onyx-card {
+    background-color: #0d0d12;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    @apply rounded-xl;
+    transition: border-color 300ms ease;
+  }
+
+  .onyx-card:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .onyx-card-elevated {
+    background-color: #13131a;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    @apply rounded-xl;
   }
 
   /* ── Forms ── */
   .onyx-label {
-    @apply block mb-2 text-[11px] uppercase tracking-[0.14em] font-semibold;
-    color: rgba(238, 233, 225, 0.42);
+    @apply block mb-2 text-[10px] uppercase tracking-[0.18em] font-semibold;
+    color: rgba(238, 233, 225, 0.4);
   }
 
   .onyx-input {
     @apply w-full outline-none py-3 px-4 text-sm transition-all duration-300 border rounded-lg;
-    background-color: #15151c;
+    background-color: #0d0d12;
     color: #eee9e1;
     border-color: rgba(255, 255, 255, 0.08);
     font-family: 'Inter', system-ui, sans-serif;
   }
 
   .onyx-input::placeholder {
-    color: rgba(238, 233, 225, 0.26);
+    color: rgba(238, 233, 225, 0.22);
   }
 
   .onyx-input:hover {
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.14);
   }
 
   .onyx-input:focus {
     border-color: #c49a52;
-    box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.15);
+    box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.12);
   }
 
   .onyx-textarea {
     @apply w-full outline-none py-3 px-4 text-sm transition-all duration-300 resize-none leading-relaxed border rounded-lg;
-    background-color: #15151c;
+    background-color: #0d0d12;
     color: #eee9e1;
     border-color: rgba(255, 255, 255, 0.08);
     font-family: 'Inter', system-ui, sans-serif;
   }
 
   .onyx-textarea::placeholder {
-    color: rgba(238, 233, 225, 0.26);
+    color: rgba(238, 233, 225, 0.22);
   }
 
   .onyx-textarea:hover {
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.14);
   }
 
   .onyx-textarea:focus {
     border-color: #c49a52;
-    box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.15);
+    box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.12);
   }
 
   /* ── Buttons ── */
   .onyx-btn-primary {
-    @apply w-full py-[13px] px-5 text-[14px] font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg;
+    @apply inline-flex items-center justify-center w-full py-3.5 px-6 text-[12px] font-semibold uppercase tracking-[0.12em] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg;
     background-color: #c49a52;
-    color: #0b0b0d;
+    color: #06060a;
     font-family: 'Inter', system-ui, sans-serif;
-    letter-spacing: 0.02em;
   }
 
   .onyx-btn-primary:hover:not(:disabled) {
     background-color: #d4aa6a;
-    box-shadow: 0 6px 22px rgba(196, 154, 82, 0.3);
+    box-shadow: 0 8px 28px rgba(196, 154, 82, 0.28);
     transform: translateY(-1px);
   }
 
+  .onyx-btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
   .onyx-btn-secondary {
-    @apply w-full py-[13px] px-5 text-[14px] font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg border;
-    border-color: #c49a52;
-    color: #c49a52;
+    @apply inline-flex items-center justify-center w-full py-3.5 px-6 text-[12px] font-semibold uppercase tracking-[0.12em] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg border;
+    border-color: rgba(255, 255, 255, 0.14);
+    color: rgba(238, 233, 225, 0.75);
     background-color: transparent;
     font-family: 'Inter', system-ui, sans-serif;
-    letter-spacing: 0.02em;
   }
 
   .onyx-btn-secondary:hover:not(:disabled) {
-    background-color: #c49a52;
-    color: #0b0b0d;
+    border-color: #c49a52;
+    color: #c49a52;
+    background-color: rgba(196, 154, 82, 0.06);
   }
 
-  /* ── Image dropzone ── */
+  /* ── Image Dropzone ── */
   .onyx-dropzone {
-    @apply border px-8 py-14 lg:py-20 flex flex-col items-center gap-4 cursor-pointer transition-all duration-300 rounded-xl;
-    background-color: #0f0f13;
+    @apply border px-8 py-16 lg:py-20 flex flex-col items-center gap-4 cursor-pointer transition-all duration-300 rounded-xl;
+    background-color: #0a0a10;
   }
 
   .onyx-dropzone.active {
     border-color: #c49a52;
     border-style: solid;
-    background-color: #15151c;
-    box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.15);
+    background-color: rgba(196, 154, 82, 0.04);
+    box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.1);
   }
 
   .onyx-dropzone.inactive {
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.1);
     border-style: dashed;
   }
 
   .onyx-dropzone.inactive:hover {
-    border-color: #c49a52;
-    background-color: #15151c;
+    border-color: rgba(196, 154, 82, 0.5);
+    background-color: rgba(196, 154, 82, 0.03);
   }
 
-  /* ── Toast (global feedback — used via Shared/Toast.jsx) ── */
+  /* ── Toast ── */
   .onyx-toast {
-    @apply fixed top-8 right-8 z-50 flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-medium shadow-2xl;
+    @apply fixed top-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 rounded-xl border text-[13px] font-medium shadow-2xl;
     font-family: 'Inter', system-ui, sans-serif;
-    animation: onyx-slide-up 0.22s ease;
+    animation: onyx-toast-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    max-width: 360px;
   }
 
   .onyx-toast-success {
-    background-color: #0f1f0f;
-    border-color: #2d6b2d;
-    color: #6fcf6f;
+    background-color: #0a1a0e;
+    border-color: rgba(76, 175, 80, 0.25);
+    color: #81c784;
   }
 
   .onyx-toast-error {
-    background-color: #1f0f0f;
-    border-color: #6b2d2d;
-    color: #cf6f6f;
+    background-color: #1a0a0a;
+    border-color: rgba(239, 83, 80, 0.25);
+    color: #e57373;
   }
 
   .onyx-toast-close {
-    @apply ml-2 opacity-60 hover:opacity-100 transition-opacity text-base leading-none cursor-pointer bg-transparent border-none;
+    @apply ml-1 opacity-50 hover:opacity-100 transition-opacity text-base leading-none cursor-pointer bg-transparent border-none flex-shrink-0;
     color: inherit;
   }
 
-  @keyframes onyx-slide-up {
+  /* ── Section helpers ── */
+  .onyx-section {
+    @apply py-20 lg:py-28;
+  }
+
+  .onyx-section-sm {
+    @apply py-12 lg:py-16;
+  }
+
+  /* ── Animations ── */
+  @keyframes onyx-toast-in {
     from {
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(-12px) scale(0.96);
     }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
 
+  @keyframes onyx-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
     to {
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  @keyframes onyx-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes onyx-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .onyx-animate-up {
+    animation: onyx-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .onyx-animate-in {
+    animation: onyx-fade-in 0.4s ease both;
   }
 }

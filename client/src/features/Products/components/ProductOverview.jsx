@@ -1,7 +1,10 @@
 import React from "react";
 
-// A reusable component for displaying the core product information
-// Works for both buyer view and seller view (with optional 'children' for actions like "Edit Details")
+/**
+ * ProductOverview — Core product info block.
+ * Used by both ProductDetails (buyer) and SellerProductdetail (seller).
+ * Children = optional action buttons (Edit, Delete, etc.)
+ */
 const ProductOverview = ({
   title,
   priceAmount,
@@ -10,26 +13,46 @@ const ProductOverview = ({
   children,
 }) => {
   return (
-    <>
-      <div className="flex justify-between items-start mb-2">
-        <h1 className="onyx-page-title">{title}</h1>
-        {/* Render optional action buttons (e.g. Edit Details) passed as children */}
-        {children}
+    <div className="mb-8">
+      {/* Title + Actions row */}
+      <div className="flex items-start justify-between gap-4 mb-1">
+        <h1
+          className="text-3xl lg:text-4xl xl:text-5xl font-light leading-[1.1] tracking-tight text-[#eee9e1] flex-1"
+          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+        >
+          {title}
+        </h1>
+        {/* Optional seller actions (Edit / Remove buttons) */}
+        {children && (
+          <div className="flex-shrink-0 flex flex-col items-end gap-1.5 mt-1">
+            {children}
+          </div>
+        )}
       </div>
 
-      <p className="text-2xl font-semibold tracking-wide text-[#c49a52] mt-4 mb-6 font-['Inter',system-ui,sans-serif]">
-        {priceCurrency || "INR"} {priceAmount?.toLocaleString() || "0"}
+      {/* Price */}
+      <p
+        className="text-2xl lg:text-3xl font-light tracking-wide text-[#c49a52] mt-4 mb-5"
+        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+      >
+        {priceCurrency || "INR"}{" "}
+        <span className="font-medium">{priceAmount?.toLocaleString() || "0"}</span>
       </p>
 
-      <div className="onyx-divider" />
+      {/* Divider */}
+      <div className="w-8 h-px bg-[#c49a52] mb-7" />
 
-      <div className="mt-8 mb-10">
-        <h3 className="onyx-label">Description</h3>
-        <p className="text-sm md:text-base leading-relaxed text-[#a09d98] whitespace-pre-line">
+      {/* Description */}
+      <div>
+        <h3 className="onyx-label mb-3">Description</h3>
+        <p
+          className="text-[14px] sm:text-[15px] leading-[1.8] text-[rgba(238,233,225,0.55)] whitespace-pre-line"
+          style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+        >
           {description}
         </p>
       </div>
-    </>
+    </div>
   );
 };
 
