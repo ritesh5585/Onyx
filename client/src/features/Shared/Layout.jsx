@@ -3,7 +3,16 @@ import { useSelector } from "react-redux";
 import { useAuth } from "../auth/hook/useAuth";
 
 const CartIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
     <line x1="3" y1="6" x2="21" y2="6" />
     <path d="M16 10a4 4 0 0 1-8 0" />
@@ -26,12 +35,17 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
           showLinks ? "onyx-navbar-with-links" : "onyx-navbar-no-links"
         }`}
       >
-        <div className={`onyx-container w-full flex items-center ${
-          showLinks ? "justify-between" : "gap-4"
-        }`}>
+        <div
+          className={`onyx-container w-full flex items-center ${
+            showLinks ? "justify-between" : "gap-4"
+          }`}
+        >
           {/* Left — back button or logo */}
           {showLinks ? (
-            <NavLink to="/" className="onyx-nav-title text-[#eee9e1] no-underline">
+            <NavLink
+              to="/"
+              className="onyx-nav-title text-[#eee9e1] no-underline"
+            >
               ONYX
             </NavLink>
           ) : (
@@ -46,7 +60,10 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
                   ←
                 </button>
               )}
-              <NavLink to="/" className="onyx-nav-title text-[#eee9e1] no-underline tracking-[0.1em]">
+              <NavLink
+                to="/"
+                className="onyx-nav-title text-[#eee9e1] no-underline tracking-[0.1em]"
+              >
                 ONYX
               </NavLink>
             </>
@@ -68,7 +85,10 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
 
               {user?.role === "seller" && (
                 <>
-                  <NavLink to="/seller/create-product" className="onyx-nav-link">
+                  <NavLink
+                    to="/seller/create-product"
+                    className="onyx-nav-link"
+                  >
                     Upload
                   </NavLink>
                   <NavLink to="/seller/dashboard" className="onyx-nav-link">
@@ -110,9 +130,7 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
       </header>
 
       {/* ── Page Content ── */}
-      <div className="onyx-container">
-        {children}
-      </div>
+      <div className="onyx-container">{children}</div>
     </div>
   );
 };

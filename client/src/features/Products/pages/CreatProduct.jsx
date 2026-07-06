@@ -110,7 +110,9 @@ const CreateProduct = () => {
             {/* ── LEFT — Text fields ── */}
             <div className="flex flex-col gap-7">
               <div>
-                <label className="onyx-label" htmlFor="cp-title">Product Title</label>
+                <label className="onyx-label" htmlFor="cp-title">
+                  Product Title
+                </label>
                 <input
                   id="cp-title"
                   type="text"
@@ -124,7 +126,9 @@ const CreateProduct = () => {
               </div>
 
               <div>
-                <label className="onyx-label" htmlFor="cp-desc">Description</label>
+                <label className="onyx-label" htmlFor="cp-desc">
+                  Description
+                </label>
                 <textarea
                   id="cp-desc"
                   name="description"
@@ -151,8 +155,13 @@ const CreateProduct = () => {
                     "Mention material composition and care instructions.",
                     "Add multiple size/color variants after publishing.",
                   ].map((tip, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-[12px] text-[rgba(238,233,225,0.4)] leading-relaxed">
-                      <span className="text-[#c49a52] mt-0.5 flex-shrink-0">—</span>
+                    <li
+                      key={i}
+                      className="flex items-start gap-2.5 text-[12px] text-[rgba(238,233,225,0.4)] leading-relaxed"
+                    >
+                      <span className="text-[#c49a52] mt-0.5 flex-shrink-0">
+                        —
+                      </span>
                       {tip}
                     </li>
                   ))}
