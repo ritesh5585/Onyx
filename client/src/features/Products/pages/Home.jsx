@@ -51,8 +51,8 @@ const Hero = ({ onShop, onExplore }) => (
         className="text-[15px] leading-relaxed mb-10 max-w-md"
         style={{ color: "rgba(238,233,225,0.55)" }}
       >
-        Curated luxury fashion. Every piece, an expression.
-        Discover the archive.
+        Curated luxury fashion. Every piece, an expression. Discover the
+        archive.
       </p>
       <div className="flex flex-wrap gap-4">
         <button
@@ -73,7 +73,9 @@ const Hero = ({ onShop, onExplore }) => (
     {/* Scroll indicator */}
     <div className="absolute bottom-8 right-8 hidden md:flex flex-col items-center gap-2 opacity-30">
       <div className="w-px h-12 bg-[#eee9e1]" />
-      <span className="text-[9px] uppercase tracking-[0.2em] rotate-90 origin-bottom text-[#eee9e1]">Scroll</span>
+      <span className="text-[9px] uppercase tracking-[0.2em] rotate-90 origin-bottom text-[#eee9e1]">
+        Scroll
+      </span>
     </div>
   </section>
 );
@@ -86,16 +88,23 @@ const CategoriesStrip = () => (
         <div
           key={cat.label}
           className={`flex flex-col gap-1 py-6 px-4 cursor-pointer group transition-colors duration-300 hover:bg-[rgba(196,154,82,0.04)] ${
-            i < CATEGORIES.length - 1 ? "border-r border-[rgba(255,255,255,0.06)]" : ""
+            i < CATEGORIES.length - 1
+              ? "border-r border-[rgba(255,255,255,0.06)]"
+              : ""
           }`}
         >
           <span
             className="text-sm font-medium text-[rgba(238,233,225,0.8)] group-hover:text-[#eee9e1] transition-colors"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "1.05rem" }}
+            style={{
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontSize: "1.05rem",
+            }}
           >
             {cat.label}
           </span>
-          <span className="text-[10px] text-[rgba(238,233,225,0.3)] tracking-wide">{cat.sub}</span>
+          <span className="text-[10px] text-[rgba(238,233,225,0.3)] tracking-wide">
+            {cat.sub}
+          </span>
         </div>
       ))}
     </div>
@@ -117,7 +126,11 @@ const FeaturedEditorial = ({ products, onNavigate }) => {
           <div className="onyx-divider" />
         </div>
         <button
-          onClick={() => document.getElementById("all-products")?.scrollIntoView({ behavior: "smooth" })}
+          onClick={() =>
+            document
+              .getElementById("all-products")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
           className="hidden sm:block text-[11px] uppercase tracking-[0.16em] font-medium text-[rgba(238,233,225,0.45)] hover:text-[#c49a52] transition-colors"
         >
           View All →
@@ -131,7 +144,7 @@ const FeaturedEditorial = ({ products, onNavigate }) => {
           onClick={() => onNavigate(hero._id)}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => (e.key === "Enter") && onNavigate(hero._id)}
+          onKeyDown={(e) => e.key === "Enter" && onNavigate(hero._id)}
           aria-label={hero.title}
         >
           <div className="aspect-[3/4] sm:h-full min-h-[400px] bg-[#0d0d12] overflow-hidden relative border border-[rgba(255,255,255,0.05)]">
@@ -144,19 +157,25 @@ const FeaturedEditorial = ({ products, onNavigate }) => {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <span className="text-[9px] uppercase tracking-[0.2em] text-[rgba(238,233,225,0.2)]">No Image</span>
+                <span className="text-[9px] uppercase tracking-[0.2em] text-[rgba(238,233,225,0.2)]">
+                  No Image
+                </span>
               </div>
             )}
             <div className="absolute inset-0 bg-[rgba(6,6,10,0)] group-hover:bg-[rgba(6,6,10,0.15)] transition-colors duration-500" />
             <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-[rgba(6,6,10,0.9)] to-transparent">
               <h3
                 className="text-lg text-[#eee9e1] leading-tight mb-1"
-                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 400 }}
+                style={{
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontWeight: 400,
+                }}
               >
                 {hero.title}
               </h3>
               <span className="text-[10px] uppercase tracking-[0.18em] text-[#c49a52] font-semibold">
-                {hero.price?.currency || "INR"} {hero.price?.amount?.toLocaleString() || "0"}
+                {hero.price?.currency || "INR"}{" "}
+                {hero.price?.amount?.toLocaleString() || "0"}
               </span>
             </div>
           </div>
@@ -177,7 +196,10 @@ const FeaturedEditorial = ({ products, onNavigate }) => {
 
 /* ── All Products Grid ── */
 const ProductGrid = ({ products, onNavigate }) => (
-  <section id="all-products" className="onyx-section border-t border-[rgba(255,255,255,0.05)]">
+  <section
+    id="all-products"
+    className="onyx-section border-t border-[rgba(255,255,255,0.05)]"
+  >
     <div className="flex items-end justify-between mb-10 sm:mb-14">
       <div>
         <p className="onyx-eyebrow mb-3">The Archive</p>
@@ -226,42 +248,6 @@ const SellerCTA = () => (
   </section>
 );
 
-/* ── Newsletter ── */
-const Newsletter = () => (
-  <section className="onyx-section-sm border-t border-[rgba(255,255,255,0.05)]">
-    <div className="max-w-lg mx-auto text-center">
-      <p className="onyx-eyebrow mb-4">Stay in the loop</p>
-      <h2
-        className="text-2xl sm:text-3xl font-light text-[#eee9e1] mb-3"
-        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-      >
-        The Onyx Edit — Weekly
-      </h2>
-      <p className="text-[13px] text-[rgba(238,233,225,0.4)] mb-8 leading-relaxed">
-        New arrivals, exclusive drops, and styling inspiration delivered to your inbox.
-      </p>
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="flex gap-3 max-w-sm mx-auto"
-        aria-label="Newsletter signup"
-      >
-        <input
-          type="email"
-          placeholder="Your email address"
-          className="onyx-input flex-1"
-          aria-label="Email address"
-        />
-        <button type="submit" className="onyx-btn-primary !w-auto px-6 flex-shrink-0">
-          Join
-        </button>
-      </form>
-      <p className="text-[10px] text-[rgba(238,233,225,0.2)] mt-4 tracking-wide">
-        No spam. Unsubscribe anytime.
-      </p>
-    </div>
-  </section>
-);
-
 /* ── Footer ── */
 const Footer = () => (
   <footer className="border-t border-[rgba(255,255,255,0.06)] py-12">
@@ -278,11 +264,32 @@ const Footer = () => (
         </p>
       </div>
       <div className="flex flex-wrap gap-6 text-[11px] uppercase tracking-[0.14em] text-[rgba(238,233,225,0.35)]">
-        <NavLink to="/" className="hover:text-[#c49a52] transition-colors">Shop</NavLink>
-        <NavLink to="/login" className="hover:text-[#c49a52] transition-colors">Sign In</NavLink>
-        <NavLink to="/register" className="hover:text-[#c49a52] transition-colors">Register</NavLink>
-        <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-[#c49a52] transition-colors">Privacy</a>
-        <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-[#c49a52] transition-colors">Terms</a>
+        <NavLink to="/" className="hover:text-[#c49a52] transition-colors">
+          Shop
+        </NavLink>
+        <NavLink to="/login" className="hover:text-[#c49a52] transition-colors">
+          Sign In
+        </NavLink>
+        <NavLink
+          to="/register"
+          className="hover:text-[#c49a52] transition-colors"
+        >
+          Register
+        </NavLink>
+        <a
+          href="#"
+          onClick={(e) => e.preventDefault()}
+          className="hover:text-[#c49a52] transition-colors"
+        >
+          Privacy
+        </a>
+        <a
+          href="#"
+          onClick={(e) => e.preventDefault()}
+          className="hover:text-[#c49a52] transition-colors"
+        >
+          Terms
+        </a>
       </div>
     </div>
     <div className="mt-8 pt-6 border-t border-[rgba(255,255,255,0.04)] text-[10px] text-[rgba(238,233,225,0.2)] tracking-wide">
@@ -304,16 +311,15 @@ const Home = () => {
   }, [handleGetAllProducts]);
 
   const scrollToProducts = () => {
-    document.getElementById("all-products")?.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById("all-products")
+      ?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <Layout showLinks={true}>
       {/* Hero */}
-      <Hero
-        onShop={scrollToProducts}
-        onExplore={scrollToProducts}
-      />
+      <Hero onShop={scrollToProducts} onExplore={scrollToProducts} />
 
       {/* Categories Strip */}
       <CategoriesStrip />
@@ -342,9 +348,6 @@ const Home = () => {
 
       {/* Seller CTA */}
       <SellerCTA />
-
-      {/* Newsletter */}
-      <Newsletter />
 
       {/* Footer */}
       <Footer />
