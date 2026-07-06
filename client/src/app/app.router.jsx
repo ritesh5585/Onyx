@@ -8,6 +8,7 @@ import CreateProduct from "../features/Products/pages/CreatProduct.jsx";
 import SellerProductDetail from "../features/Products/pages/SellerProductdetail.jsx"
 import ProductDetails from "../features/Products/pages/ProductDetails.jsx";
 import Cart from "../features/cart/pages/Cart.jsx"
+import NotFound from "../features/Shared/NotFound.jsx";
 
 export const routes = createBrowserRouter([
   {
@@ -16,7 +17,7 @@ export const routes = createBrowserRouter([
   },
   {
     path: "*",
-    element: <Home />,
+    element: <NotFound />,
   },
   {
     path: "/register",
