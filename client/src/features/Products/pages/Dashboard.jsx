@@ -13,7 +13,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     handleGetSellerProduct();
-  }, []);
+  }, [handleGetSellerProduct]);
 
   return (
     <Layout showBackButton={true}>

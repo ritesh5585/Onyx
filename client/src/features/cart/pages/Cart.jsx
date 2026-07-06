@@ -196,23 +196,21 @@ const OrderSummary = ({ count, subtotal, shipping, total, currency }) => (
   </div>
 );
 
+const EMPTY_CART = [];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Cart Page
 // ─────────────────────────────────────────────────────────────────────────────
 const Cart = () => {
   const navigate = useNavigate();
-  const cartItems = useSelector((state) => state.cart.items) || [];
+  const rawCartItems = useSelector((state) => state.cart.items);
+  const cartItems = rawCartItems || EMPTY_CART;
   const { handleGetCart } = useCart();
   const [toast, setToast] = useState({ msg: "", type: "", visible: false });
 
   useEffect(() => {
     handleGetCart();
-  }, []);
-
-  const showToast = (msg, type = "success") => {
-    setToast({ msg, type, visible: true });
-    setTimeout(() => setToast((p) => ({ ...p, visible: false })), 3000);
-  };
+  }, [handleGetCart]);
 
   const { subtotal, currency } = useMemo(
     () => ({

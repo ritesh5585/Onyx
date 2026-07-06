@@ -1,11 +1,12 @@
 import { addToCart, getCart } from "../service/cart.api";
 import { useDispatch } from "react-redux";
-import { addItems, setItems } from "../state/cart.slice";
+import { setItems } from "../state/cart.slice";
+import { useCallback } from "react";
 
 export const useCart = () => {
     const dispatch = useDispatch();
 
-    async function handleAddtoCart(productId, variantId) {
+    const handleAddtoCart = useCallback(async (productId, variantId) => {
         try {
             const data = await addToCart({ productId, variantId });
             return data;
@@ -13,17 +14,17 @@ export const useCart = () => {
             console.error("cart not added", error);
             throw error;
         }
-    }
+    }, []);
 
-    async function handleGetCart() {
+    const handleGetCart = useCallback(async () => {
         try {
-             const data = await getCart()
-             console.log(data)
-             dispatch(setItems(data.cart.items))
+             const data = await getCart();
+             dispatch(setItems(data.cart.items));
         } catch (error) {
             console.error("cart not found", error);
             throw error;
         }
-    }
+    }, [dispatch]);
+
     return { handleAddtoCart, handleGetCart };
-}
+};

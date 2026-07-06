@@ -301,7 +301,7 @@ const Home = () => {
 
   useEffect(() => {
     handleGetAllProducts();
-  }, []);
+  }, [handleGetAllProducts]);
 
   const scrollToProducts = () => {
     document.getElementById("all-products")?.scrollIntoView({ behavior: "smooth" });

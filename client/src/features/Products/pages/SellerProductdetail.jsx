@@ -149,7 +149,7 @@ const SellerProductdetail = () => {
 
   useEffect(() => {
     if (productId) handleProductDetails(productId);
-  }, [productId]);
+  }, [productId, handleProductDetails]);
 
   useEffect(() => {
     if (detail) {

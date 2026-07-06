@@ -31,7 +31,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (productId) handleProductDetails(productId);
-  }, [productId]);
+  }, [productId, handleProductDetails]);
 
   const parsedVariants = useMemo(() => {
     if (!detail?.variants?.length) return { attributes: {}, variantsList: [] };

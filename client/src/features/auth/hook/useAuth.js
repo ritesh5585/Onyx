@@ -1,12 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setUser, setLoading, setError } from "../state/auth.state";
 import { authApi, parseError } from "../services/auth.api";
+import { useCallback } from "react";
 
 export const useAuth = () => {
     const dispatch = useDispatch();
     const { user, loading, error } = useSelector((state) => state.auth);
 
-    const handleLogin = async (creds) => {
+    const handleLogin = useCallback(async (creds) => {
         dispatch(setLoading(true));
         dispatch(setError(null));
 
@@ -20,9 +21,9 @@ export const useAuth = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    };
+    }, [dispatch]);
 
-    const handleRegister = async (creds) => {
+    const handleRegister = useCallback(async (creds) => {
         dispatch(setLoading(true));
         dispatch(setError(null));
 
@@ -36,9 +37,9 @@ export const useAuth = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    };
+    }, [dispatch]);
 
-    const checkAuth = async () => {
+    const checkAuth = useCallback(async () => {
         dispatch(setLoading(true));
 
         try {
@@ -51,9 +52,9 @@ export const useAuth = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    };
+    }, [dispatch]);
 
-    const handleLogout = async () => {
+    const handleLogout = useCallback(async () => {
         dispatch(setLoading(true));
 
         try {
@@ -65,7 +66,7 @@ export const useAuth = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    };
+    }, [dispatch]);
 
     return {
         user,
