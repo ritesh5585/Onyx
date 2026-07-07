@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, NavLink } from "react-router";
 import { useCart } from "../hooks/useCart";
@@ -9,7 +9,7 @@ import EmptyState from "../../Shared/EmptyState";
 // ─────────────────────────────────────────────────────────────────────────────
 // CartItem
 // ─────────────────────────────────────────────────────────────────────────────
-const CartItem = ({ item, navigate }) => {
+const CartItem = ({ item, navigate, onIncrementQty, onDecrementQty, onRemoveItem, showToast }) => {
   const product = item.product || {};
   const variant = item.variant || null;
   const qty = item.quantity || 1;
@@ -114,6 +114,15 @@ const CartItem = ({ item, navigate }) => {
               className="w-8 h-8 flex items-center justify-center text-[rgba(238,233,225,0.5)] hover:text-[#c49a52] hover:bg-[rgba(196,154,82,0.07)] disabled:opacity-25 transition-all border-none bg-transparent cursor-pointer text-lg leading-none"
               disabled={qty <= 1}
               aria-label="Decrease quantity"
+              onClick={async () => {
+                if (!item._id || qty <= 1) return;
+                try {
+                  await onDecrementQty(item._id, qty);
+                  showToast("Quantity updated", "success");
+                } catch {
+                  showToast("Failed to update quantity", "error");
+                }
+              }}
             >
               −
             </button>
@@ -124,13 +133,33 @@ const CartItem = ({ item, navigate }) => {
               className="w-8 h-8 flex items-center justify-center text-[rgba(238,233,225,0.5)] hover:text-[#c49a52] hover:bg-[rgba(196,154,82,0.07)] disabled:opacity-25 transition-all border-none bg-transparent cursor-pointer text-lg leading-none"
               disabled={qty >= stock}
               aria-label="Increase quantity"
+              onClick={async () => {
+                if (!item._id || qty >= stock) return;
+                try {
+                  await onIncrementQty(item._id, qty);
+                  showToast("Quantity updated", "success");
+                } catch {
+                  showToast("Failed to update quantity", "error");
+                }
+              }}
             >
               +
             </button>
           </div>
 
           {/* Remove */}
-          <button className="flex items-center gap-1.5 bg-transparent border border-[rgba(239,83,80,0.2)] rounded-md px-3 py-1.5 text-[10px] font-semibold tracking-[0.1em] uppercase text-[#e57373] cursor-pointer hover:bg-[rgba(239,83,80,0.07)] hover:border-[rgba(239,83,80,0.45)] transition-all">
+          <button
+            className="flex items-center gap-1.5 bg-transparent border border-[rgba(239,83,80,0.2)] rounded-md px-3 py-1.5 text-[10px] font-semibold tracking-[0.1em] uppercase text-[#e57373] cursor-pointer hover:bg-[rgba(239,83,80,0.07)] hover:border-[rgba(239,83,80,0.45)] transition-all"
+            onClick={async () => {
+              if (!item._id) return;
+              try {
+                await onRemoveItem(item._id);
+                showToast("Item removed from cart", "success");
+              } catch {
+                showToast("Failed to remove item", "error");
+              }
+            }}
+          >
             ✕ Remove
           </button>
         </div>
@@ -221,13 +250,20 @@ const Cart = () => {
   const navigate = useNavigate();
   const rawCartItems = useSelector((state) => state.cart.items);
   const cartItems = rawCartItems || EMPTY_CART;
-  const { handleGetCart } = useCart();
+  const { handleGetCart, handleRemoveItem, handleIncrementQty, handleDecrementQty } = useCart();
   const [toast, setToast] = useState({ msg: "", type: "", visible: false });
+
+  const showToast = useCallback((msg, type = "success") => {
+    setToast({ msg, type, visible: true });
+    window.setTimeout(() => {
+      setToast((prev) => ({ ...prev, visible: false }));
+    }, 3000);
+  }, []);
 
   useEffect(() => {
     handleGetCart();
   }, [handleGetCart]);
-
+//=================================================================================
   const { subtotal, currency } = useMemo(
     () => ({
       subtotal: cartItems.reduce(
@@ -244,7 +280,7 @@ const Cart = () => {
     }),
     [cartItems],
   );
-
+//=================================================================================
   const isEmpty = cartItems.length === 0;
 
   return (
@@ -289,6 +325,10 @@ const Cart = () => {
                     key={item._id || i}
                     item={item}
                     navigate={navigate}
+                    onIncrementQty={handleIncrementQty}
+                    onDecrementQty={handleDecrementQty}
+                    onRemoveItem={handleRemoveItem}
+                    showToast={showToast}
                   />
                 ))}
               </div>

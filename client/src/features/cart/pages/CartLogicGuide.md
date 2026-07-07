@@ -1,12 +1,12 @@
 # Developer Notes: Wiring up the Cart Logic
 
 The Cart UI is ready. You need to wire up **3 handler functions** and **2 API endpoints**. Follow these steps:
-
+<!-- 
 ## STEP 1: Redux Slice (`features/cart/state/cart.slice.js`)
 Currently you have `setItems` and `addItems`. Add 2 more reducers:
 
 1. **`removeItem`**: Removes an item by `_id`.
-   ```javascript
+   ```javascript 
    removeItem: (state, action) => {
      state.items = state.items.filter(item => item._id !== action.payload);
    }
@@ -19,9 +19,9 @@ Currently you have `setItems` and `addItems`. Add 2 more reducers:
      if (item) item.quantity = quantity;
    }
    ```
-*(Export these actions from the slice).*
+*(Export these actions from the slice).* -->
 
-## STEP 2: API Service Layer (`features/cart/service/cart.api.js`)
+<!-- ## STEP 2: API Service Layer (`features/cart/service/cart.api.js`)
 Add 2 new API functions:
 
 1. **`removeFromCart`**:
@@ -35,7 +35,7 @@ Add 2 new API functions:
    export const updateCartQty = async (cartItemId, quantity) => {
      return await api.patch(`/update/${cartItemId}`, { quantity }).then(res => res.data);
    };
-   ```
+   ``` -->
 
 ## STEP 3: Custom Hook (`features/cart/hooks/useCart.js`)
 Add these handlers to your hook:

@@ -94,3 +94,73 @@ export async function viewCartProduct(req, res) {
         return res.status(500).json({ success: false, message: error.message || "Internal server error" });
     }
 }
+
+export async function removeFromCart(req, res) {
+    const { cartItemId } = req.params;
+    const userId = req.user._id;
+
+    try {
+        const cart = await cartModel.findOne({ user: userId });
+        if (!cart) {
+            return res.status(404).json({ success: false, message: "Cart not found" });
+        }
+
+        cart.items = cart.items.filter(item => item._id.toString() !== cartItemId);
+        await cart.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Item removed from cart",
+            cart
+        });
+    } catch (error) {
+        console.error("Remove cart item error:", error);
+        return res.status(500).json({ success: false, message: error.message || "Internal server error" });
+    }
+}
+
+export async function updateCartItemQuantity(req, res) {
+    const { cartItemId } = req.params;
+    const { quantity } = req.body;
+    const userId = req.user._id;
+
+    try {
+        const cart = await cartModel.findOne({ user: userId });
+        if (!cart) {
+            return res.status(404).json({ success: false, message: "Cart not found" });
+        }
+
+        const item = cart.items.id(cartItemId);
+        if (!item) {
+            return res.status(404).json({ success: false, message: "Cart item not found" });
+        }
+
+        if (typeof quantity !== "number" || Number.isNaN(quantity) || quantity < 1) {
+            return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
+        }
+
+        const productData = await getProductVariant(item.product.toString(), item.variant ? item.variant.toString() : null);
+        if (!productData) {
+            return res.status(404).json({ success: false, message: "Product or variant not found" });
+        }
+
+        const { product, variant } = productData;
+        const currentStock = variant?.stock ?? product.stock ?? Infinity;
+
+        if (quantity > currentStock) {
+            return res.status(400).json({ success: false, message: `Only ${currentStock} stocks left` });
+        }
+
+        item.quantity = quantity;
+        await cart.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Cart updated",
+            cart
+        });
+    } catch (error) {
+        console.error("Update cart item quantity error:", error);
+        return res.status(500).json({ success: false, message: error.message || "Internal server error" });
+    }
+}

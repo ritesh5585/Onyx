@@ -1,6 +1,6 @@
-import { addToCart, getCart } from "../service/cart.api";
+import { addToCart, getCart, removeFromCart, updateCartQty } from "../service/cart.api";
 import { useDispatch } from "react-redux";
-import { setItems } from "../state/cart.slice";
+import { setItems, removeItems, updateItemQty } from "../state/cart.slice";
 import { useCallback } from "react";
 
 export const useCart = () => {
@@ -26,5 +26,52 @@ export const useCart = () => {
         }
     }, [dispatch]);
 
-    return { handleAddtoCart, handleGetCart };
+    const handleRemoveItem = useCallback(async (cartItemId) => {
+        try {
+            const data = await removeFromCart(cartItemId);
+            dispatch(removeItems(cartItemId));
+            return data;
+        } catch (error) {
+            console.error("Failed to remove item:", error);
+            throw error;
+        }
+    }, [dispatch]);
+
+    const handleIncrementQty = useCallback(async (cartItemId, currentQty) => {
+        const newQty = currentQty + 1;
+
+        try {
+            const data = await updateCartQty(cartItemId, newQty);
+            dispatch(updateItemQty({ cartItemId, quantity: newQty }));
+            return data;
+        } catch (error) {
+            console.error("Failed to increment quantity:", error);
+            throw error;
+        }
+    }, [dispatch]);
+
+    const handleDecrementQty = useCallback(async (cartItemId, currentQty) => {
+        const newQty = currentQty - 1;
+
+        if (newQty <= 0) {
+            return;
+        }
+
+        try {
+            const data = await updateCartQty(cartItemId, newQty);
+            dispatch(updateItemQty({ cartItemId, quantity: newQty }));
+            return data;
+        } catch (error) {
+            console.error("Failed to decrement quantity:", error);
+            throw error;
+        }
+    }, [dispatch]);
+
+    return {
+        handleAddtoCart,
+        handleGetCart,
+        handleRemoveItem,
+        handleIncrementQty,
+        handleDecrementQty
+    };
 };
