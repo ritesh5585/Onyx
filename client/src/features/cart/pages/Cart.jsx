@@ -9,7 +9,14 @@ import EmptyState from "../../Shared/EmptyState";
 // ─────────────────────────────────────────────────────────────────────────────
 // CartItem
 // ─────────────────────────────────────────────────────────────────────────────
-const CartItem = ({ item, navigate, onIncrementQty, onDecrementQty, onRemoveItem, showToast }) => {
+const CartItem = ({
+  item,
+  navigate,
+  onIncrementQty,
+  onDecrementQty,
+  onRemoveItem,
+  showToast,
+}) => {
   const product = item.product || {};
   const variant = item.variant || null;
   const qty = item.quantity || 1;
@@ -250,7 +257,12 @@ const Cart = () => {
   const navigate = useNavigate();
   const rawCartItems = useSelector((state) => state.cart.items);
   const cartItems = rawCartItems || EMPTY_CART;
-  const { handleGetCart, handleRemoveItem, handleIncrementQty, handleDecrementQty } = useCart();
+  const {
+    handleGetCart,
+    handleRemoveItem,
+    handleIncrementQty,
+    handleDecrementQty,
+  } = useCart();
   const [toast, setToast] = useState({ msg: "", type: "", visible: false });
 
   const showToast = useCallback((msg, type = "success") => {
@@ -263,7 +275,7 @@ const Cart = () => {
   useEffect(() => {
     handleGetCart();
   }, [handleGetCart]);
-//=================================================================================
+  //=================================================================================
   const { subtotal, currency } = useMemo(
     () => ({
       subtotal: cartItems.reduce(
@@ -280,7 +292,7 @@ const Cart = () => {
     }),
     [cartItems],
   );
-//=================================================================================
+  //=================================================================================
   const isEmpty = cartItems.length === 0;
 
   return (

@@ -127,28 +127,47 @@ export async function updateCartItemQuantity(req, res) {
     try {
         const cart = await cartModel.findOne({ user: userId });
         if (!cart) {
-            return res.status(404).json({ success: false, message: "Cart not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+
+            });
         }
 
         const item = cart.items.id(cartItemId);
         if (!item) {
-            return res.status(404).json({ success: false, message: "Cart item not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Cart item not found"
+
+            });
         }
 
         if (typeof quantity !== "number" || Number.isNaN(quantity) || quantity < 1) {
-            return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
+            return res.status(400).json({
+                success: false,
+                message: "Quantity must be at least 1"
+
+            });
         }
 
         const productData = await getProductVariant(item.product.toString(), item.variant ? item.variant.toString() : null);
         if (!productData) {
-            return res.status(404).json({ success: false, message: "Product or variant not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Product or variant not found"
+
+            });
         }
 
         const { product, variant } = productData;
         const currentStock = variant?.stock ?? product.stock ?? Infinity;
 
         if (quantity > currentStock) {
-            return res.status(400).json({ success: false, message: `Only ${currentStock} stocks left` });
+            return res.status(400).json({
+                success: false,
+                message: `Only ${currentStock} stocks left`
+            });
         }
 
         item.quantity = quantity;
@@ -161,6 +180,9 @@ export async function updateCartItemQuantity(req, res) {
         });
     } catch (error) {
         console.error("Update cart item quantity error:", error);
-        return res.status(500).json({ success: false, message: error.message || "Internal server error" });
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Internal server error"
+        });
     }
 }
