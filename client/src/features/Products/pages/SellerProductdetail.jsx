@@ -18,11 +18,11 @@ const CURRENCIES = ["INR", "USD", "EUR", "GBP"];
 const VariantCard = ({ v, onRemove }) => {
   const attrs = readAttributes(v.attributes);
   return (
-    <div className="relative flex flex-col p-5 rounded-xl border border-[rgba(255,255,255,0.07)] bg-[#0d0d12] transition-colors duration-300 hover:border-[rgba(196,154,82,0.3)] group">
+    <div className="group relative flex flex-col rounded-xl border border-onyx-border/70 bg-onyx-surface p-5 transition-colors duration-300 hover:border-onyx-gold/30">
       {/* Remove button */}
       <button
         onClick={() => onRemove(v._id)}
-        className="absolute top-3 right-3 w-6 h-6 rounded-full border border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(238,233,225,0.3)] flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-all duration-200 hover:border-[rgba(239,83,80,0.4)] hover:text-[#e57373]"
+        className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full border border-onyx-border/70 bg-transparent text-xs text-onyx-muted/60 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:border-red-400/40 hover:text-red-400"
         aria-label="Remove variant"
         title="Remove variant"
       >
@@ -34,31 +34,28 @@ const VariantCard = ({ v, onRemove }) => {
         {attrs.map(([key, val]) => (
           <span
             key={key}
-            className="px-2.5 py-1 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-sm text-[11px] text-[rgba(238,233,225,0.8)]"
+            className="rounded-sm border border-onyx-border/70 bg-white/5 px-2.5 py-1 text-[11px] text-onyx-muted/80"
           >
-            <span className="text-[rgba(238,233,225,0.4)] mr-1">{key}:</span>
+            <span className="mr-1 text-onyx-muted/60">{key}:</span>
             {val}
           </span>
         ))}
       </div>
 
       {/* Stock + Price */}
-      <div className="flex justify-between items-center mt-auto pt-3 border-t border-[rgba(255,255,255,0.06)]">
+      <div className="mt-auto flex items-center justify-between border-t border-onyx-border/60 pt-3">
         <div className="flex items-center gap-1.5">
           <span
             className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
               (v.stock ?? 0) > 0 ? "bg-[#81c784]" : "bg-[#e57373]"
             }`}
           />
-          <span className="text-[12px] text-[rgba(238,233,225,0.45)]">
+          <span className="text-[12px] text-onyx-muted/70">
             {v.stock ?? 0} in stock
           </span>
         </div>
         {v.price?.amount && (
-          <span
-            className="text-[13px] font-medium text-[#c49a52]"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-          >
+          <span className="font-serif text-[13px] font-medium text-onyx-gold">
             {v.price.currency} {v.price.amount.toLocaleString()}
           </span>
         )}
@@ -77,7 +74,7 @@ const AddVariantForm = ({ newVariant, onChange, onAdd, isSubmitting }) => {
   ];
 
   return (
-    <div className="p-6 rounded-xl border border-[rgba(255,255,255,0.07)] bg-[#0a0a10]">
+    <div className="rounded-xl border border-onyx-border/70 bg-onyx-black/80 p-6">
       <h3 className="onyx-label mb-5">Add New Variant</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
         {fields.map(({ key, placeholder, type }) => (
@@ -256,7 +253,7 @@ const SellerProductdetail = () => {
 
             {/* ─ View / Edit Info ─ */}
             {isEditing ? (
-              <div className="flex flex-col gap-5 p-6 rounded-xl border border-[rgba(196,154,82,0.2)] bg-[#0d0d12]">
+              <div className="flex flex-col gap-5 rounded-xl border border-onyx-gold/20 bg-onyx-surface p-6">
                 <p className="onyx-eyebrow">Editing Product</p>
                 <div>
                   <label className="onyx-label">Product Title</label>
@@ -307,7 +304,7 @@ const SellerProductdetail = () => {
                     disabled={saving}
                   />
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <div className="flex flex-col gap-3 pt-2 sm:flex-row">
                   <button
                     onClick={() => setIsEditing(false)}
                     className="onyx-btn-secondary sm:flex-1"
@@ -354,12 +351,9 @@ const SellerProductdetail = () => {
             )}
 
             {/* ─ Variants Section ─ */}
-            <div className="border-t border-[rgba(255,255,255,0.06)] pt-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2
-                  className="text-xl font-light text-[#eee9e1]"
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                >
+            <div className="border-t border-onyx-border/60 pt-8">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="font-serif text-xl font-light text-onyx-text">
                   Product Variants
                 </h2>
                 {detail.variants?.length > 0 && (
@@ -368,7 +362,7 @@ const SellerProductdetail = () => {
               </div>
 
               {detail.variants?.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {detail.variants.map((v, i) => (
                     <VariantCard
                       key={v._id || i}
@@ -378,7 +372,7 @@ const SellerProductdetail = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-[13px] leading-relaxed text-[rgba(238,233,225,0.35)] mb-6">
+                <p className="mb-6 text-[13px] leading-relaxed text-onyx-muted/60">
                   No variants yet. Add sizes, colors, or materials below.
                 </p>
               )}

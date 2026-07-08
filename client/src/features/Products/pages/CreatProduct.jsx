@@ -88,7 +88,7 @@ const CreateProduct = () => {
     <Layout showBackButton={true}>
       <div className="py-10 max-w-5xl">
         {/* ── Header ── */}
-        <div className="mb-10 pb-8 border-b border-[rgba(255,255,255,0.06)]">
+        <div className="mb-10 border-b border-onyx-border/70 pb-8">
           <p className="onyx-eyebrow mb-3">Seller Portal</p>
           <h1 className="onyx-page-title">New Listing</h1>
           <div className="onyx-divider" />
@@ -97,7 +97,7 @@ const CreateProduct = () => {
         {/* ── Error Banner ── */}
         {error && (
           <div
-            className="mb-8 flex items-center gap-3 text-[13px] text-[#e57373] bg-[#1a0a0a] border border-[rgba(239,83,80,0.2)] rounded-xl px-5 py-4"
+            className="mb-8 flex items-center gap-3 rounded-xl border border-red-400/20 bg-red-950/40 px-5 py-4 text-[13px] text-red-400"
             role="alert"
           >
             <span className="text-base flex-shrink-0">✕</span>
@@ -106,7 +106,7 @@ const CreateProduct = () => {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-10 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1fr_420px] lg:gap-16">
             {/* ── LEFT — Text fields ── */}
             <div className="flex flex-col gap-7">
               <div>
@@ -147,7 +147,7 @@ const CreateProduct = () => {
               />
 
               {/* Tips */}
-              <div className="p-5 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[#0d0d12]">
+              <div className="rounded-xl border border-onyx-border/70 bg-onyx-surface p-5">
                 <p className="onyx-label mb-3">Listing Tips</p>
                 <ul className="flex flex-col gap-2">
                   {[
@@ -157,9 +157,9 @@ const CreateProduct = () => {
                   ].map((tip, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-2.5 text-[12px] text-[rgba(238,233,225,0.4)] leading-relaxed"
+                      className="flex items-start gap-2.5 text-[12px] leading-relaxed text-onyx-muted/70"
                     >
-                      <span className="text-[#c49a52] mt-0.5 flex-shrink-0">
+                      <span className="mt-0.5 flex-shrink-0 text-onyx-gold">
                         —
                       </span>
                       {tip}

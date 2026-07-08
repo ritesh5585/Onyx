@@ -18,13 +18,12 @@ const Dashboard = () => {
   return (
     <Layout showBackButton={true}>
       {/* ── Page Header ── */}
-      <div className="pt-10 pb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-[rgba(255,255,255,0.06)]">
+      <div className="flex flex-col justify-between gap-6 border-b border-onyx-border/70 pb-10 pt-10 sm:flex-row sm:items-end">
         <div>
           <p className="onyx-eyebrow mb-3">Seller Portal</p>
-          {/* <h1 className="onyx-page-title">Your Listings</h1> */}
           <div className="onyx-divider" />
           {sellerProducts && sellerProducts.length > 0 && (
-            <span className="mt-4 block text-[11px] uppercase tracking-[0.16em] text-[rgba(238,233,225,0.4)]">
+            <span className="mt-4 block text-[11px] uppercase tracking-[0.16em] text-onyx-muted/70">
               {sellerProducts.length}{" "}
               {sellerProducts.length === 1 ? "piece" : "pieces"}
             </span>
@@ -32,7 +31,7 @@ const Dashboard = () => {
         </div>
         <button
           onClick={() => navigate("/seller/create-product")}
-          className="onyx-btn-primary sm:!w-auto sm:px-8"
+          className="onyx-btn-primary sm:w-auto sm:px-8"
         >
           + New Listing
         </button>
@@ -40,7 +39,7 @@ const Dashboard = () => {
 
       {/* ── Product Grid ── */}
       {sellerProducts && sellerProducts.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-12 pt-12 pb-24">
+        <div className="grid grid-cols-2 gap-x-5 gap-y-12 pb-24 pt-12 sm:grid-cols-3 lg:grid-cols-4">
           {sellerProducts.map((product) => (
             <ProductCard
               key={product._id}

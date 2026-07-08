@@ -15,11 +15,8 @@ const ProductOverview = ({
   return (
     <div className="mb-8">
       {/* Title + Actions row */}
-      <div className="flex items-start justify-between gap-4 mb-1">
-        <h1
-          className="text-3xl lg:text-4xl xl:text-5xl font-light leading-[1.1] tracking-tight text-[#eee9e1] flex-1"
-          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-        >
+      <div className="mb-1 flex items-start justify-between gap-4">
+        <h1 className="flex-1 font-serif text-3xl font-light leading-[1.1] tracking-tight text-onyx-text lg:text-4xl xl:text-5xl">
           {title}
         </h1>
         {/* Optional seller actions (Edit / Remove buttons) */}
@@ -31,10 +28,7 @@ const ProductOverview = ({
       </div>
 
       {/* Price */}
-      <p
-        className="text-2xl lg:text-3xl font-light tracking-wide text-[#c49a52] mt-4 mb-5"
-        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-      >
+      <p className="mb-5 mt-4 font-serif text-2xl font-light tracking-wide text-onyx-gold lg:text-3xl">
         {priceCurrency || "INR"}{" "}
         <span className="font-medium">
           {priceAmount?.toLocaleString() || "0"}
@@ -47,10 +41,7 @@ const ProductOverview = ({
       {/* Description */}
       <div>
         <h3 className="onyx-label mb-3">Description</h3>
-        <p
-          className="text-[14px] sm:text-[15px] leading-[1.8] text-[rgba(238,233,225,0.55)] whitespace-pre-line"
-          style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-        >
+        <p className="font-sans whitespace-pre-line text-[14px] leading-[1.8] text-onyx-muted sm:text-[15px]">
           {description}
         </p>
       </div>

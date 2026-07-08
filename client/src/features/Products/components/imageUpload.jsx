@@ -16,10 +16,7 @@ const ImageUpload = ({
       {/* Header */}
       <div className="flex justify-between items-center">
         <label className="onyx-label">Product Images</label>
-        <span
-          className="text-[10px] uppercase tracking-[0.16em] font-semibold"
-          style={{ color: "rgba(238,233,225,0.3)" }}
-        >
+        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-onyx-muted/60">
           {images.length} / {MAX_IMAGES}
         </span>
       </div>
@@ -37,7 +34,7 @@ const ImageUpload = ({
           onKeyDown={(e) => e.key === "Enter" && document.getElementById("fileInput").click()}
           className={`onyx-dropzone ${isDragging ? "active" : "inactive"}`}
         >
-          <div className="w-12 h-12 border border-[rgba(255,255,255,0.1)] rounded-xl flex items-center justify-center bg-[#0d0d12]">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-onyx-border/70 bg-onyx-surface">
             <svg
               width="22"
               height="22"
@@ -54,11 +51,11 @@ const ImageUpload = ({
             </svg>
           </div>
           <div className="text-center">
-            <p className="text-sm text-[rgba(238,233,225,0.55)]">
+            <p className="text-sm text-onyx-muted">
               Drop images here or{" "}
-              <span className="text-[#c49a52] underline underline-offset-2">browse files</span>
+              <span className="text-onyx-gold underline underline-offset-2">browse files</span>
             </p>
-            <p className="text-[10px] text-[rgba(238,233,225,0.25)] mt-1 uppercase tracking-[0.12em]">
+            <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-onyx-muted/50">
               JPG, PNG, WebP — up to {MAX_IMAGES} images
             </p>
           </div>
@@ -81,7 +78,7 @@ const ImageUpload = ({
           {images.map((file, i) => (
             <div
               key={i}
-              className="relative aspect-square rounded-lg overflow-hidden bg-[#0d0d12] group border border-[rgba(255,255,255,0.07)]"
+              className="group relative aspect-square overflow-hidden rounded-lg border border-onyx-border/70 bg-onyx-surface"
             >
               <img
                 src={URL.createObjectURL(file)}
@@ -90,7 +87,7 @@ const ImageUpload = ({
               />
               {/* Cover badge */}
               {i === 0 && (
-                <span className="absolute bottom-2 left-2 text-[9px] bg-[rgba(6,6,10,0.85)] text-[#c49a52] px-2 py-0.5 rounded-sm tracking-[0.14em] uppercase font-semibold border border-[rgba(196,154,82,0.3)]">
+                <span className="absolute bottom-2 left-2 rounded-sm border border-onyx-gold/30 bg-onyx-black/85 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-onyx-gold">
                   Cover
                 </span>
               )}
@@ -99,7 +96,7 @@ const ImageUpload = ({
                 type="button"
                 onClick={() => removeImage(i)}
                 aria-label={`Remove image ${i + 1}`}
-                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[rgba(6,6,10,0.85)] text-[rgba(238,233,225,0.8)] flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-[rgba(239,83,80,0.9)] hover:text-white border border-[rgba(255,255,255,0.1)]"
+                className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full border border-onyx-border/70 bg-onyx-black/85 text-xs text-onyx-muted/80 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-500/90 hover:text-white"
               >
                 ✕
               </button>
@@ -117,10 +114,7 @@ const ImageUpload = ({
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">
-              <span
-                className="w-4 h-4 rounded-full border border-[rgba(6,6,10,0.2)] border-t-[#06060a] animate-spin"
-                style={{ animationDuration: "0.7s" }}
-              />
+              <span className="h-4 w-4 animate-[spin_0.7s_linear_infinite] rounded-full border border-onyx-black/20 border-t-onyx-black" />
               Publishing…
             </span>
           ) : (

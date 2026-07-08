@@ -43,10 +43,10 @@ const CartItem = ({
   }, [variant]);
 
   return (
-    <div className="flex gap-4 sm:gap-5 py-6 sm:py-7 border-b border-[rgba(255,255,255,0.06)] first:border-t">
+    <div className="flex gap-4 border-b border-onyx-border/70 py-6 first:border-t sm:gap-5 sm:py-7">
       {/* ── Image ── */}
       <div
-        className="flex-shrink-0 w-[85px] h-[110px] sm:w-[100px] sm:h-[130px] overflow-hidden bg-[#0d0d12] border border-[rgba(255,255,255,0.07)] cursor-pointer group/img rounded-sm"
+        className="group/img h-[110px] w-[85px] flex-shrink-0 cursor-pointer overflow-hidden rounded-sm border border-onyx-border/70 bg-onyx-surface sm:h-[130px] sm:w-[100px]"
         onClick={() => product._id && navigate(`/product/${product._id}`)}
         role="button"
         tabIndex={0}
@@ -65,8 +65,8 @@ const CartItem = ({
             className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-[9px] uppercase tracking-[0.15em] text-[rgba(238,233,225,0.2)]">
+          <div className="flex h-full w-full items-center justify-center">
+            <span className="text-[9px] uppercase tracking-[0.15em] text-onyx-muted/40">
               No Image
             </span>
           </div>
@@ -77,8 +77,7 @@ const CartItem = ({
       <div className="flex-1 flex flex-col justify-between min-w-0">
         <div className="flex flex-col gap-1.5">
           <span
-            className="text-base sm:text-lg font-light text-[#eee9e1] leading-tight truncate cursor-pointer hover:text-[#c49a52] transition-colors duration-300"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            className="cursor-pointer truncate font-serif text-base leading-tight text-onyx-text transition-colors duration-300 hover:text-onyx-gold sm:text-lg"
             onClick={() => product._id && navigate(`/product/${product._id}`)}
             role="button"
             tabIndex={0}
@@ -92,33 +91,33 @@ const CartItem = ({
           </span>
 
           {variantLabel && (
-            <span className="text-[10px] font-medium tracking-[0.12em] uppercase text-[rgba(238,233,225,0.35)]">
+            <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-onyx-muted/60">
               {variantLabel}
             </span>
           )}
 
-          <span className="text-[12px] font-semibold tracking-[0.1em] uppercase text-[rgba(238,233,225,0.75)] mt-0.5">
+          <span className="mt-0.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-onyx-muted/80">
             {itemCurrency} {(unitPrice * qty).toLocaleString()}
           </span>
 
           <span
-            className={`text-[10px] font-semibold tracking-[0.12em] uppercase mt-0.5 flex items-center gap-1.5 ${
-              isInStock ? "text-[#81c784]" : "text-[#e57373]"
+            className={`mt-0.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] ${
+              isInStock ? "text-emerald-400" : "text-red-400"
             }`}
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isInStock ? "bg-[#81c784]" : "bg-[#e57373]"}`}
+              className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${isInStock ? "bg-emerald-400" : "bg-red-400"}`}
             />
             {isInStock ? `${stock} in stock` : "Out of stock"}
           </span>
         </div>
 
         {/* ── Actions ── */}
-        <div className="flex items-center justify-between gap-4 mt-3 flex-wrap">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
           {/* Quantity stepper */}
-          <div className="flex items-center border border-[rgba(255,255,255,0.08)] rounded-md overflow-hidden bg-[#0d0d12]">
+          <div className="flex items-center overflow-hidden rounded-md border border-onyx-border/70 bg-onyx-surface">
             <button
-              className="w-8 h-8 flex items-center justify-center text-[rgba(238,233,225,0.5)] hover:text-[#c49a52] hover:bg-[rgba(196,154,82,0.07)] disabled:opacity-25 transition-all border-none bg-transparent cursor-pointer text-lg leading-none"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center border-none bg-transparent text-lg leading-none text-onyx-muted/70 transition-all hover:bg-onyx-gold/10 hover:text-onyx-gold disabled:opacity-25"
               disabled={qty <= 1}
               aria-label="Decrease quantity"
               onClick={async () => {
@@ -133,7 +132,7 @@ const CartItem = ({
             >
               −
             </button>
-            <span className="w-9 text-center text-[13px] font-semibold text-[#eee9e1] border-x border-[rgba(255,255,255,0.08)] py-1.5">
+            <span className="w-9 border-x border-onyx-border/70 py-1.5 text-center text-[13px] font-semibold text-onyx-text">
               {qty}
             </span>
             <button
@@ -156,7 +155,7 @@ const CartItem = ({
 
           {/* Remove */}
           <button
-            className="flex items-center gap-1.5 bg-transparent border border-[rgba(239,83,80,0.2)] rounded-md px-3 py-1.5 text-[10px] font-semibold tracking-[0.1em] uppercase text-[#e57373] cursor-pointer hover:bg-[rgba(239,83,80,0.07)] hover:border-[rgba(239,83,80,0.45)] transition-all"
+            className="flex cursor-pointer items-center gap-1.5 rounded-md border border-red-400/20 bg-transparent px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-red-400 transition-all hover:border-red-400/45 hover:bg-red-400/10"
             onClick={async () => {
               if (!item._id) return;
               try {
@@ -179,69 +178,60 @@ const CartItem = ({
 // OrderSummary
 // ─────────────────────────────────────────────────────────────────────────────
 const OrderSummary = ({ count, subtotal, shipping, total, currency }) => (
-  <div className="bg-[#0d0d12] border border-[rgba(255,255,255,0.07)] rounded-2xl p-6 sm:p-8 sticky top-20">
-    <h2
-      className="text-xl font-light text-[#eee9e1] tracking-tight mb-6 pb-5 border-b border-[rgba(255,255,255,0.07)]"
-      style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-    >
+  <div className="sticky top-20 rounded-2xl border border-onyx-border/70 bg-onyx-surface p-6 sm:p-8">
+    <h2 className="mb-6 border-b border-onyx-border/70 pb-5 font-serif text-xl font-light tracking-tight text-onyx-text">
       Order Summary
     </h2>
 
     <div className="flex flex-col gap-0">
-      <div className="flex justify-between items-center py-3 border-b border-[rgba(255,255,255,0.05)]">
-        <span className="text-[12px] text-[rgba(238,233,225,0.45)] tracking-wide">
+      <div className="flex items-center justify-between border-b border-onyx-border/60 py-3">
+        <span className="text-[12px] tracking-wide text-onyx-muted/70">
           Subtotal ({count} {count === 1 ? "item" : "items"})
         </span>
-        <span className="text-[13px] font-semibold text-[#eee9e1]">
+        <span className="text-[13px] font-semibold text-onyx-text">
           {currency} {subtotal.toLocaleString()}
         </span>
       </div>
 
-      <div className="flex justify-between items-center py-3">
-        <span className="text-[12px] text-[rgba(238,233,225,0.45)] tracking-wide">
+      <div className="flex items-center justify-between py-3">
+        <span className="text-[12px] tracking-wide text-onyx-muted/70">
           Shipping
         </span>
         <span
-          className={`text-[13px] font-semibold ${shipping === 0 ? "text-[#81c784]" : "text-[#eee9e1]"}`}
+          className={`text-[13px] font-semibold ${shipping === 0 ? "text-emerald-400" : "text-onyx-text"}`}
         >
           {shipping === 0 ? "Free" : `${currency} ${shipping}`}
         </span>
       </div>
     </div>
 
-    <div className="h-px bg-[rgba(255,255,255,0.07)] my-1" />
+    <div className="my-1 h-px bg-onyx-border/70" />
 
-    <div className="flex justify-between items-center pt-4 pb-6">
-      <span
-        className="text-base font-light text-[#eee9e1]"
-        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-      >
+    <div className="flex items-center justify-between pb-6 pt-4">
+      <span className="font-serif text-base font-light text-onyx-text">
         Total
       </span>
-      <span
-        className="text-2xl font-semibold text-[#c49a52] tracking-tight"
-        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-      >
+      <span className="font-serif text-2xl font-semibold tracking-tight text-onyx-gold">
         {currency} {total.toLocaleString()}
       </span>
     </div>
 
-    <button className="onyx-btn-primary w-full flex items-center justify-between px-6">
+    <button className="onyx-btn-primary flex w-full items-center justify-between px-6">
       <span>Proceed to Checkout</span>
       <span className="text-lg leading-none">→</span>
     </button>
 
     <NavLink
       to="/"
-      className="onyx-btn-secondary block text-center mt-3 !text-[11px] !tracking-[0.1em] uppercase"
+      className="onyx-btn-secondary mt-3 block text-center text-[11px] uppercase tracking-[0.1em]"
     >
       Continue Shopping
     </NavLink>
 
     {/* Trust badge */}
-    <div className="flex items-center gap-2.5 mt-4 px-4 py-3 bg-[rgba(255,255,255,0.025)] border border-[rgba(255,255,255,0.06)] rounded-xl">
-      <span className="text-[#c49a52] text-sm flex-shrink-0">🔒</span>
-      <span className="text-[11px] text-[rgba(238,233,225,0.35)] tracking-wide leading-relaxed">
+    <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-onyx-border/60 bg-white/5 px-4 py-3">
+      <span className="flex-shrink-0 text-sm text-onyx-gold">🔒</span>
+      <span className="text-[11px] leading-relaxed tracking-wide text-onyx-muted/60">
         Secure checkout · 256-bit SSL encryption
       </span>
     </div>
@@ -306,14 +296,14 @@ const Cart = () => {
       )}
 
       <Layout showBackButton={true}>
-        <div className="pt-8 pb-24 min-h-[60vh]">
+        <div className="min-h-[60vh] pb-24 pt-8">
           {/* ── Header ── */}
-          <div className="mb-10 pb-8 border-b border-[rgba(255,255,255,0.06)]">
+          <div className="mb-10 border-b border-onyx-border/70 pb-8">
             <p className="onyx-eyebrow mb-3">Shopping Bag</p>
             <h1 className="onyx-page-title">Your Cart</h1>
             <div className="onyx-divider" />
             {!isEmpty && (
-              <span className="mt-4 block text-[11px] uppercase tracking-[0.18em] font-semibold text-[rgba(238,233,225,0.4)]">
+              <span className="mt-4 block text-[11px] font-semibold uppercase tracking-[0.18em] text-onyx-muted/70">
                 {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
               </span>
             )}
@@ -329,7 +319,7 @@ const Cart = () => {
               cta={{ label: "Explore Collection", to: "/" }}
             />
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 lg:gap-12 items-start">
+            <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_360px] lg:gap-12">
               {/* Items list */}
               <div className="flex flex-col">
                 {cartItems.map((item, i) => (
