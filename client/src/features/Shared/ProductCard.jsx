@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useRef } from "react";
+import { animateCardHover } from "./animations";
 
 const ProductCard = ({ product, onClick }) => {
+  const cardRef = useRef(null);
   const imageUrl = product.images?.length > 0 ? product.images[0].url : null;
 
   return (
     <article
+      ref={cardRef}
       role="button"
       tabIndex={0}
       onClick={onClick}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick?.()}
+      onMouseEnter={() => animateCardHover(cardRef.current, true)}
+      onMouseLeave={() => animateCardHover(cardRef.current, false)}
       className="group flex cursor-pointer flex-col rounded-sm outline-none focus-visible:ring-1 focus-visible:ring-onyx-gold"
       aria-label={product.title}
     >
@@ -18,7 +23,7 @@ const ProductCard = ({ product, onClick }) => {
             src={imageUrl}
             alt={product.title}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+            className="h-full w-full object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
@@ -27,11 +32,11 @@ const ProductCard = ({ product, onClick }) => {
             </span>
           </div>
         )}
-        <div className="absolute inset-0 bg-onyx-bg/0 opacity-0 transition-opacity duration-500 group-hover:opacity-10" />
+        <div className="card-overlay absolute inset-0 bg-onyx-bg/0 opacity-0" />
       </div>
 
       <div className="flex flex-col gap-1 px-0.5">
-        <h3 className="line-clamp-1 font-serif text-sm leading-snug text-onyx-text transition-colors duration-300 sm:text-base group-hover:text-onyx-gold">
+        <h3 className="line-clamp-1 font-serif text-sm leading-snug text-onyx-text sm:text-base">
           {product.title}
         </h3>
         <p className="hidden text-[11px] leading-relaxed text-onyx-muted/70 line-clamp-1 sm:block">

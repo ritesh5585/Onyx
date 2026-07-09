@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, NavLink } from "react-router";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import Layout from "../../Shared/Layout";
 import ProductCard from "../../Shared/ProductCard";
 import EmptyState from "../../Shared/EmptyState";
+import { animateHeroContent, animateStaggerFadeUp, animateFadeUp } from "../../Shared/animations";
 
 const CATEGORIES = [
   { label: "Outerwear", sub: "Coats & Jackets" },
@@ -24,8 +25,10 @@ const HERO_IMAGES = [
 
 const Hero = ({ onShop, onExplore }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const contentRef = useRef(null);
 
   useEffect(() => {
+    animateHeroContent(contentRef.current);
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % HERO_IMAGES.length);
     }, 3000);
@@ -49,7 +52,7 @@ const Hero = ({ onShop, onExplore }) => {
       ))}
       <div className="onyx-hero-overlay absolute inset-0 z-0" />
 
-      <div className="relative z-10 max-w-2xl">
+      <div ref={contentRef} className="relative z-10 max-w-2xl">
         <p className="onyx-eyebrow mb-5">New Season — 2026</p>
         <h1 className="onyx-page-title mb-6">
           Dressed in
@@ -88,10 +91,19 @@ const Hero = ({ onShop, onExplore }) => {
   );
 };
 
-const CategoriesStrip = () => (
-  <section className="onyx-section-sm border-y border-onyx-border/70 bg-onyx-bg px-5 sm:px-8 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20">
-    <div className="grid grid-cols-3 gap-0 md:grid-cols-6">
-      {CATEGORIES.map((cat, i) => (
+const CategoriesStrip = () => {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      animateStaggerFadeUp(containerRef.current.children);
+    }
+  }, []);
+
+  return (
+    <section className="onyx-section-sm border-y border-onyx-border/70 bg-onyx-bg px-5 sm:px-8 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20">
+      <div ref={containerRef} className="grid grid-cols-3 gap-0 md:grid-cols-6">
+        {CATEGORIES.map((cat, i) => (
         <div
           key={cat.label}
           className={`group flex cursor-pointer flex-col gap-1 px-4 py-6 transition-colors duration-300 hover:bg-onyx-gold/10 ${
@@ -108,15 +120,22 @@ const CategoriesStrip = () => (
       ))}
     </div>
   </section>
-);
+  );
+};
 
 const FeaturedEditorial = ({ products, onNavigate }) => {
+  const sectionRef = useRef(null);
+  
+  useEffect(() => {
+    animateFadeUp(sectionRef.current);
+  }, []);
+
   if (!products || products.length < 2) return null;
   const [hero, ...rest] = products.slice(0, 4);
   const heroImg = hero.images?.[0]?.url;
 
   return (
-    <section className="onyx-section">
+    <section ref={sectionRef} className="onyx-section">
       <div className="mb-10 flex items-end justify-between sm:mb-14">
         <div>
           <p className="onyx-eyebrow mb-3">Curated Selection</p>
@@ -184,33 +203,43 @@ const FeaturedEditorial = ({ products, onNavigate }) => {
   );
 };
 
-const ProductGrid = ({ products, onNavigate }) => (
-  <section
-    id="all-products"
-    className="onyx-section border-t border-onyx-border/60"
-  >
-    <div className="mb-10 flex items-end justify-between sm:mb-14">
-      <div>
-        <p className="onyx-eyebrow mb-3">The Archive</p>
-        <h2 className="onyx-section-title">All Products</h2>
-        <div className="onyx-divider" />
-      </div>
-      <span className="text-[11px] uppercase tracking-[0.12em] text-onyx-muted/60">
-        {products.length} {products.length === 1 ? "piece" : "pieces"}
-      </span>
-    </div>
+const ProductGrid = ({ products, onNavigate }) => {
+  const gridRef = useRef(null);
 
-    <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-      {products.map((product) => (
-        <ProductCard
-          key={product._id}
-          product={product}
-          onClick={() => onNavigate(product._id)}
-        />
-      ))}
-    </div>
-  </section>
-);
+  useEffect(() => {
+    if (gridRef.current) {
+      animateStaggerFadeUp(gridRef.current.children);
+    }
+  }, [products]);
+
+  return (
+    <section
+      id="all-products"
+      className="onyx-section border-t border-onyx-border/60"
+    >
+      <div className="mb-10 flex items-end justify-between sm:mb-14">
+        <div>
+          <p className="onyx-eyebrow mb-3">The Archive</p>
+          <h2 className="onyx-section-title">All Products</h2>
+          <div className="onyx-divider" />
+        </div>
+        <span className="text-[11px] uppercase tracking-[0.12em] text-onyx-muted/60">
+          {products.length} {products.length === 1 ? "piece" : "pieces"}
+        </span>
+      </div>
+
+      <div ref={gridRef} className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        {products.map((product) => (
+          <ProductCard
+            key={product._id}
+            product={product}
+            onClick={() => onNavigate(product._id)}
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
 
 const SellerCTA = () => (
   <section className="onyx-section-sm border-t border-onyx-border/60">

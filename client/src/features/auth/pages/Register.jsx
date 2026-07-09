@@ -72,96 +72,100 @@ const Register = () => {
             </p>
           )}
 
-          {/* Full Name */}
-          <div className="auth-field">
-            <label className="auth-label" htmlFor="r-name">
-              Full Name
-            </label>
-            <div className="auth-input-wrap">
-              <span className="auth-input-icon">
-                <IcoUser />
-              </span>
-              <input
-                id="r-name"
-                className="auth-input"
-                type="text"
-                name="fullname"
-                value={form.fullname}
-                onChange={onChange}
-                placeholder="Your full name"
-                autoComplete="name"
-                required
-              />
+          <div className="auth-field-group">
+            {/* Full Name */}
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="r-name">
+                Full Name
+              </label>
+              <div className="auth-input-wrap">
+                <span className="auth-input-icon">
+                  <IcoUser />
+                </span>
+                <input
+                  id="r-name"
+                  className="auth-input"
+                  type="text"
+                  name="fullname"
+                  value={form.fullname}
+                  onChange={onChange}
+                  placeholder="Your full name"
+                  autoComplete="name"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="r-contact">
+                Contact
+              </label>
+              <div className="auth-input-wrap">
+                <span className="auth-input-icon">
+                  <IcoPhone />
+                </span>
+                <input
+                  id="r-contact"
+                  className="auth-input"
+                  type="tel"
+                  name="contact"
+                  value={form.contact}
+                  onChange={onChange}
+                  placeholder="99999 99999"
+                  autoComplete="tel"
+                  inputMode="numeric"
+                  required
+                />
+              </div>
             </div>
           </div>
 
-          {/* Email */}
-          <div className="auth-field">
-            <label className="auth-label" htmlFor="r-email">
-              Email
-            </label>
-            <div className="auth-input-wrap">
-              <span className="auth-input-icon">
-                <IcoMail />
-              </span>
-              <input
-                id="r-email"
-                className="auth-input"
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={onChange}
-                placeholder="name@example.com"
-                autoComplete="email"
-                required
-              />
+          <div className="auth-field-group">
+            {/* Email */}
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="r-email">
+                Email
+              </label>
+              <div className="auth-input-wrap">
+                <span className="auth-input-icon">
+                  <IcoMail />
+                </span>
+                <input
+                  id="r-email"
+                  className="auth-input"
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={onChange}
+                  placeholder="name@example.com"
+                  autoComplete="email"
+                  required
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Contact */}
-          <div className="auth-field">
-            <label className="auth-label" htmlFor="r-contact">
-              Contact Number
-            </label>
-            <div className="auth-input-wrap">
-              <span className="auth-input-icon">
-                <IcoPhone />
-              </span>
-              <input
-                id="r-contact"
-                className="auth-input"
-                type="tel"
-                name="contact"
-                value={form.contact}
-                onChange={onChange}
-                placeholder="99999 99999"
-                autoComplete="tel"
-                inputMode="numeric"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Password */}
-          <div className="auth-field">
-            <label className="auth-label" htmlFor="r-pass">
-              Password
-            </label>
-            <div className="auth-input-wrap">
-              <span className="auth-input-icon">
-                <IcoLock />
-              </span>
-              <input
-                id="r-pass"
-                className="auth-input"
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={onChange}
-                placeholder="Create a strong password"
-                autoComplete="new-password"
-                required
-              />
+            {/* Password */}
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="r-pass">
+                Password
+              </label>
+              <div className="auth-input-wrap">
+                <span className="auth-input-icon">
+                  <IcoLock />
+                </span>
+                <input
+                  id="r-pass"
+                  className="auth-input"
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={onChange}
+                  placeholder="Strong password"
+                  autoComplete="new-password"
+                  required
+                />
+              </div>
             </div>
           </div>
 
