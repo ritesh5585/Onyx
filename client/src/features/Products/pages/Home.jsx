@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, NavLink } from "react-router";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
@@ -15,45 +15,78 @@ const CATEGORIES = [
   { label: "Accessories", sub: "Bags & Jewellery" },
 ];
 
-const Hero = ({ onShop, onExplore }) => (
-  <section
-    className="onyx-hero-image relative flex min-h-[92vh] items-end overflow-hidden px-5 pb-16 pt-12 sm:px-8 sm:pb-24 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20"
-    aria-label="Hero"
-  >
-    <div className="relative z-10 max-w-2xl">
-      <p className="onyx-eyebrow mb-5">New Season — 2026</p>
-      <h1 className="onyx-page-title mb-6">
-        Dressed in
-        <br />
-        <em className="not-italic text-onyx-gold">nothing but</em>
-        <br />
-        intention.
-      </h1>
-      <p className="mb-10 max-w-md text-[15px] leading-relaxed text-onyx-muted">
-        Curated luxury fashion. Every piece, an expression. Discover the
-        archive.
-      </p>
-      <div className="flex flex-wrap gap-4">
-        <button onClick={onShop} className="onyx-btn-primary w-auto px-10 py-4">
-          Shop Collection
-        </button>
-        <button
-          onClick={onExplore}
-          className="onyx-btn-secondary w-auto px-10 py-4"
-        >
-          Explore Archive
-        </button>
-      </div>
-    </div>
+const HERO_IMAGES = [
+  "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1200&auto=format&fit=crop",
+];
 
-    <div className="absolute bottom-8 right-8 hidden flex-col items-center gap-2 opacity-30 md:flex">
-      <div className="h-12 w-px bg-onyx-text" />
-      <span className="origin-bottom rotate-90 text-[9px] uppercase tracking-[0.2em] text-onyx-text">
-        Scroll
-      </span>
-    </div>
-  </section>
-);
+const Hero = ({ onShop, onExplore }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section
+      className="relative flex min-h-[92vh] items-end overflow-hidden px-5 pb-16 pt-12 sm:px-8 sm:pb-24 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20 bg-onyx-bg"
+      aria-label="Hero"
+    >
+      {HERO_IMAGES.map((img, index) => (
+        <img
+          key={img}
+          src={img}
+          alt={`Hero ${index + 1}`}
+          className={`absolute inset-0 h-full w-full object-cover object-[center_30%] transition-opacity duration-1000 ease-in-out ${
+            index === currentImageIndex ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      ))}
+      <div className="onyx-hero-overlay absolute inset-0 z-0" />
+
+      <div className="relative z-10 max-w-2xl">
+        <p className="onyx-eyebrow mb-5">New Season — 2026</p>
+        <h1 className="onyx-page-title mb-6">
+          Dressed in
+          <br />
+          <em className="not-italic text-onyx-gold">nothing but</em>
+          <br />
+          intention.
+        </h1>
+        <p className="mb-10 max-w-md text-[15px] leading-relaxed text-onyx-muted">
+          Curated luxury fashion. Every piece, an expression. Discover the
+          archive.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <button
+            onClick={onShop}
+            className="onyx-btn-primary w-auto px-10 py-4"
+          >
+            Shop Collection
+          </button>
+          <button
+            onClick={onExplore}
+            className="onyx-btn-secondary w-auto px-10 py-4"
+          >
+            Explore Archive
+          </button>
+        </div>
+      </div>
+
+      <div className="absolute bottom-8 right-8 hidden flex-col items-center gap-2 opacity-30 md:flex">
+        <div className="h-12 w-px bg-onyx-text" />
+        <span className="origin-bottom rotate-90 text-[9px] uppercase tracking-[0.2em] text-onyx-text">
+          Scroll
+        </span>
+      </div>
+    </section>
+  );
+};
 
 const CategoriesStrip = () => (
   <section className="onyx-section-sm border-y border-onyx-border/70 bg-onyx-bg px-5 sm:px-8 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20">
