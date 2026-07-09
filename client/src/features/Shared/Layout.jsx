@@ -32,7 +32,7 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
       {/* ── Navbar — full-width with blur, content inside container ── */}
       <header
         className={`onyx-navbar sticky top-0 z-40 w-full ${
-          showLinks ? "onyx-navbar-with-links" : "onyx-navbar-no-links"
+          showLinks ? "justify-between" : "gap-4"
         }`}
       >
         <div
@@ -44,7 +44,7 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
           {showLinks ? (
             <NavLink
               to="/"
-              className="onyx-nav-title text-[#eee9e1] no-underline"
+              className="text-xl font-semibold uppercase tracking-[0.08em] text-[#eee9e1] font-serif no-underline"
             >
               ONYX
             </NavLink>
@@ -53,7 +53,7 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
               {showBackButton && (
                 <button
                   onClick={() => navigate(-1)}
-                  className="onyx-nav-back"
+                  className="text-xl leading-none flex items-center justify-center w-9 h-9 rounded-full border border-white/5 text-[#eee9e1]/35 transition-all duration-300 hover:text-[#c49a52] hover:border-[#c49a52]/35 hover:bg-[#c49a52]/5"
                   type="button"
                   aria-label="Go back"
                 >
@@ -62,7 +62,7 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
               )}
               <NavLink
                 to="/"
-                className="onyx-nav-title text-[#eee9e1] no-underline tracking-[0.1em]"
+                className="text-xl font-semibold uppercase tracking-[0.08em] text-[#eee9e1] font-serif no-underline"
               >
                 ONYX
               </NavLink>
@@ -71,7 +71,7 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
 
           {/* Right — nav links */}
           {showLinks && (
-            <nav className="onyx-nav-menu" aria-label="Main navigation">
+            <nav className="flex items-center gap-6 text-[11px] font-medium tracking-[0.12em] uppercase" aria-label="Main navigation">
               {!user && (
                 <>
                   <NavLink to="/register" className="onyx-nav-link">

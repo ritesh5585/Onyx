@@ -32,7 +32,7 @@ const ImageUpload = ({
           tabIndex={0}
           aria-label="Upload product images"
           onKeyDown={(e) => e.key === "Enter" && document.getElementById("fileInput").click()}
-          className={`onyx-dropzone ${isDragging ? "active" : "inactive"}`}
+          className={`border px-8 py-16 lg:py-20 flex flex-col items-center gap-4 cursor-pointer transition-all duration-300 rounded-xl bg-[#0a0a10] ${isDragging ? "border-[#c49a52] border-solid bg-[#c49a52]/5 shadow-[0_0_0_3px_rgba(196,154,82,0.1)]" : "border-white/10 border-dashed hover:border-[#c49a52]/50 hover:bg-[#c49a52]/5"}`}
         >
           <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-onyx-border/70 bg-onyx-surface">
             <svg

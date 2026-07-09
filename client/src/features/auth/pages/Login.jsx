@@ -36,18 +36,18 @@ const Login = () => {
   return (
     <AuthLayout headline="Dress for" sub="the moment." eyebrow="Collections">
       <button
-        className="auth-close"
+        className="absolute top-6 right-7 w-9 h-9 rounded-full border border-white/10 bg-transparent text-[#eee9e1]/45 flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-white/15 hover:text-[#eee9e1] hover:bg-[#13131a]"
         onClick={() => navigate("/")}
         aria-label="Close"
       >
         <IcoClose />
       </button>
 
-      <div className="auth-panel__inner">
+      <div className="max-w-[360px] w-full mx-auto">
         <p className="auth-panel__eyebrow">Existing Member</p>
         <h2 className="auth-panel__title">Welcome Back!</h2>
 
-        <form className="auth-form" onSubmit={onSubmit} noValidate>
+        <form className="flex flex-col gap-3" onSubmit={onSubmit} noValidate>
           {error && (
             <p className="auth-error" role="alert">
               {error}
@@ -79,13 +79,13 @@ const Login = () => {
 
           {/* Password */}
           <div className="auth-field">
-            <div className="auth-field__row">
+            <div className="flex items-center justify-between">
               <label className="auth-label" htmlFor="l-pass">
                 Password
               </label>
               <a
                 href="#"
-                className="auth-forgot"
+                className="text-[0.68rem] text-[#eee9e1]/22 no-underline transition-colors hover:text-[#c49a52]"
                 onClick={(e) => e.preventDefault()}
               >
                 Forgot?
@@ -117,9 +117,9 @@ const Login = () => {
             disabled={loading}
           >
             <span>
-              {loading ? <span className="auth-spinner" /> : "Continue"}
+              {loading ? <span className="inline-block w-4 h-4 border-[1.5px] border-black/20 border-t-black rounded-full animate-[spin_0.7s_linear_infinite]" /> : "Continue"}
             </span>
-            {!loading && <span className="auth-btn__arrow">→</span>}
+            {!loading && <span className="text-[1.1rem] leading-none">→</span>}
           </button>
 
           <GoogleButton />
@@ -127,7 +127,7 @@ const Login = () => {
 
         <p className="auth-footer">
           Don't have an account?{" "}
-          <Link to="/register" className="auth-footer__link">
+          <Link to="/register" className="text-[#eee9e1] font-semibold no-underline border-b border-[#eee9e1]/20 pb-[1px] transition-colors hover:text-[#c49a52] hover:border-[#c49a52]">
             Register Now
           </Link>
         </p>

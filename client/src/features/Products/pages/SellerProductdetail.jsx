@@ -300,7 +300,7 @@ const SellerProductdetail = () => {
                     value={editForm.description}
                     onChange={(e) => handleInputChange(e, setEditForm)}
                     rows={5}
-                    className="onyx-textarea"
+                    className="w-full outline-none py-3 px-4 text-sm resize-none leading-relaxed border border-white/[0.08] rounded-lg bg-[#0d0d12] text-[#eee9e1] font-sans transition-all duration-300 placeholder:text-[#eee9e1]/22 hover:border-white/[0.14] focus:border-[#c49a52] focus:shadow-[0_0_0_3px_rgba(196,154,82,0.12)]"
                     disabled={saving}
                   />
                 </div>
@@ -357,7 +357,7 @@ const SellerProductdetail = () => {
                   Product Variants
                 </h2>
                 {detail.variants?.length > 0 && (
-                  <span className="onyx-tag">{detail.variants.length} variants</span>
+                  <span className="inline-flex items-center px-3 py-1 text-[10px] uppercase tracking-[0.18em] font-semibold rounded-full border border-white/10 text-[#eee9e1]/55 bg-white/5">{detail.variants.length} variants</span>
                 )}
               </div>
 

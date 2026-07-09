@@ -54,27 +54,27 @@ const Register = () => {
   return (
     <AuthLayout headline="Your style," sub="your story." eyebrow="New Member">
       <button
-        className="auth-close"
+        className="absolute top-6 right-7 w-9 h-9 rounded-full border border-white/10 bg-transparent text-[#eee9e1]/45 flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-white/15 hover:text-[#eee9e1] hover:bg-[#13131a]"
         onClick={() => navigate("/")}
         aria-label="Close"
       >
         <IcoClose />
       </button>
 
-      <div className="auth-panel__inner">
-        <p className="auth-panel__eyebrow">Create Account</p>
-        <h2 className="auth-panel__title">Join Onyx</h2>
+      <div className="max-w-[360px] w-full mx-auto">
+        <p className="text-[0.6rem] font-semibold tracking-[0.24em] uppercase text-[#c49a52] mb-2">Create Account</p>
+        <h2 className="font-serif text-[clamp(1.75rem,2.6vw,2.25rem)] font-normal text-[#eee9e1] leading-[1.2] tracking-[-0.01em] mb-5">Join Onyx</h2>
 
-        <form className="auth-form" onSubmit={onSubmit} noValidate>
+        <form className="flex flex-col gap-3" onSubmit={onSubmit} noValidate>
           {error && (
-            <p className="auth-error" role="alert">
+            <p className="bg-red-500/10 border border-red-500/20 rounded-[10px] p-3 text-[0.8rem] text-red-400 mb-[18px] leading-[1.6] flex items-start gap-2 before:content-['✕'] before:shrink-0 before:mt-[1px] before:opacity-70" role="alert">
               {error}
             </p>
           )}
 
-          <div className="auth-field-group">
+          <div className="flex max-[480px]:flex-col min-[481px]:flex-row gap-3 w-full">
             {/* Full Name */}
-            <div className="auth-field">
+            <div className="auth-field flex-1 min-w-0">
               <label className="auth-label" htmlFor="r-name">
                 Full Name
               </label>
@@ -97,7 +97,7 @@ const Register = () => {
             </div>
 
             {/* Contact */}
-            <div className="auth-field">
+            <div className="auth-field flex-1 min-w-0">
               <label className="auth-label" htmlFor="r-contact">
                 Contact
               </label>
@@ -121,9 +121,9 @@ const Register = () => {
             </div>
           </div>
 
-          <div className="auth-field-group">
+          <div className="flex max-[480px]:flex-col min-[481px]:flex-row gap-3 w-full">
             {/* Email */}
-            <div className="auth-field">
+            <div className="auth-field flex-1 min-w-0">
               <label className="auth-label" htmlFor="r-email">
                 Email
               </label>
@@ -146,7 +146,7 @@ const Register = () => {
             </div>
 
             {/* Password */}
-            <div className="auth-field">
+            <div className="auth-field flex-1 min-w-0">
               <label className="auth-label" htmlFor="r-pass">
                 Password
               </label>
@@ -170,7 +170,7 @@ const Register = () => {
           </div>
 
           {/* Seller checkbox */}
-          <label className="auth-checkbox-row" htmlFor="r-seller">
+          <label className="flex items-center gap-[11px] bg-[#13131a] border border-white/10 rounded-[10px] py-[13px] px-[14px] cursor-pointer transition-colors hover:border-white/20" htmlFor="r-seller">
             <input
               id="r-seller"
               className="auth-checkbox"
@@ -179,7 +179,7 @@ const Register = () => {
               checked={form.isSeller}
               onChange={onChange}
             />
-            <span className="auth-checkbox-label">
+            <span className="text-[0.82rem] text-[#eee9e1]/45 cursor-pointer select-none">
               Register as a Seller / Merchant
             </span>
           </label>
@@ -192,17 +192,17 @@ const Register = () => {
             disabled={loading}
           >
             <span>
-              {loading ? <span className="auth-spinner" /> : "Create Account"}
+              {loading ? <span className="inline-block w-4 h-4 border-[1.5px] border-black/20 border-t-black rounded-full animate-[spin_0.7s_linear_infinite]" /> : "Create Account"}
             </span>
-            {!loading && <span className="auth-btn__arrow">→</span>}
+            {!loading && <span className="text-[1.1rem] leading-none">→</span>}
           </button>
 
           <GoogleButton />
         </form>
 
-        <p className="auth-footer">
+        <p className="mt-6 text-center text-[0.78rem] text-[#eee9e1]/20">
           Already have an account?{" "}
-          <Link to="/login" className="auth-footer__link">
+          <Link to="/login" className="text-[#eee9e1] font-semibold no-underline border-b border-[#eee9e1]/20 pb-[1px] transition-colors hover:text-[#c49a52] hover:border-[#c49a52]">
             Sign In
           </Link>
         </p>

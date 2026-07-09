@@ -50,7 +50,7 @@ const Hero = ({ onShop, onExplore }) => {
           }`}
         />
       ))}
-      <div className="onyx-hero-overlay absolute inset-0 z-0" />
+      <div className="bg-[linear-gradient(to_top,rgba(6,6,10,1)_0%,rgba(6,6,10,0.75)_35%,rgba(6,6,10,0.25)_70%,transparent_100%),linear-gradient(to_right,rgba(6,6,10,0.6)_0%,transparent_60%)] absolute inset-0 z-0" />
 
       <div ref={contentRef} className="relative z-10 max-w-2xl">
         <p className="onyx-eyebrow mb-5">New Season — 2026</p>
@@ -101,7 +101,7 @@ const CategoriesStrip = () => {
   }, []);
 
   return (
-    <section className="onyx-section-sm border-y border-onyx-border/70 bg-onyx-bg px-5 sm:px-8 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20">
+    <section className="py-12 lg:py-16 border-y border-onyx-border/70 bg-onyx-bg px-5 sm:px-8 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20">
       <div ref={containerRef} className="grid grid-cols-3 gap-0 md:grid-cols-6">
         {CATEGORIES.map((cat, i) => (
         <div
@@ -139,7 +139,7 @@ const FeaturedEditorial = ({ products, onNavigate }) => {
       <div className="mb-10 flex items-end justify-between sm:mb-14">
         <div>
           <p className="onyx-eyebrow mb-3">Curated Selection</p>
-          <h2 className="onyx-section-title">Featured Pieces</h2>
+          <h2 className="font-serif text-3xl lg:text-4xl font-light leading-tight tracking-tight text-[#eee9e1]">Featured Pieces</h2>
           <div className="onyx-divider" />
         </div>
         <button
@@ -220,7 +220,7 @@ const ProductGrid = ({ products, onNavigate }) => {
       <div className="mb-10 flex items-end justify-between sm:mb-14">
         <div>
           <p className="onyx-eyebrow mb-3">The Archive</p>
-          <h2 className="onyx-section-title">All Products</h2>
+          <h2 className="font-serif text-3xl lg:text-4xl font-light leading-tight tracking-tight text-[#eee9e1]">All Products</h2>
           <div className="onyx-divider" />
         </div>
         <span className="text-[11px] uppercase tracking-[0.12em] text-onyx-muted/60">
@@ -242,8 +242,8 @@ const ProductGrid = ({ products, onNavigate }) => {
 };
 
 const SellerCTA = () => (
-  <section className="onyx-section-sm border-t border-onyx-border/60">
-    <div className="onyx-card-elevated flex flex-col items-start justify-between gap-8 rounded-2xl p-10 sm:p-14 lg:flex-row lg:items-center lg:p-20">
+  <section className="py-12 lg:py-16 border-t border-onyx-border/60">
+    <div className="bg-[#13131a] border border-white/5 rounded-xl flex flex-col items-start justify-between gap-8 p-10 sm:p-14 lg:flex-row lg:items-center lg:p-20">
       <div>
         <p className="onyx-eyebrow mb-3">Partner with Onyx</p>
         <h2 className="max-w-md font-serif text-3xl font-light leading-tight text-onyx-text lg:text-4xl">

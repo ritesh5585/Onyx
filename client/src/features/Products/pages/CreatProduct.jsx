@@ -136,7 +136,7 @@ const CreateProduct = () => {
                   onChange={handleChange}
                   placeholder="Describe the product — material, fit, silhouette, care instructions…"
                   rows={7}
-                  className="onyx-textarea"
+                  className="w-full outline-none py-3 px-4 text-sm resize-none leading-relaxed border border-white/[0.08] rounded-lg bg-[#0d0d12] text-[#eee9e1] font-sans transition-all duration-300 placeholder:text-[#eee9e1]/22 hover:border-white/[0.14] focus:border-[#c49a52] focus:shadow-[0_0_0_3px_rgba(196,154,82,0.12)]"
                 />
               </div>
 

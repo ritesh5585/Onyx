@@ -9,7 +9,7 @@ export const GoogleButton = ({ label = "Continue with Google" }) => {
     <button
       type="button"
       id="google-login-btn"
-      className="auth-google-btn"
+      className="flex items-center justify-center gap-[10px] w-full bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] text-[#eee9e1] border border-white/5 rounded-[12px] py-[13px] px-[16px] text-[0.875rem] font-medium font-sans cursor-pointer transition-all duration-300 hover:border-white/15 hover:bg-[rgba(255,255,255,0.06)] hover:-translate-y-[1px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.2)] [&>svg]:shrink-0"
       onClick={handleGoogleLogin}
     >
       <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
