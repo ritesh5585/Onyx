@@ -1,3 +1,4 @@
+// const user = useSelector((state) => state.auth.user);
 import React, { useEffect, useState, useMemo } from "react";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
@@ -26,6 +27,7 @@ const ProductDetails = () => {
   };
 
   const detail = useSelector((state) => state.product.details);
+  const user = useSelector((state) => state.auth.user);
   const { handleProductDetails } = useProduct();
   const { handleAddtoCart } = useCart();
 
@@ -111,6 +113,11 @@ const ProductDetails = () => {
         : "Out of stock";
 
   const onAddToCart = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
     if (isOutOfStock) return;
     setIsAdding(true);
     try {
@@ -130,6 +137,11 @@ const ProductDetails = () => {
   };
 
   const onBuyNow = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
     if (isOutOfStock) return;
     try {
       await onAddToCart();
@@ -141,12 +153,17 @@ const ProductDetails = () => {
 
   return (
     <>
-      {toast.visible && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast((prev) => ({ ...prev, visible: false }))} />}
+      {toast.visible && (
+        <Toast
+          msg={toast.msg}
+          type={toast.type}
+          onClose={() => setToast((prev) => ({ ...prev, visible: false }))}
+        />
+      )}
 
       <Layout showBackButton={true}>
         <div className="pt-8 pb-36 md:pt-12 md:pb-40">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 xl:gap-24">
-
             {/* ── Image Gallery ── */}
             <ImageGallery
               mainImage={imageUrls[selectedImage] || imageUrls[0]}
@@ -181,13 +198,17 @@ const ProductDetails = () => {
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="p-4 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#0d0d12]">
                   <h3 className="onyx-label mb-2">Availability</h3>
-                  <p className={`text-[13px] font-medium ${isOutOfStock ? "text-[#e57373]" : "text-[#81c784]"}`}>
+                  <p
+                    className={`text-[13px] font-medium ${isOutOfStock ? "text-[#e57373]" : "text-[#81c784]"}`}
+                  >
                     {stockStatus}
                   </p>
                 </div>
                 <div className="p-4 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#0d0d12]">
                   <h3 className="onyx-label mb-2">Shipping</h3>
-                  <p className="text-[13px] font-medium text-[rgba(238,233,225,0.65)]">Ships in 2–3 days</p>
+                  <p className="text-[13px] font-medium text-[rgba(238,233,225,0.65)]">
+                    Ships in 2–3 days
+                  </p>
                 </div>
               </div>
             </div>
