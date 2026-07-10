@@ -22,7 +22,7 @@ const AuthLayout = ({ children, headline, sub, eyebrow = "Collections" }) => {
   }, []);
 
   return (
-    <div ref={rootRef} className="flex min-h-[100dvh] bg-[#06060a] font-sans antialiased max-[960px]:block max-[960px]:relative">
+    <div ref={rootRef} className="flex min-h-[100dvh] bg-[#06060a] font-sans antialiased max-[960px]:flex max-[960px]:items-center max-[960px]:justify-center max-[960px]:relative">
     {/* ── LEFT: Hero panel (image via CSS, no img tag) ── */}
     <aside className="auth-hero" aria-hidden="true">
       <header className="relative z-10 flex items-center justify-between px-[42px] py-[32px] max-[960px]:px-[28px] max-[960px]:py-[24px] max-[480px]:px-[24px] max-[480px]:py-[20px]">
