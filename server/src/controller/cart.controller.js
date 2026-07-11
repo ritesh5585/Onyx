@@ -80,7 +80,7 @@ export async function addToCart(req, res) {
     }
 }
 
-export async function viewCartProduct(req, res) {
+export async function viewCartProduct(req, res) {   
     try {
         const userId = req.user._id;
         const cart = await getCartDetails(userId);
@@ -89,6 +89,7 @@ export async function viewCartProduct(req, res) {
             success: true,
             cart
         });
+
     } catch (error) {
         console.error("View cart error:", error);
         return res.status(500).json({ success: false, message: error.message || "Internal server error" });

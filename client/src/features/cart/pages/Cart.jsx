@@ -6,9 +6,6 @@ import Layout from "../../Shared/Layout";
 import Toast from "../../Shared/Toast";
 import EmptyState from "../../Shared/EmptyState";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CartItem
-// ─────────────────────────────────────────────────────────────────────────────
 const CartItem = ({
   item,
   navigate,
@@ -174,9 +171,9 @@ const CartItem = ({
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 // OrderSummary
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 const OrderSummary = ({ count, subtotal, shipping, total, currency }) => (
   <div className="sticky top-20 rounded-2xl border border-onyx-border/70 bg-onyx-surface p-6 sm:p-8">
     <h2 className="mb-6 border-b border-onyx-border/70 pb-5 font-serif text-xl font-light tracking-tight text-onyx-text">
@@ -240,9 +237,9 @@ const OrderSummary = ({ count, subtotal, shipping, total, currency }) => (
 
 const EMPTY_CART = [];
 
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 // Main Cart Page
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 const Cart = () => {
   const navigate = useNavigate();
   const rawCartItems = useSelector((state) => state.cart.items);
@@ -276,6 +273,7 @@ const Cart = () => {
         0,
       ),
       currency:
+      console.log(cartItems) ||
         cartItems[0]?.variant?.price?.currency ||
         cartItems[0]?.product?.price?.currency ||
         "INR",

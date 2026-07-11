@@ -9,12 +9,13 @@ export const useCart = () => {
     const handleAddtoCart = useCallback(async (productId, variantId) => {
         try {
             const data = await addToCart({ productId, variantId });
+            dispatch(setItems(data.cart.items));
             return data;
         } catch (error) {
             console.error("cart not added", error);
             throw error;
         }
-    }, []);
+    }, [dispatch]);
 
     const handleGetCart = useCallback(async () => {
         try {

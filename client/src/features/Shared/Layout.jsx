@@ -1,23 +1,9 @@
+import React, { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { useAuth } from "../auth/hook/useAuth";
-
-const CartIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <path d="M16 10a4 4 0 0 1-8 0" />
-  </svg>
-);
+import { useCart } from "../cart/hooks/useCart";
+import Count from "../cart/components/Count";
 
 const NavLinks = ({ user, cartCount, handleLogout, navigate, isMobile }) => (
   <>
@@ -34,10 +20,16 @@ const NavLinks = ({ user, cartCount, handleLogout, navigate, isMobile }) => (
 
     {user?.role === "seller" && (
       <>
-        <NavLink to="/seller/create-product" className="onyx-nav-link whitespace-nowrap">
+        <NavLink
+          to="/seller/create-product"
+          className="onyx-nav-link whitespace-nowrap"
+        >
           Upload
         </NavLink>
-        <NavLink to="/seller/dashboard" className="onyx-nav-link whitespace-nowrap">
+        <NavLink
+          to="/seller/dashboard"
+          className="onyx-nav-link whitespace-nowrap"
+        >
           Dashboard
         </NavLink>
       </>
@@ -50,12 +42,7 @@ const NavLinks = ({ user, cartCount, handleLogout, navigate, isMobile }) => (
           className="onyx-nav-link relative flex items-center gap-1.5 whitespace-nowrap"
           aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
         >
-          {isMobile ? <span>Cart</span> : <CartIcon />}
-          {cartCount > 0 && (
-            <span className={isMobile ? "ml-2 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-[#c49a52] text-[#06060a] text-[11px] font-bold leading-none" : "absolute -top-2 -right-2 w-4 h-4 rounded-full bg-[#c49a52] text-[#06060a] text-[9px] font-bold flex items-center justify-center leading-none"}>
-              {cartCount > 9 ? "9+" : cartCount}
-            </span>
-          )}
+          <Count isMobile={isMobile} cartCount={cartCount} />
         </NavLink>
 
         <button
@@ -78,20 +65,28 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
   const { user } = useSelector((state) => state.auth);
   const cartItems = useSelector((state) => state.cart.items) || [];
   const { handleLogout } = useAuth();
+  const { handleGetCart } = useCart();
 
   const cartCount = cartItems.length;
+
+  useEffect(() => {
+    if (!user) return;
+    handleGetCart().catch(() => {
+      // ignore fetch errors in header
+    });
+  }, [user, handleGetCart]);
 
   return (
     <div className="onyx-bg min-h-screen">
       {/* ── Navbar — full-width with blur, content inside container ── */}
       <header
         className={`onyx-navbar sticky top-0 z-40 w-full ${
-          showLinks ? "justify-between" : "gap-4"
+          showLinks ? "justify-between" : "gap-3"
         }`}
       >
         <div
           className={`onyx-container w-full flex items-center ${
-            showLinks ? "justify-between" : "gap-4"
+            showLinks ? "justify-between" : "gap-2 sm:gap-4"
           }`}
         >
           {/* Left — back button or logo */}
@@ -107,7 +102,7 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
               {showBackButton && (
                 <button
                   onClick={() => navigate(-1)}
-                  className="text-xl leading-none flex items-center justify-center w-9 h-9 rounded-full border border-white/5 text-[#eee9e1]/35 transition-all duration-300 hover:text-[#c49a52] hover:border-[#c49a52]/35 hover:bg-[#c49a52]/5"
+                  className="text-2xl leading-none flex items-center justify-center w-8 h-8 rounded-full border border-white/8 text-[#eee9e1]/45 transition-all duration-300 hover:text-[#c49a52] hover:border-[#c49a52]/35 hover:bg-[#c49a52]/5"
                   type="button"
                   aria-label="Go back"
                 >
@@ -116,7 +111,7 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
               )}
               <NavLink
                 to="/"
-                className="text-xl font-semibold uppercase tracking-[0.08em] text-[#eee9e1] font-serif no-underline"
+                className="text-lg font-semibold uppercase tracking-[0.08em] text-[#eee9e1] font-serif no-underline"
               >
                 ONYX
               </NavLink>
@@ -127,14 +122,35 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
           {showLinks && (
             <>
               {/* Desktop Nav */}
-              <nav className="hidden md:flex items-center gap-6 text-[11px] font-medium tracking-[0.12em] uppercase" aria-label="Main navigation">
-                <NavLinks user={user} cartCount={cartCount} handleLogout={handleLogout} navigate={navigate} isMobile={false} />
+              <nav
+                className="hidden md:flex items-center gap-6 text-[11px] font-medium tracking-[0.12em] uppercase"
+                aria-label="Main navigation"
+              >
+                <NavLinks
+                  user={user}
+                  cartCount={cartCount}
+                  handleLogout={handleLogout}
+                  navigate={navigate}
+                  isMobile={false}
+                />
               </nav>
 
               {/* Mobile Nav */}
               <div className="md:hidden flex items-center relative group">
-                <button className="text-[#eee9e1] p-2 hover:text-[#c49a52] transition-colors relative" aria-label="Menu">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <button
+                  className="text-[#eee9e1] p-2 hover:text-[#c49a52] transition-colors relative"
+                  aria-label="Menu"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <line x1="4" y1="12" x2="20" y2="12"></line>
                     <line x1="4" y1="6" x2="20" y2="6"></line>
                     <line x1="4" y1="18" x2="20" y2="18"></line>
@@ -145,10 +161,16 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
                     </span>
                   )}
                 </button>
-                
+
                 {/* Hover Popup */}
                 <div className="absolute top-full right-0 mt-2 w-max min-w-[140px] bg-[#13131a] border border-white/10 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col p-5 gap-5 text-[11px] font-medium tracking-[0.12em] uppercase z-50">
-                  <NavLinks user={user} cartCount={cartCount} handleLogout={handleLogout} navigate={navigate} isMobile={true} />
+                  <NavLinks
+                    user={user}
+                    cartCount={cartCount}
+                    handleLogout={handleLogout}
+                    navigate={navigate}
+                    isMobile={true}
+                  />
                 </div>
               </div>
             </>
