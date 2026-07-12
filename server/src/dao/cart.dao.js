@@ -1,11 +1,12 @@
 import cartModel from "../models/cart.js"
+import { buildCartStatsAggregation } from "../services/cartStats.service.js";
 
 
 // Return cart with populated product and resolved variant object (if present).
 // The aggregation now preserves cart items even when there is no matching
 // variant, which avoids false out-of-stock states on the client.
 export const getCartDetails = async (userId) => {
-    const [cart] = await cartModel.aggregate();
+    const [cart] = await cartModel.aggregate(buildCartStatsAggregation(userId));
 
     if (!cart) return { items: [] };
 

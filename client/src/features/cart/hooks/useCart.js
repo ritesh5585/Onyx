@@ -1,55 +1,60 @@
 import { addToCart, getCart, removeFromCart, updateCartQty } from "../service/cart.api";
 import { useDispatch } from "react-redux";
-import { setItems, removeItems, updateItemQty } from "../state/cart.slice";
+import { setItems } from "../state/cart.slice";
 import { useCallback } from "react";
 
 export const useCart = () => {
     const dispatch = useDispatch();
 
-    const handleAddtoCart = useCallback(async (productId, variantId) => {
+    const refreshCart = useCallback(async () => {
         try {
-            const data = await addToCart({ productId, variantId });
-            dispatch(setItems(data.cart.items));
-            return data;
+            const data = await getCart();
+            dispatch(setItems(data.cart));
+            return data.cart;
         } catch (error) {
-            console.error("cart not added", error);
+            console.error("Cart refresh failed", error);
             throw error;
         }
     }, [dispatch]);
 
-    const handleGetCart = useCallback(async () => {
+    const handleAddtoCart = useCallback(async (productId, variantId) => {
         try {
-            const data = await getCart();
-            dispatch(setItems(data.cart.items));
+            const data = await addToCart({ productId, variantId });
+            await refreshCart();
+            return data;
         } catch (error) {
-            console.error("cart not found", error);
+            console.error("Cart not added", error);
             throw error;
         }
-    }, [dispatch]);
+    }, [refreshCart]);
+
+    const handleGetCart = useCallback(async () => {
+        return refreshCart();
+    }, [refreshCart]);
 
     const handleRemoveItem = useCallback(async (cartItemId) => {
         try {
             const data = await removeFromCart(cartItemId);
-            dispatch(removeItems(cartItemId));
+            await refreshCart();
             return data;
         } catch (error) {
             console.error("Failed to remove item:", error);
             throw error;
         }
-    }, [dispatch]);
+    }, [refreshCart]);
 
     const handleIncrementQty = useCallback(async (cartItemId, currentQty) => {
         const newQty = currentQty + 1;
 
         try {
             const data = await updateCartQty(cartItemId, newQty);
-            dispatch(updateItemQty({ cartItemId, quantity: newQty }));
+            await refreshCart();
             return data;
         } catch (error) {
             console.error("Failed to increment quantity:", error);
             throw error;
         }
-    }, [dispatch]);
+    }, [refreshCart]);
 
     const handleDecrementQty = useCallback(async (cartItemId, currentQty) => {
         const newQty = currentQty - 1;
@@ -60,19 +65,19 @@ export const useCart = () => {
 
         try {
             const data = await updateCartQty(cartItemId, newQty);
-            dispatch(updateItemQty({ cartItemId, quantity: newQty }));
+            await refreshCart();
             return data;
         } catch (error) {
             console.error("Failed to decrement quantity:", error);
             throw error;
         }
-    }, [dispatch]);
+    }, [refreshCart]);
 
     return {
         handleAddtoCart,
         handleGetCart,
         handleRemoveItem,
         handleIncrementQty,
-        handleDecrementQty
+        handleDecrementQty,
     };
 };

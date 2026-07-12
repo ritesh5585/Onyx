@@ -63,7 +63,8 @@ const NavLinks = ({ user, cartCount, handleLogout, navigate, isMobile }) => (
 const Layout = ({ children, showLinks = false, showBackButton = false }) => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const cartItems = useSelector((state) => state.cart.items) || [];
+  const cartData = useSelector((state) => state.cart.items) || {};
+  const cartItems = cartData.items || [];
   const { handleLogout } = useAuth();
   const { handleGetCart } = useCart();
 

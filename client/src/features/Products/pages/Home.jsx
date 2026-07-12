@@ -5,7 +5,11 @@ import { useSelector } from "react-redux";
 import Layout from "../../Shared/Layout";
 import ProductCard from "../../Shared/ProductCard";
 import EmptyState from "../../Shared/EmptyState";
-import { animateHeroContent, animateStaggerFadeUp, animateFadeUp } from "../../Shared/animations";
+import {
+  animateHeroContent,
+  animateStaggerFadeUp,
+  animateFadeUp,
+} from "../../Shared/animations";
 
 const CATEGORIES = [
   { label: "Outerwear", sub: "Coats & Jackets" },
@@ -104,28 +108,28 @@ const CategoriesStrip = () => {
     <section className="py-12 lg:py-16 border-y border-onyx-border/70 bg-onyx-bg px-5 sm:px-8 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20">
       <div ref={containerRef} className="grid grid-cols-3 gap-0 md:grid-cols-6">
         {CATEGORIES.map((cat, i) => (
-        <div
-          key={cat.label}
-          className={`group flex cursor-pointer flex-col gap-1 px-4 py-6 transition-colors duration-300 hover:bg-onyx-gold/10 ${
-            i < CATEGORIES.length - 1 ? "border-r border-onyx-border/70" : ""
-          }`}
-        >
-          <span className="font-serif text-[1.05rem] font-medium text-onyx-text/80 transition-colors group-hover:text-onyx-text">
-            {cat.label}
-          </span>
-          <span className="text-[10px] uppercase tracking-wide text-onyx-muted/70">
-            {cat.sub}
-          </span>
-        </div>
-      ))}
-    </div>
-  </section>
+          <div
+            key={cat.label}
+            className={`group flex cursor-pointer flex-col gap-1 transition-colors duration-300 hover:bg-onyx-gold/10 ${
+              i < CATEGORIES.length - 1 ? "border-r border-onyx-border/70" : ""
+            }`}
+          >
+            <span className="font-serif text-[1.05rem] font-medium text-onyx-text/80 transition-colors group-hover:text-onyx-text">
+              {cat.label}
+            </span>
+            <span className="text-[10px] uppercase tracking-wide text-onyx-muted/70">
+              {cat.sub}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 };
 
 const FeaturedEditorial = ({ products, onNavigate }) => {
   const sectionRef = useRef(null);
-  
+
   useEffect(() => {
     animateFadeUp(sectionRef.current);
   }, []);
@@ -139,7 +143,9 @@ const FeaturedEditorial = ({ products, onNavigate }) => {
       <div className="mb-10 flex items-end justify-between sm:mb-14">
         <div>
           <p className="onyx-eyebrow mb-3">Curated Selection</p>
-          <h2 className="font-serif text-3xl lg:text-4xl font-light leading-tight tracking-tight text-[#eee9e1]">Featured Pieces</h2>
+          <h2 className="font-serif text-3xl lg:text-4xl font-light leading-tight tracking-tight text-[#eee9e1]">
+            Featured Pieces
+          </h2>
           <div className="onyx-divider" />
         </div>
         <button
@@ -220,7 +226,9 @@ const ProductGrid = ({ products, onNavigate }) => {
       <div className="mb-10 flex items-end justify-between sm:mb-14">
         <div>
           <p className="onyx-eyebrow mb-3">The Archive</p>
-          <h2 className="font-serif text-3xl lg:text-4xl font-light leading-tight tracking-tight text-[#eee9e1]">All Products</h2>
+          <h2 className="font-serif text-3xl lg:text-4xl font-light leading-tight tracking-tight text-[#eee9e1]">
+            All Products
+          </h2>
           <div className="onyx-divider" />
         </div>
         <span className="text-[11px] uppercase tracking-[0.12em] text-onyx-muted/60">
@@ -228,7 +236,10 @@ const ProductGrid = ({ products, onNavigate }) => {
         </span>
       </div>
 
-      <div ref={gridRef} className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div
+        ref={gridRef}
+        className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+      >
         {products.map((product) => (
           <ProductCard
             key={product._id}
