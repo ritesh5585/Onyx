@@ -120,62 +120,60 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
           )}
 
           {/* Right — nav links */}
-          {showLinks && (
-            <>
-              {/* Desktop Nav */}
-              <nav
-                className="hidden md:flex items-center gap-6 text-[11px] font-medium tracking-[0.12em] uppercase"
-                aria-label="Main navigation"
+          <div className="ml-auto flex items-center">
+            {/* Desktop Nav */}
+            <nav
+              className="hidden md:flex items-center gap-6 text-[11px] font-medium tracking-[0.12em] uppercase"
+              aria-label="Main navigation"
+            >
+              <NavLinks
+                user={user}
+                cartCount={cartCount}
+                handleLogout={handleLogout}
+                navigate={navigate}
+                isMobile={false}
+              />
+            </nav>
+
+            {/* Mobile Nav */}
+            <div className="md:hidden flex items-center relative group">
+              <button
+                className="text-[#eee9e1] p-2 hover:text-[#c49a52] transition-colors relative"
+                aria-label="Menu"
               >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="4" y1="12" x2="20" y2="12"></line>
+                  <line x1="4" y1="6" x2="20" y2="6"></line>
+                  <line x1="4" y1="18" x2="20" y2="18"></line>
+                </svg>
+                {cartCount > 0 && (
+                  <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-[#c49a52] text-[#06060a] text-[9px] font-bold flex items-center justify-center leading-none">
+                    {cartCount > 9 ? "9+" : cartCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Hover Popup */}
+              <div className="absolute top-full right-0 mt-2 w-max min-w-[140px] bg-[#13131a] border border-white/10 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col p-5 gap-5 text-[11px] font-medium tracking-[0.12em] uppercase z-50">
                 <NavLinks
                   user={user}
                   cartCount={cartCount}
                   handleLogout={handleLogout}
                   navigate={navigate}
-                  isMobile={false}
+                  isMobile={true}
                 />
-              </nav>
-
-              {/* Mobile Nav */}
-              <div className="md:hidden flex items-center relative group">
-                <button
-                  className="text-[#eee9e1] p-2 hover:text-[#c49a52] transition-colors relative"
-                  aria-label="Menu"
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="4" y1="12" x2="20" y2="12"></line>
-                    <line x1="4" y1="6" x2="20" y2="6"></line>
-                    <line x1="4" y1="18" x2="20" y2="18"></line>
-                  </svg>
-                  {cartCount > 0 && (
-                    <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-[#c49a52] text-[#06060a] text-[9px] font-bold flex items-center justify-center leading-none">
-                      {cartCount > 9 ? "9+" : cartCount}
-                    </span>
-                  )}
-                </button>
-
-                {/* Hover Popup */}
-                <div className="absolute top-full right-0 mt-2 w-max min-w-[140px] bg-[#13131a] border border-white/10 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col p-5 gap-5 text-[11px] font-medium tracking-[0.12em] uppercase z-50">
-                  <NavLinks
-                    user={user}
-                    cartCount={cartCount}
-                    handleLogout={handleLogout}
-                    navigate={navigate}
-                    isMobile={true}
-                  />
-                </div>
               </div>
-            </>
-          )}
+            </div>
+          </div>
         </div>
       </header>
 
