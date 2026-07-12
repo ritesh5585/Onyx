@@ -1,14 +1,24 @@
+import { lazy } from "react";
 import { createBrowserRouter } from "react-router";
-import Home from "../features/Products/pages/home.jsx";
-import Register from "../features/auth/pages/Register.jsx";
-import Login from "../features/auth/pages/Login.jsx";
-import Dashboard from "../features/Products/pages/Dashboard.jsx";
 import Protected from "../features/auth/components/Protected.jsx";
-import CreateProduct from "../features/Products/pages/CreatProduct.jsx";
-import SellerProductDetail from "../features/Products/pages/SellerProductdetail.jsx"
-import ProductDetails from "../features/Products/pages/ProductDetails.jsx";
-import Cart from "../features/cart/pages/Cart.jsx"
-import NotFound from "../features/components/NotFound.jsx";
+import Home from "../features/Products/pages/Home.jsx";
+
+const Register = lazy(() => import("../features/auth/pages/Register.jsx"));
+const Login = lazy(() => import("../features/auth/pages/Login.jsx"));
+const Dashboard = lazy(
+  () => import("../features/Products/pages/Dashboard.jsx"),
+);
+const CreateProduct = lazy(
+  () => import("../features/Products/pages/CreatProduct.jsx"),
+);
+const SellerProductDetail = lazy(
+  () => import("../features/Products/pages/SellerProductdetail.jsx"),
+);
+const ProductDetails = lazy(
+  () => import("../features/Products/pages/ProductDetails.jsx"),
+);
+const Cart = lazy(() => import("../features/cart/pages/Cart.jsx"));
+const NotFound = lazy(() => import("../features/components/NotFound.jsx"));
 
 export const routes = createBrowserRouter([
   {
@@ -48,7 +58,7 @@ export const routes = createBrowserRouter([
       },
       {
         path: "dashboard/:productId/variant",
-        element: <SellerProductDetail/>
+        element: <SellerProductDetail />,
       },
     ],
   },
@@ -58,6 +68,6 @@ export const routes = createBrowserRouter([
   },
   {
     path: "/getyourcart",
-    element: <Cart/>
-  }
+    element: <Cart />,
+  },
 ]);

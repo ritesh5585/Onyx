@@ -137,8 +137,8 @@ const ProductDetails = () => {
   return (
     <>
       <Layout showBackButton={true}>
-        <div className="pt-8 pb-36 md:pt-12 md:pb-40">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 xl:gap-24">
+        <div className="pt-6 sm:pt-8 pb-32 sm:pb-36 md:pt-12 md:pb-40">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 xl:gap-24">
             {/* ── Image Gallery ── */}
             <ImageGallery
               mainImage={imageUrls[selectedImage] || imageUrls[0]}
@@ -170,18 +170,18 @@ const ProductDetails = () => {
               )}
 
               {/* Availability + Shipping */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="p-4 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#0d0d12]">
-                  <h3 className="onyx-label mb-2">Availability</h3>
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
+                <div className="p-3 sm:p-4 rounded-lg border border-onyx-border/70 bg-onyx-surface">
+                  <h3 className="onyx-label mb-1.5 sm:mb-2">Availability</h3>
                   <p
                     className={`text-[13px] font-medium ${isOutOfStock ? "text-[#e57373]" : "text-[#81c784]"}`}
                   >
                     {stockStatus}
                   </p>
                 </div>
-                <div className="p-4 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#0d0d12]">
-                  <h3 className="onyx-label mb-2">Shipping</h3>
-                  <p className="text-[13px] font-medium text-[rgba(238,233,225,0.65)]">
+                <div className="p-3 sm:p-4 rounded-lg border border-onyx-border/70 bg-onyx-surface">
+                  <h3 className="onyx-label mb-1.5 sm:mb-2">Shipping</h3>
+                  <p className="text-[13px] font-medium text-onyx-muted">
                     Ships in 2–3 days
                   </p>
                 </div>
@@ -191,18 +191,18 @@ const ProductDetails = () => {
         </div>
 
         {/* ── Fixed Bottom CTA Bar ── */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(255,255,255,0.07)] bg-[rgba(6,6,10,0.95)] backdrop-blur-xl">
-          <div className="onyx-container py-4 flex flex-row gap-3">
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-onyx-border/70 bg-onyx-black/95 backdrop-blur-xl">
+          <div className="onyx-container py-3 sm:py-4 flex flex-row gap-2 sm:gap-3">
             <button
               type="button"
               onClick={onAddToCart}
               disabled={!isInCart && (isOutOfStock || isAdding)}
-              className="onyx-btn-secondary flex-1"
+              className="onyx-btn-secondary flex-1 !py-3 sm:!py-3.5 text-[11px] sm:text-[12px]"
               aria-label={isInCart ? "Go to cart" : "Add to cart"}
             >
               {isAdding ? (
-                <span className="flex items-center gap-2 justify-center">
-                  <span className="w-3.5 h-3.5 rounded-full border border-current border-t-transparent animate-spin" />
+                <span className="flex items-center gap-1.5 sm:gap-2 justify-center">
+                  <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full border border-current border-t-transparent animate-spin" />
                   Adding…
                 </span>
               ) : isInCart ? (
@@ -215,7 +215,7 @@ const ProductDetails = () => {
               type="button"
               onClick={onBuyNow}
               disabled={isOutOfStock || isAdding}
-              className="onyx-btn-primary flex-1"
+              className="onyx-btn-primary flex-1 !py-3 sm:!py-3.5 text-[11px] sm:text-[12px]"
               aria-label="Buy now"
             >
               {isOutOfStock ? "Out of Stock" : "Buy Now"}

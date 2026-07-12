@@ -226,7 +226,7 @@ const SellerProductdetail = () => {
     <Layout showBackButton={true}>
 
       <div className="py-10 md:py-14">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 xl:gap-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 xl:gap-24">
 
           {/* ── Image Gallery ── */}
           <ImageGallery
@@ -255,7 +255,7 @@ const SellerProductdetail = () => {
                     disabled={saving}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="onyx-label">Price</label>
                     <input

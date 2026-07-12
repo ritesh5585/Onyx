@@ -42,13 +42,12 @@ const Cart = () => {
 
       <Layout showBackButton={true}>
         <div className="min-h-[60vh] pb-24 pt-8">
-          {/* ── Header ── */}
-          <div className="mb-10 border-b border-onyx-border/70 pb-8">
+          <div className="mb-8 sm:mb-10 border-b border-onyx-border/70 pb-6 sm:pb-8">
             <p className="onyx-eyebrow mb-3">Shopping Bag</p>
-            <h1 className="onyx-page-title">Your Cart</h1>
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light leading-[1.1] tracking-tight text-onyx-text">Your Cart</h1>
             <div className="onyx-divider" />
             {!isEmpty && (
-              <span className="mt-4 block text-[11px] font-semibold uppercase tracking-[0.18em] text-onyx-muted/70">
+              <span className="mt-3 block text-[11px] font-semibold uppercase tracking-[0.18em] text-onyx-muted/70">
                 {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
               </span>
             )}
@@ -64,9 +63,9 @@ const Cart = () => {
               cta={{ label: "Explore Collection", to: "/" }}
             />
           ) : (
-            <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_360px] lg:gap-12">
+            <div className="grid grid-cols-1 items-start gap-6 sm:gap-8 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] lg:gap-12">
               {/* Items list */}
-              <div className="flex flex-col">
+              <div className="flex flex-col min-w-0">
                 {cartItems.map((item, i) => (
                   <CartItems
                     key={item._id || i}
@@ -79,14 +78,16 @@ const Cart = () => {
                 ))}
               </div>
 
-              {/* Summary */}
-              <OrderSummary
-                count={cartItems.length}
-                subtotal={subtotal}
-                shipping={0}
-                total={totalPrice}
-                currency={currency}
-              />
+              {/* Summary — stacks below items on mobile, sticky sidebar on lg */}
+              <div className="lg:sticky lg:top-20">
+                <OrderSummary
+                  count={cartItems.length}
+                  subtotal={subtotal}
+                  shipping={0}
+                  total={totalPrice}
+                  currency={currency}
+                />
+              </div>
             </div>
           )}
         </div>

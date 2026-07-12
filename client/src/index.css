@@ -2,190 +2,255 @@
 @import "tailwindcss";
 
 @theme {
+  /* ── Background Hierarchy ── */
   --color-onyx-black: #06060a;
-  --color-onyx-surface: #0d0d12;
+  --color-onyx-surface: #0a0a0f;
   --color-onyx-card: #13131a;
-  --color-onyx-border: rgba(255, 255, 255, 0.07);
-  --color-onyx-border-hover: rgba(255, 255, 255, 0.14);
+
+  /* ── Gold Accent System ── */
   --color-onyx-gold: #c49a52;
   --color-onyx-gold-lt: #d4aa6a;
   --color-onyx-gold-glow: rgba(196, 154, 82, 0.15);
+  --color-onyx-gold-muted: rgba(196, 154, 82, 0.06);
+
+  /* ── Text Hierarchy ── */
   --color-onyx-text: #eee9e1;
   --color-onyx-muted: rgba(238, 233, 225, 0.45);
   --color-onyx-muted2: rgba(238, 233, 225, 0.22);
+
+  /* ── Borders & Dark Overlays ── */
+  --color-onyx-border: rgba(255, 255, 255, 0.07);
+  --color-onyx-border-hover: rgba(255, 255, 255, 0.14);
+  --color-onyx-overlay: rgba(6, 6, 10, 0.685);
+
+  /* ── Typography Scale ── */
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'Inter', system-ui, sans-serif;
+
+  /* ── Shadow System ── */
+  --shadow-onyx-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-onyx-md: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --shadow-onyx-lg: 0 24px 64px rgba(0, 0, 0, 0.4);
+  --shadow-onyx-gold: 0 8px 28px rgba(196, 154, 82, 0.28);
+  --shadow-onyx-glow: 0 0 0 3px rgba(196, 154, 82, 0.12);
+
+  /* ── Transition Timing ── */
+  --ease-onyx: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Container Width ── */
+  --container-width: 1440px;
 }
 
-:root {
-  --auth-bg: #06060a;
-  --auth-surface: #060608;
-  --auth-card: #13131a;
-  --auth-border: rgba(255, 255, 255, 0.07);
-  --auth-border2: rgba(255, 255, 255, 0.14);
-  --auth-gold: #c49a52;
-  --auth-gold-lt: #d4aa6a;
-  --auth-gold-glow: rgba(196, 154, 82, 0.12);
-  --auth-text: #eee9e1;
-  --auth-muted: rgba(238, 233, 225, 0.45);
-  --auth-muted2: rgba(238, 233, 225, 0.22);
-  --auth-serif: "Cormorant Garamond", Georgia, serif;
-  --auth-sans: "Inter", system-ui, sans-serif;
-  --auth-ease: 240ms cubic-bezier(0.4, 0, 0.2, 1);
+@layer base {
+  body {
+    @apply bg-onyx-black text-onyx-text font-sans antialiased selection:bg-onyx-gold selection:text-onyx-black;
+  }
+
+  /* ── Custom Scrollbar ── */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-onyx-black;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-onyx-border-hover rounded-full transition-colors duration-300;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-onyx-gold;
+  }
+
+
+
+  /* ── Navbar Scroll State ── */
+  header[data-scrolled="true"] {
+    @apply bg-onyx-black/85 backdrop-blur-xl border-b border-onyx-border/60;
+    box-shadow: 0 2px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  /* ── Page Transition Wrapper ── */
+  .page-content {
+    will-change: transform, opacity;
+  }
+
+  /* ── Reveal char clip ── */
+  .reveal-char-wrap {
+    overflow: hidden;
+    display: inline-block;
+  }
 }
 
 @layer components {
 
   /* ═══════════════════════════════════════════
-     ONYX Design System v2 — Global Token Layer
-     Rule: class lives here if used in 3+ files
-     OR has pseudo-states Tailwind can't inline.
+     ONYX DESIGN SYSTEM — GLOBAL FOUNDATION
   ═══════════════════════════════════════════ */
 
-  /* ── Base ── */
+  /* ── Layout & Backgrounds ── */
   .onyx-bg {
-    background-color: #06060a;
-    color: #eee9e1;
-    font-family: 'Inter', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    @apply bg-onyx-black text-onyx-text font-sans;
   }
 
   .onyx-container {
-    @apply max-w-7xl mx-auto px-3 sm:px-8 lg:px-12 xl:px-20;
+    @apply max-w-[var(--container-width)] mx-auto px-5 sm:px-8 lg:px-12 xl:px-20;
   }
 
-
-  /* ── Typography ── */
-  .onyx-page-title {
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    @apply text-4xl lg:text-5xl xl:text-6xl font-light leading-[1.1] tracking-tight;
-    color: #eee9e1;
-  }
-
-
-
-  .onyx-eyebrow {
-    @apply text-[10px] uppercase tracking-[0.28em] font-semibold;
-    color: #c49a52;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-
-  .onyx-divider {
-    @apply mt-5 w-10 h-px;
-    background-color: #c49a52;
-  }
-
-
-
-  /* ── Navigation ── */
-  .onyx-navbar {
-    @apply py-2 md:py-4 flex items-center border-b;
-    border-color: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(20px);
-    background-color: rgba(6, 6, 10, 0.685);
-  }
-
-
-
-
-
-  .onyx-nav-link {
-    @apply transition-colors duration-300;
-    color: rgba(197, 169, 124, 0.764);
-  }
-
-  .onyx-nav-link:hover {
-    color: #eee9e1;
-  }
-
-
-  /* ── Forms ── */
-  .onyx-label {
-    @apply block mb-2 text-[10px] uppercase tracking-[0.18em] font-semibold;
-    color: rgba(238, 233, 225, 0.4);
-  }
-
-  .onyx-input {
-    @apply w-full outline-none py-3 px-4 text-sm transition-all duration-300 border rounded-lg;
-    background-color: #0d0d12;
-    color: #eee9e1;
-    border-color: rgba(255, 255, 255, 0.08);
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-
-  .onyx-input::placeholder {
-    color: rgba(238, 233, 225, 0.22);
-  }
-
-  .onyx-input:hover {
-    border-color: rgba(255, 255, 255, 0.14);
-  }
-
-  .onyx-input:focus {
-    border-color: #c49a52;
-    box-shadow: 0 0 0 3px rgba(196, 154, 82, 0.12);
-  }
-
-
-  /* ── Buttons ── */
-  .onyx-btn-primary {
-    @apply inline-flex items-center justify-center w-full py-3.5 px-6 text-[12px] font-semibold uppercase tracking-[0.12em] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg;
-    background-color: #c49a52;
-    color: #06060a;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-
-  .onyx-btn-primary:hover:not(:disabled) {
-    background-color: #d4aa6a;
-    box-shadow: 0 8px 28px rgba(196, 154, 82, 0.28);
-    transform: translateY(-1px);
-  }
-
-  .onyx-btn-primary:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
-  .onyx-btn-secondary {
-    @apply inline-flex items-center justify-center w-full py-3.5 px-6 text-[12px] font-semibold uppercase tracking-[0.12em] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg border;
-    border-color: rgba(255, 255, 255, 0.14);
-    color: rgba(238, 233, 225, 0.75);
-    background-color: transparent;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-
-  .onyx-btn-secondary:hover:not(:disabled) {
-    border-color: #c49a52;
-    color: #c49a52;
-    background-color: rgba(196, 154, 82, 0.06);
-  }
-
-
-
-
-
-  /* ── Section helpers ── */
   .onyx-section {
     @apply py-20 lg:py-28;
   }
 
+  /* ── Glass Effect ── */
+  .onyx-glass {
+    @apply bg-onyx-overlay backdrop-blur-[12px] border border-onyx-border;
+  }
 
+  .onyx-navbar {
+    @apply py-2 md:py-4 flex items-center border-b border-onyx-border bg-onyx-overlay backdrop-blur-[12px];
+  }
 
+  /* ── Typography & Links ── */
+  .onyx-page-title,
+  .auth-panel__title {
+    font-size: clamp(1.75rem, 2.6vw, 2.25rem);
+    @apply lg:text-5xl xl:text-6xl font-serif font-light leading-[1.1] tracking-tight text-onyx-text mb-5;
+  }
 
+  .onyx-eyebrow,
+  .auth-panel__eyebrow {
+    @apply text-[10px] uppercase tracking-[0.28em] font-semibold text-onyx-gold font-sans block mb-2;
+  }
 
+  .onyx-nav-link {
+    @apply transition-colors duration-300 text-onyx-gold-lt/75 hover:text-onyx-text;
+  }
 
+  .onyx-divider {
+    @apply mt-5 w-10 h-px bg-onyx-gold;
+  }
 
-  /* ══════════════════════
-     HERO PANEL (left 55%)
-  ══════════════════════ */
+  /* ── Button Variants ── */
+  .onyx-btn-primary,
+  .auth-btn {
+    @apply inline-flex items-center justify-center w-full py-3.5 px-6 text-[12px] font-semibold uppercase tracking-[0.12em] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg bg-onyx-gold text-onyx-black font-sans mt-1;
+  }
+
+  .onyx-btn-primary:hover:not(:disabled),
+  .auth-btn:hover:not(:disabled) {
+    @apply bg-onyx-gold-lt shadow-[var(--shadow-onyx-gold)] -translate-y-[1px];
+  }
+
+  .onyx-btn-primary:active:not(:disabled),
+  .auth-btn:active:not(:disabled) {
+    @apply translate-y-0 shadow-none;
+  }
+
+  .onyx-btn-secondary {
+    @apply inline-flex items-center justify-center w-full py-3.5 px-6 text-[12px] font-semibold uppercase tracking-[0.12em] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg border border-onyx-border-hover text-onyx-text/75 bg-transparent font-sans mt-1;
+  }
+
+  .onyx-btn-secondary:hover:not(:disabled) {
+    @apply border-onyx-gold text-onyx-gold bg-onyx-gold-muted;
+  }
+
+  /* ── Form Inputs & Labels ── */
+  .onyx-label,
+  .auth-label {
+    @apply block mb-2 text-[10px] uppercase tracking-[0.18em] font-semibold text-onyx-muted;
+  }
+
+  .onyx-input,
+  .auth-input {
+    @apply w-full outline-none py-3 px-4 text-sm transition-all duration-300 border border-onyx-border rounded-lg bg-onyx-card text-onyx-text font-sans placeholder:text-onyx-muted2;
+  }
+
+  .auth-input {
+    @apply pl-[40px];
+    /* Accommodate icons in auth layout */
+  }
+
+  .onyx-input:hover,
+  .auth-input:hover {
+    @apply border-onyx-border-hover;
+  }
+
+  .onyx-input:focus,
+  .auth-input:focus {
+    @apply border-onyx-gold shadow-[var(--shadow-onyx-glow)];
+  }
+
+  /* ── Checkbox Variant ── */
+  .onyx-checkbox,
+  .auth-checkbox {
+    @apply w-4 h-4 rounded appearance-none cursor-pointer relative shrink-0 transition-colors duration-300 border-[1.5px] border-onyx-border-hover bg-transparent;
+  }
+
+  .onyx-checkbox:checked,
+  .auth-checkbox:checked {
+    @apply bg-onyx-gold border-onyx-gold;
+  }
+
+  .onyx-checkbox:checked::after,
+  .auth-checkbox:checked::after {
+    content: "";
+    @apply absolute left-[3px] top-[1px] w-[5px] h-[8px] border-2 border-black border-t-0 border-l-0 rotate-[42deg];
+  }
+
+  /* ── Card Variants ── */
+  .onyx-card {
+    @apply rounded-xl border border-onyx-border bg-onyx-surface p-5 transition-all duration-300 shadow-[var(--shadow-onyx-sm)];
+  }
+
+  .onyx-card:hover {
+    @apply border-onyx-border-hover shadow-[var(--shadow-onyx-md)];
+  }
+
+  /* ── Loading Skeleton ── */
+  .onyx-skeleton {
+    @apply animate-pulse bg-onyx-border rounded-md;
+  }
+
+  /* ═══════════════════════════════════════════
+     LEGACY AUTH OVERRIDES (Unified mapping)
+  ═══════════════════════════════════════════ */
+  .auth-input-wrap {
+    @apply relative flex items-center;
+  }
+
+  .auth-input-icon {
+    @apply absolute left-[13px] text-onyx-muted2 pointer-events-none flex transition-colors duration-300;
+  }
+
+  .auth-input-wrap:focus-within .auth-input-icon {
+    @apply text-onyx-gold;
+  }
+
+  .auth-field {
+    @apply flex flex-col gap-1;
+  }
+
+  .auth-error {
+    @apply bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm text-red-400 mb-[18px] flex items-start gap-2 leading-relaxed;
+  }
+
+  .auth-error::before {
+    content: "✕";
+    @apply shrink-0 mt-[1px] opacity-70;
+  }
+
+  .auth-footer {
+    @apply mt-6 text-center text-xs text-onyx-muted2;
+  }
+
+  .auth-logo {
+    @apply flex items-center gap-2.5 font-serif text-[1.9rem] font-semibold text-onyx-text tracking-[0.08em] no-underline transition-colors duration-300 hover:text-onyx-gold;
+  }
+
   .auth-hero {
     flex: 0 0 55%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-
     background-image:
       linear-gradient(to right, rgba(6, 6, 10, 0.9) 0%, rgba(6, 6, 10, 0.5) 65%, transparent 100%),
       linear-gradient(to top, rgba(6, 6, 10, 1) 0%, rgba(6, 6, 10, 0.55) 30%, transparent 60%),
@@ -193,312 +258,57 @@
       url("https://images.unsplash.com/photo-1715408153387-b68a37650cb0?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
     background-size: cover;
     background-position: center 60%;
-    background-repeat: no-repeat;
+    @apply relative flex flex-col overflow-hidden bg-no-repeat;
   }
 
-
-
-  /* ONYX logo */
-  .auth-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--auth-serif);
-    font-size: 1.9rem;
-    font-weight: 600;
-    color: var(--auth-text);
-    letter-spacing: 0.08em;
-    text-decoration: none;
-    transition: color var(--auth-ease);
-  }
-
-  .auth-logo:hover {
-    color: var(--auth-gold);
-  }
-
-
-
-
-  /* ══════════════════════
-     FORM PANEL (right 45%)
-  ══════════════════════ */
   .auth-panel {
     flex: 0 0 45%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background: var(--auth-surface);
-    border-left: 1px solid var(--auth-border);
-    padding: 32px 56px;
-    overflow-y: auto;
+    @apply relative flex flex-col justify-center bg-onyx-surface border-l border-onyx-border px-[56px] py-[32px] overflow-y-auto;
   }
 
-
-
-  .auth-panel__eyebrow {
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--auth-gold);
-    margin-bottom: 8px;
-  }
-
-  .auth-panel__title {
-    font-family: var(--auth-serif);
-    font-size: clamp(1.75rem, 2.6vw, 2.25rem);
-    font-weight: 400;
-    color: var(--auth-text);
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    margin-bottom: 20px;
-  }
-
-  /* Error */
-  .auth-error {
-    background: rgba(239, 83, 80, 0.07);
-    border: 1px solid rgba(239, 83, 80, 0.2);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 0.8rem;
-    color: #e57373;
-    margin-bottom: 18px;
-    line-height: 1.6;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .auth-error::before {
-    content: "✕";
-    flex-shrink: 0;
-    margin-top: 1px;
-    opacity: 0.7;
-  }
-
-
-
-  .auth-field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-
-
-  .auth-label {
-    font-size: 0.62rem;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--auth-muted);
-  }
-
-
-
-  /* Input */
-  .auth-input-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .auth-input-icon {
-    position: absolute;
-    left: 13px;
-    color: var(--auth-muted2);
-    pointer-events: none;
-    transition: color var(--auth-ease);
-    display: flex;
-  }
-
-  .auth-input-wrap:focus-within .auth-input-icon {
-    color: var(--auth-gold);
-  }
-
-  .auth-input {
-    width: 100%;
-    background: var(--auth-card);
-    border: 1px solid var(--auth-border);
-    border-radius: 10px;
-    padding: 13px 14px 13px 40px;
-    font-size: 0.875rem;
-    font-family: var(--auth-sans);
-    color: var(--auth-text);
-    outline: none;
-    caret-color: var(--auth-gold);
-    transition: border-color var(--auth-ease), box-shadow var(--auth-ease);
-  }
-
-  .auth-input::placeholder {
-    color: var(--auth-muted2);
-    font-size: 0.83rem;
-  }
-
-  .auth-input:hover {
-    border-color: var(--auth-border2);
-  }
-
-  .auth-input:focus {
-    border-color: var(--auth-gold);
-    box-shadow: 0 0 0 3px var(--auth-gold-glow);
-  }
-
-
-
-  .auth-checkbox {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    border: 1.5px solid var(--auth-border2);
-    background: transparent;
-    appearance: none;
-    cursor: pointer;
-    position: relative;
-    flex-shrink: 0;
-    transition: background var(--auth-ease), border-color var(--auth-ease);
-  }
-
-  .auth-checkbox:checked {
-    background: var(--auth-gold);
-    border-color: var(--auth-gold);
-  }
-
-  .auth-checkbox:checked::after {
-    content: "";
-    position: absolute;
-    left: 3px;
-    top: 1px;
-    width: 5px;
-    height: 8px;
-    border: 2px solid #000;
-    border-top: none;
-    border-left: none;
-    transform: rotate(42deg);
-  }
-
-
-
-  /* Submit button */
-  .auth-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    background: var(--auth-gold);
-    color: #06060a;
-    border: none;
-    border-radius: 10px;
-    padding: 14px 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    font-family: var(--auth-sans);
-    cursor: pointer;
-    letter-spacing: 0.04em;
-    margin-top: 4px;
-    transition: background var(--auth-ease), transform var(--auth-ease), box-shadow var(--auth-ease);
-  }
-
-  .auth-btn:hover:not(:disabled) {
-    background: var(--auth-gold-lt);
-    box-shadow: 0 8px 28px rgba(196, 154, 82, 0.28);
-    transform: translateY(-1px);
-  }
-
-  .auth-btn:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
-  .auth-btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-
-
-
-
-  /* Footer */
-  .auth-footer {
-    margin-top: 24px;
-    text-align: center;
-    font-size: 0.78rem;
-    color: var(--auth-muted2);
-  }
-
-
-
-  /* ── Responsive ── */
   @media (max-width: 960px) {
     .auth-root {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      min-height: 100dvh;
+      @apply relative flex items-center justify-center p-6 min-h-[100dvh];
     }
 
     .auth-hero {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
+      @apply absolute inset-0 w-full h-full z-[1];
     }
 
     .auth-hero__header {
-      padding: 24px 28px;
+      @apply p-6;
     }
 
-    .auth-hero__body {
-      display: none;
-      /* Hide heavy text on mobile to focus on the form */
-    }
-
+    .auth-hero__body,
     .auth-hero__nav {
-      display: none;
+      @apply hidden;
     }
 
     .auth-panel {
-      position: relative;
-      z-index: 2;
       flex: none;
-      width: 100%;
-      max-width: 440px;
-      margin: 15px;
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(10, 10, 15, 0.625);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
-      padding: 44px 36px;
+      @apply relative z-[2] w-full max-w-[440px] m-[15px] rounded-3xl border border-onyx-border-hover bg-onyx-surface/60 backdrop-blur-md shadow-[var(--shadow-onyx-lg)] px-9 py-11;
     }
   }
 
   @media (max-width: 480px) {
     .auth-field-group {
-      flex-direction: column;
-      gap: 12px;
+      @apply flex-col gap-3;
     }
 
     .auth-hero__header {
-      padding: 20px 24px;
+      @apply px-6 py-5;
     }
 
     .auth-logo {
-      font-size: 1.5rem;
+      @apply text-[1.5rem];
     }
 
     .auth-panel {
-      margin: 0;
-      width: 100%;
-      padding: 36px 24px;
+      @apply m-0 w-full px-6 py-9;
     }
 
     .auth-panel__title {
-      font-size: 1.7rem;
+      @apply text-[1.7rem];
     }
   }
 }

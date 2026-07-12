@@ -1,4 +1,6 @@
-export const VariantSelector = ({
+import React, { memo } from "react";
+
+export const VariantSelector = memo(({
   attributes,
   selectedOptions,
   onOptionSelect,
@@ -37,4 +39,4 @@ export const VariantSelector = ({
       </div>
     ))}
   </div>
-);
+));

@@ -34,10 +34,10 @@ const CartItems = ({
   }, [variant]);
 
   return (
-    <div className="flex gap-4 border-b border-onyx-border/70 py-6 first:border-t sm:gap-5 sm:py-7">
+    <div className="flex gap-3 sm:gap-5 border-b border-onyx-border/70 py-5 sm:py-7 first:border-t">
       {/* ── Image ── */}
       <div
-        className="group/img h-[110px] w-[85px] flex-shrink-0 cursor-pointer overflow-hidden rounded-sm border border-onyx-border/70 bg-onyx-surface sm:h-[130px] sm:w-[100px]"
+        className="group/img h-[95px] w-[72px] xs:h-[110px] xs:w-[85px] sm:h-[130px] sm:w-[100px] flex-shrink-0 cursor-pointer overflow-hidden rounded-sm border border-onyx-border/70 bg-onyx-surface"
         onClick={() => product._id && navigate(`/product/${product._id}`)}
         role="button"
         tabIndex={0}
@@ -66,9 +66,9 @@ const CartItems = ({
 
       {/* ── Info ── */}
       <div className="flex-1 flex flex-col justify-between min-w-0">
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1.5 min-w-0">
           <span
-            className="cursor-pointer truncate font-serif text-base leading-tight text-onyx-text transition-colors duration-300 hover:text-onyx-gold sm:text-lg"
+            className="cursor-pointer truncate font-serif text-sm sm:text-base leading-tight text-onyx-text transition-colors duration-300 hover:text-onyx-gold sm:text-lg"
             onClick={() => product._id && navigate(`/product/${product._id}`)}
             role="button"
             tabIndex={0}
@@ -104,7 +104,7 @@ const CartItems = ({
         </div>
 
         {/* ── Actions ── */}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           {/* Quantity stepper */}
           <div className="flex items-center overflow-hidden rounded-md border border-onyx-border/70 bg-onyx-surface">
             <button
@@ -123,11 +123,11 @@ const CartItems = ({
             >
               −
             </button>
-            <span className="w-9 border-x border-onyx-border/70 py-1.5 text-center text-[13px] font-semibold text-onyx-text">
+            <span className="w-8 sm:w-9 border-x border-onyx-border/70 py-1.5 text-center text-[13px] font-semibold text-onyx-text">
               {qty}
             </span>
             <button
-              className="w-8 h-8 flex items-center justify-center text-[rgba(238,233,225,0.5)] hover:text-[#c49a52] hover:bg-[rgba(196,154,82,0.07)] disabled:opacity-25 transition-all border-none bg-transparent cursor-pointer text-lg leading-none"
+              className="w-8 h-8 flex items-center justify-center text-onyx-muted/50 hover:text-onyx-gold hover:bg-onyx-gold/7 disabled:opacity-25 transition-all border-none bg-transparent cursor-pointer text-lg leading-none"
               disabled={qty >= stock}
               aria-label="Increase quantity"
               onClick={async () => {
@@ -146,7 +146,7 @@ const CartItems = ({
 
           {/* Remove */}
           <button
-            className="flex cursor-pointer items-center gap-1.5 rounded-md border border-red-400/20 bg-transparent px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-red-400 transition-all hover:border-red-400/45 hover:bg-red-400/10"
+            className="flex cursor-pointer items-center gap-1.5 rounded-md border border-red-400/20 bg-transparent px-2.5 sm:px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-red-400 transition-all hover:border-red-400/45 hover:bg-red-400/10"
             onClick={async () => {
               if (!item._id) return;
               try {

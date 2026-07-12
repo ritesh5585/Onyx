@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, memo } from "react";
 import { animateCardHover } from "../Shared/animations";
 
 const ProductCard = ({ product, onClick }) => {
@@ -51,4 +51,4 @@ const ProductCard = ({ product, onClick }) => {
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

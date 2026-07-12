@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 
 /**
  * ProductOverview — Core product info block.
@@ -49,4 +49,4 @@ const ProductOverview = ({
   );
 };
 
-export default ProductOverview;
+export default memo(ProductOverview);

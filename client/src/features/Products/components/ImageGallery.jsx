@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 
 const ImageGallery = ({
   mainImage,
@@ -66,4 +66,4 @@ const ImageGallery = ({
   );
 };
 
-export default ImageGallery;
+export default memo(ImageGallery);

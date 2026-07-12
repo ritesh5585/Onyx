@@ -1,105 +1,27 @@
 import React, {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, useNavigate, useLocation } from "react-router";
 import { useSelector } from "react-redux";
 import { useAuth } from "../auth/hook/useAuth";
 import { useCart } from "../cart/hooks/useCart";
 import Count from "../cart/components/Count";
+import { initNavbarScrollEffect, animatePageIn } from "./animations";
 
-const CartLink = ({ cartCount, isMobile }) => (
-  <NavLink
-    to="/getyourcart"
-    className="onyx-nav-link relative flex items-center gap-1.5 whitespace-nowrap"
-    aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
-  >
-    <Count isMobile={isMobile} cartCount={cartCount} />
-  </NavLink>
-);
-
-const DesktopLinks = ({ user, cartCount }) => (
-  <div
-    className="hidden md:flex items-center gap-6 text-[11px] font-medium tracking-[0.12em] uppercase"
-    aria-label="Main navigation"
-  >
-    {user?.role === "seller" && (
-      <>
-        <NavLink
-          to="/seller/create-product"
-          className="onyx-nav-link whitespace-nowrap"
-        >
-          Upload
-        </NavLink>
-        <NavLink
-          to="/seller/dashboard"
-          className="onyx-nav-link whitespace-nowrap"
-        >
-          Dashboard
-        </NavLink>
-      </>
-    )}
-
-    {user && <CartLink cartCount={cartCount} isMobile={false} />}
-  </div>
-);
-
-const MobileMenuItems = ({ user, cartCount, logout }) => (
-  <>
-    {user && <CartLink cartCount={cartCount} isMobile={true} />}
-
-    {user?.role === "seller" && (
-      <>
-        <NavLink
-          to="/seller/create-product"
-          className="onyx-nav-link whitespace-nowrap"
-        >
-          Upload
-        </NavLink>
-        <NavLink
-          to="/seller/dashboard"
-          className="onyx-nav-link whitespace-nowrap"
-        >
-          Dashboard
-        </NavLink>
-      </>
-    )}
-
-    {!user && (
-      <>
-        <NavLink to="/register" className="onyx-nav-link whitespace-nowrap">
-          Register
-        </NavLink>
-        <NavLink to="/login" className="onyx-nav-link whitespace-nowrap">
-          Sign In
-        </NavLink>
-      </>
-    )}
-
-    {user && (
-      <button
-        onClick={logout}
-        className="onyx-nav-link bg-transparent border-none cursor-pointer p-0 text-left whitespace-nowrap"
-        type="button"
-      >
-        Logout
-      </button>
-    )}
-  </>
-);
-
-const Layout = ({ children, showLinks = false, showBackButton = false }) => {
+const Layout = ({ children, showLinks = false, showBackButton = false, transparentNav = false }) => {
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
-  const cartData = useSelector((state) => state.cart.items) || {};
-  const cartItems = cartData.items || [];
-  const { handleLogout } = useAuth();
+  const location = useLocation();
+  const { user, handleLogout } = useAuth();
+  const cartCount = useSelector((state) => state.cart.items?.items?.length) || 0;
   const { handleGetCart } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
+  const headerRef = useRef(null);
+  const contentRef = useRef(null);
+
 
   const logout = useCallback(async () => {
     setMobileMenuOpen(false);
@@ -107,21 +29,9 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
     navigate("/");
   }, [handleLogout, navigate]);
 
-  const cartCount = cartItems.length;
-  const userInitial = useMemo(() => {
-    const displayName = user?.fullname || user?.name || user?.email;
-    return displayName?.charAt(0).toUpperCase() || "U";
-  }, [user]);
-
-  const userDisplayName = useMemo(
-    () => user?.fullname || user?.name || user?.email || "Guest User",
-    [user],
-  );
-
-  const authStatusLabel = useMemo(
-    () => (user ? "Signed in" : "Not signed in"),
-    [user],
-  );
+  const userDisplayName = user?.fullname || user?.name || user?.email || "Guest User";
+  const userInitial = userDisplayName.charAt(0).toUpperCase();
+  const authStatusLabel = user ? "Signed in" : "Not signed in";
 
   useEffect(() => {
     if (!user) return;
@@ -146,11 +56,25 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [mobileMenuOpen]);
 
+  // Navbar scroll effect
+  useEffect(() => {
+    return initNavbarScrollEffect(headerRef.current, 40);
+  }, []);
+
+
+
+  // Page transition in on each route change
+  useEffect(() => {
+    animatePageIn(contentRef.current);
+  }, [location.pathname]);
+
   return (
     <div className="onyx-bg min-h-screen">
-      {/* ── Navbar — full-width with blur, content inside container ── */}
+
+
       <header
-        className={`onyx-navbar sticky top-0 z-40 w-full ${
+        ref={headerRef}
+        className={`onyx-navbar sticky top-0 z-40 w-full transition-all duration-300 ${
           showLinks ? "justify-between" : "gap-3"
         }`}
       >
@@ -159,11 +83,10 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
             showLinks ? "justify-between" : "gap-2 sm:gap-4"
           }`}
         >
-          {/* Left — back button or logo */}
           {showLinks ? (
             <NavLink
               to="/"
-              className="text-xl font-semibold uppercase tracking-[0.08em] text-[#eee9e1] font-serif no-underline"
+              className="text-base sm:text-xl font-semibold uppercase tracking-[0.08em] text-onyx-text font-serif no-underline shrink-0"
             >
               ONYX
             </NavLink>
@@ -172,7 +95,7 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
               {showBackButton && (
                 <button
                   onClick={() => navigate(-1)}
-                  className="text-2xl leading-none flex items-center justify-center w-8 h-8 rounded-full border border-white/8 text-[#eee9e1]/45 transition-all duration-300 hover:text-[#c49a52] hover:border-[#c49a52]/35 hover:bg-[#c49a52]/5"
+                  className="flex items-center justify-center w-9 h-9 shrink-0 rounded-full border border-white/10 text-onyx-muted transition-all duration-300 hover:text-onyx-gold hover:border-onyx-gold/35 hover:bg-onyx-gold/5"
                   type="button"
                   aria-label="Go back"
                 >
@@ -181,16 +104,45 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
               )}
               <NavLink
                 to="/"
-                className="text-lg font-semibold uppercase tracking-[0.08em] text-[#eee9e1] font-serif no-underline"
+                className="text-base sm:text-lg font-semibold uppercase tracking-[0.08em] text-onyx-text font-serif no-underline shrink-0"
               >
                 ONYX
               </NavLink>
             </>
           )}
 
-          {/* Right — nav links */}
           <div className="ml-auto flex items-center gap-3">
-            <DesktopLinks user={user} cartCount={cartCount} />
+            {/* Desktop Links inline */}
+            <div
+              className="hidden md:flex items-center gap-6 text-[11px] font-medium tracking-[0.12em] uppercase"
+              aria-label="Main navigation"
+            >
+              {user?.role === "seller" && (
+                <>
+                  <NavLink
+                    to="/seller/create-product"
+                    className="onyx-nav-link whitespace-nowrap"
+                  >
+                    Upload
+                  </NavLink>
+                  <NavLink
+                    to="/seller/dashboard"
+                    className="onyx-nav-link whitespace-nowrap"
+                  >
+                    Dashboard
+                  </NavLink>
+                </>
+              )}
+              {user && (
+                <NavLink
+                  to="/getyourcart"
+                  className="onyx-nav-link relative flex items-center gap-1.5 whitespace-nowrap"
+                  aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
+                >
+                  <Count isMobile={false} cartCount={cartCount} />
+                </NavLink>
+              )}
+            </div>
 
             <div className="relative hidden md:block">
               <div className="group relative">
@@ -246,45 +198,67 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
               className="md:hidden flex items-center relative"
               ref={mobileMenuRef}
             >
+              {/* Cart icon visible on mobile always */}
+              {user && (
+                <NavLink
+                  to="/getyourcart"
+                  className="onyx-nav-link relative flex items-center mr-1"
+                  aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
+                >
+                  <Count isMobile={true} cartCount={cartCount} />
+                </NavLink>
+              )}
+
               <button
-                className="text-[#eee9e1] p-2 hover:text-[#c49a52] transition-colors"
+                className="p-2 text-onyx-text hover:text-onyx-gold transition-colors"
                 aria-label="Open mobile menu"
                 type="button"
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
               >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="4" y1="12" x2="20" y2="12"></line>
-                  <line x1="4" y1="6" x2="20" y2="6"></line>
-                  <line x1="4" y1="18" x2="20" y2="18"></line>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  {mobileMenuOpen
+                    ? <><line x1="4" y1="4" x2="20" y2="20" /><line x1="20" y1="4" x2="4" y2="20" /></>
+                    : <><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></>
+                  }
                 </svg>
               </button>
 
               {mobileMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-white/10 bg-[#13131a] p-5 shadow-2xl z-50">
-                  <div className="mb-4 border-b border-white/10 pb-3">
-                    <p className="truncate text-sm font-semibold uppercase tracking-[0.12em] text-[#eee9e1]">
+                <div className="absolute right-0 top-[calc(100%+8px)] w-[min(280px,90vw)] rounded-2xl border border-white/10 bg-onyx-card p-5 shadow-2xl z-50">
+                  <div className="mb-4 border-b border-onyx-border/70 pb-3">
+                    <p className="truncate text-sm font-semibold uppercase tracking-[0.12em] text-onyx-text">
                       {userDisplayName}
                     </p>
-                    <p className="truncate text-[10px] uppercase tracking-[0.18em] text-[#eee9e1]/70">
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-onyx-muted">
                       {authStatusLabel}
                     </p>
                   </div>
-                  <div className="flex flex-col gap-3 text-[11px] uppercase tracking-[0.12em] text-[#eee9e1]">
-                    <MobileMenuItems
-                      user={user}
-                      cartCount={cartCount}
-                      logout={logout}
-                    />
-                  </div>
+                  <nav className="flex flex-col gap-3 text-[11px] uppercase tracking-[0.12em]">
+                    {user?.role === "seller" && (
+                      <>
+                        <NavLink to="/seller/create-product" onClick={() => setMobileMenuOpen(false)} className="onyx-nav-link py-1">
+                          Upload
+                        </NavLink>
+                        <NavLink to="/seller/dashboard" onClick={() => setMobileMenuOpen(false)} className="onyx-nav-link py-1">
+                          Dashboard
+                        </NavLink>
+                      </>
+                    )}
+                    {!user ? (
+                      <>
+                        <NavLink to="/register" onClick={() => setMobileMenuOpen(false)} className="onyx-nav-link py-1">Register</NavLink>
+                        <NavLink to="/login" onClick={() => setMobileMenuOpen(false)} className="onyx-nav-link py-1">Sign In</NavLink>
+                      </>
+                    ) : (
+                      <button
+                        onClick={logout}
+                        className="onyx-nav-link bg-transparent border-none cursor-pointer p-0 text-left py-1 w-full"
+                        type="button"
+                      >
+                        Logout
+                      </button>
+                    )}
+                  </nav>
                 </div>
               )}
             </div>
@@ -292,8 +266,7 @@ const Layout = ({ children, showLinks = false, showBackButton = false }) => {
         </div>
       </header>
 
-      {/* ── Page Content ── */}
-      <div className="onyx-container">{children}</div>
+      <div ref={contentRef} className="onyx-container page-content">{children}</div>
     </div>
   );
 };
