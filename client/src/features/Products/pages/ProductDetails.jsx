@@ -22,6 +22,7 @@ const ProductDetails = () => {
 
   const detail = useSelector((state) => state.product.details);
   const user = useSelector((state) => state.auth.user);
+  const cartItems = useSelector((state) => state.cart.items?.items) || [];
   const { handleProductDetails } = useProduct();
   const { handleAddtoCart } = useCart();
 
@@ -34,32 +35,25 @@ const ProductDetails = () => {
     const attributes = {};
     const variantsList = detail.variants.map((v) => {
       const parsedAttrs = Object.fromEntries(readAttributes(v.attributes));
-      Object.entries(parsedAttrs).forEach(([key, value]) => {
-        if (!attributes[key]) attributes[key] = new Set();
-        attributes[key].add(value);
-      });
+      Object.entries(parsedAttrs).forEach(([k, val]) =>
+        (attributes[k] ??= new Set()).add(val),
+      );
       return { ...v, parsedAttrs };
     });
-
-    Object.keys(attributes).forEach((key) => {
-      attributes[key] = Array.from(attributes[key]);
-    });
-
+    Object.keys(attributes).forEach(
+      (k) => (attributes[k] = [...attributes[k]]),
+    );
     return { attributes, variantsList };
   }, [detail]);
 
   useEffect(() => {
-    if (Object.keys(parsedVariants.attributes).length > 0) {
-      const initialOptions = {};
-      Object.entries(parsedVariants.attributes).forEach(([key, values]) => {
-        initialOptions[key] = values[0];
-      });
-      setSelectedOptions(initialOptions);
-      setSelectedImage(0);
-    } else {
-      setSelectedOptions({});
-      setSelectedImage(0);
-    }
+    const attrEntries = Object.entries(parsedVariants.attributes);
+    setSelectedOptions(
+      attrEntries.length > 0
+        ? Object.fromEntries(attrEntries.map(([k, vals]) => [k, vals[0]]))
+        : {},
+    );
+    setSelectedImage(0);
   }, [parsedVariants.attributes]);
 
   const resolvedVariant = useMemo(() => {
@@ -68,12 +62,22 @@ const ProductDetails = () => {
       !Object.keys(selectedOptions).length
     )
       return null;
-    return parsedVariants.variantsList.find((variant) =>
+    return parsedVariants.variantsList.find((v) =>
       Object.entries(selectedOptions).every(
-        ([key, val]) => variant.parsedAttrs[key] === val,
+        ([k, val]) => v.parsedAttrs[k] === val,
       ),
     );
   }, [parsedVariants.variantsList, selectedOptions]);
+
+  const isInCart = useMemo(() => {
+    return cartItems.some(
+      (item) =>
+        item.product?._id === detail?._id &&
+        (resolvedVariant
+          ? item.variant?._id === resolvedVariant._id
+          : !item.variant),
+    );
+  }, [cartItems, detail?._id, resolvedVariant]);
 
   if (!detail) return <Spinner />;
 
@@ -87,36 +91,32 @@ const ProductDetails = () => {
   const activePrice = resolvedVariant?.price?.amount
     ? resolvedVariant.price
     : detail.price;
-
   const hasVariants = detail.variants?.length > 0;
+  const activeStock = hasVariants ? resolvedVariant?.stock : detail.stock;
+  const isOutOfStock = activeStock === undefined || activeStock <= 0;
 
-  const stockNotAvailable = hasVariants
-    ? !resolvedVariant || resolvedVariant.stock <= 0
-    : detail.stock <= 0;
-
-  const isOutOfStock = stockNotAvailable;
-
-  const stockStatus = !hasVariants
-    ? detail.stock > 0
-      ? `${detail.stock} in stock`
-      : "Out of stock"
-    : !resolvedVariant
+  const stockStatus =
+    hasVariants && !resolvedVariant
       ? "Combination unavailable"
-      : resolvedVariant.stock > 0
-        ? `${resolvedVariant.stock} in stock`
+      : !isOutOfStock
+        ? `${activeStock} in stock`
         : "Out of stock";
 
   const onAddToCart = async () => {
     if (!user) {
       navigate("/login");
-      return;
+      return false;
     }
-
-    if (isOutOfStock) return;
+    if (isInCart) {
+      navigate("/getyourcart");
+      return true;
+    }
+    if (isOutOfStock) return false;
     setIsAdding(true);
     try {
       await handleAddtoCart(detail._id, resolvedVariant?._id || null);
       toast.success("Item added to cart successfully!");
+      return true;
     } catch (err) {
       console.error("Add to cart failed", err);
       toast.error(
@@ -124,29 +124,18 @@ const ProductDetails = () => {
           err?.message ||
           "Failed to add item to cart.",
       );
+      return false;
     } finally {
       setIsAdding(false);
     }
   };
 
   const onBuyNow = async () => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    if (isOutOfStock) return;
-    try {
-      await onAddToCart();
-      navigate("/getyourcart");
-    } catch (err) {
-      console.error(err);
-    }
+    if (await onAddToCart()) navigate("/getyourcart");
   };
 
   return (
     <>
-
       <Layout showBackButton={true}>
         <div className="pt-8 pb-36 md:pt-12 md:pb-40">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 xl:gap-24">
@@ -207,15 +196,17 @@ const ProductDetails = () => {
             <button
               type="button"
               onClick={onAddToCart}
-              disabled={isOutOfStock || isAdding || stockNotAvailable}
+              disabled={!isInCart && (isOutOfStock || isAdding)}
               className="onyx-btn-secondary flex-1"
-              aria-label="Add to cart"
+              aria-label={isInCart ? "Go to cart" : "Add to cart"}
             >
               {isAdding ? (
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-2 justify-center">
                   <span className="w-3.5 h-3.5 rounded-full border border-current border-t-transparent animate-spin" />
                   Adding…
                 </span>
+              ) : isInCart ? (
+                "Go to Cart"
               ) : (
                 "Add to Cart"
               )}
