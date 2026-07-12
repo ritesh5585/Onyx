@@ -3,8 +3,8 @@ import { useNavigate, NavLink } from "react-router";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import Layout from "../../Shared/Layout";
-import ProductCard from "../../Shared/ProductCard";
-import EmptyState from "../../Shared/EmptyState";
+import ProductCard from "../../components/ProductCard";
+import EmptyState from "../../components/EmptyState";
 import {
   animateHeroContent,
   animateStaggerFadeUp,

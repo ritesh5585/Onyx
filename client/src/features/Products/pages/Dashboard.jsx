@@ -3,8 +3,8 @@ import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import Layout from "../../Shared/Layout.jsx";
-import ProductCard from "../../Shared/ProductCard.jsx";
-import EmptyState from "../../Shared/EmptyState.jsx";
+import ProductCard from "../../components/ProductCard.jsx";
+import EmptyState from "../../components/EmptyState.jsx";
 
 const Dashboard = () => {
   const { handleGetSellerProduct } = useProduct();

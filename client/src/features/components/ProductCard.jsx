@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { animateCardHover } from "./animations";
+import { animateCardHover } from "../Shared/animations";
 
 const ProductCard = ({ product, onClick }) => {
   const cardRef = useRef(null);

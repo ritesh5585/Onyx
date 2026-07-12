@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router";
-import Layout from "./Layout";
+import Layout from "../Shared/Layout";
 
 const NotFound = () => {
   const navigate = useNavigate();
