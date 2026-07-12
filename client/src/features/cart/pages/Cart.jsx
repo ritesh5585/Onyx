@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { useNavigate, NavLink } from "react-router";
 import { useCart } from "../hooks/useCart";
 import Layout from "../../Shared/Layout";
-import Toast from "../../Shared/Toast";
 import EmptyState from "../../components/EmptyState";
 import OrderSummary from "../components/OrderSummary";
 import CartItems from "../components/CartItems";
@@ -28,14 +27,7 @@ const Cart = () => {
     handleDecrementQty,
   } = useCart();
 
-  const [toast, setToast] = useState({ msg: "", type: "", visible: false });
 
-  const showToast = useCallback((msg, type = "success") => {
-    setToast({ msg, type, visible: true });
-    window.setTimeout(() => {
-      setToast((prev) => ({ ...prev, visible: false }));
-    }, 3000);
-  }, []);
 
   useEffect(() => {
     handleGetCart().catch(() => {
@@ -47,13 +39,6 @@ const Cart = () => {
 
   return (
     <>
-      {toast.visible && (
-        <Toast
-          msg={toast.msg}
-          type={toast.type}
-          onClose={() => setToast((p) => ({ ...p, visible: false }))}
-        />
-      )}
 
       <Layout showBackButton={true}>
         <div className="min-h-[60vh] pb-24 pt-8">
@@ -90,7 +75,6 @@ const Cart = () => {
                     onIncrementQty={handleIncrementQty}
                     onDecrementQty={handleDecrementQty}
                     onRemoveItem={handleRemoveItem}
-                    showToast={showToast}
                   />
                 ))}
               </div>

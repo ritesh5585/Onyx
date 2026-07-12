@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { toast } from "sonner";
 
 const CartItems = ({
   item,
@@ -6,7 +7,6 @@ const CartItems = ({
   onIncrementQty,
   onDecrementQty,
   onRemoveItem,
-  showToast,
 }) => {
   const product = item.product || {};
   const variant = item.variant || null;
@@ -115,9 +115,9 @@ const CartItems = ({
                 if (!item._id || qty <= 1) return;
                 try {
                   await onDecrementQty(item._id, qty);
-                  showToast("Quantity updated", "success");
+                  toast.success("Quantity updated");
                 } catch {
-                  showToast("Failed to update quantity", "error");
+                  toast.error("Failed to update quantity");
                 }
               }}
             >
@@ -134,9 +134,9 @@ const CartItems = ({
                 if (!item._id || qty >= stock) return;
                 try {
                   await onIncrementQty(item._id, qty);
-                  showToast("Quantity updated", "success");
+                  toast.success("Quantity updated");
                 } catch {
-                  showToast("Failed to update quantity", "error");
+                  toast.error("Failed to update quantity");
                 }
               }}
             >
@@ -151,9 +151,9 @@ const CartItems = ({
               if (!item._id) return;
               try {
                 await onRemoveItem(item._id);
-                showToast("Item removed from cart", "success");
+                toast.success("Item removed from cart");
               } catch {
-                showToast("Failed to remove item", "error");
+                toast.error("Failed to remove item");
               }
             }}
           >

@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useProduct } from "../hooks/useProduct";
 import { Spinner } from "../../Shared/Spinner";
 import Layout from "../../Shared/Layout";
-import Toast from "../../Shared/Toast";
+import { toast } from "sonner";
 
 // Shared Reusable Components
 import ImageGallery from "../components/ImageGallery";
@@ -127,7 +127,6 @@ const SellerProductdetail = () => {
   const [saving, setSaving] = useState(false);
   const [newVariant, setNewVariant] = useState(INITIAL_VARIANT);
   const [variantSubmitting, setVariantSubmitting] = useState(false);
-  const [toast, setToast] = useState(null);
 
   const detail = useSelector((state) => state.product.details);
 
@@ -138,11 +137,6 @@ const SellerProductdetail = () => {
     handleDeleteProduct,
     handleDeleteVariant,
   } = useProduct();
-
-  const showToast = useCallback((msg, type = "success") => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3500);
-  }, []);
 
   useEffect(() => {
     if (productId) handleProductDetails(productId);
@@ -176,11 +170,10 @@ const SellerProductdetail = () => {
     try {
       await handleUpdateProduct(productId, editForm);
       setIsEditing(false);
-      showToast("Product details updated successfully.");
+      toast.success("Product details updated successfully.");
     } catch (err) {
-      showToast(
+      toast.error(
         err?.response?.data?.message || "Failed to update product.",
-        "error",
       );
     } finally {
       setSaving(false);
@@ -189,18 +182,17 @@ const SellerProductdetail = () => {
 
   const handleAddVariant = async () => {
     if (!newVariant.name.trim() || !newVariant.value.trim()) {
-      showToast("Attribute name and value are required.", "error");
+      toast.error("Attribute name and value are required.");
       return;
     }
     setVariantSubmitting(true);
     try {
       await handleProductVariants(productId, [newVariant]);
       setNewVariant(INITIAL_VARIANT);
-      showToast("Variant added successfully.");
+      toast.success("Variant added successfully.");
     } catch (err) {
-      showToast(
+      toast.error(
         err?.response?.data?.message || "Failed to add variant.",
-        "error",
       );
     } finally {
       setVariantSubmitting(false);
@@ -211,10 +203,10 @@ const SellerProductdetail = () => {
     if (!window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) return;
     try {
       await handleDeleteProduct(productId);
-      showToast("Product deleted successfully");
+      toast.success("Product deleted successfully");
       setTimeout(() => navigate(-1), 1000);
     } catch (err) {
-      showToast(err?.response?.data?.message || "Failed to delete product.", "error");
+      toast.error(err?.response?.data?.message || "Failed to delete product.");
     }
   };
 
@@ -222,9 +214,9 @@ const SellerProductdetail = () => {
     if (!window.confirm("Are you sure you want to remove this variant?")) return;
     try {
       await handleDeleteVariant(productId, variantId);
-      showToast("Variant removed successfully");
+      toast.success("Variant removed successfully");
     } catch (err) {
-      showToast(err?.response?.data?.message || "Failed to remove variant.", "error");
+      toast.error(err?.response?.data?.message || "Failed to remove variant.");
     }
   };
 
@@ -232,9 +224,6 @@ const SellerProductdetail = () => {
 
   return (
     <Layout showBackButton={true}>
-      {toast && (
-        <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />
-      )}
 
       <div className="py-10 md:py-14">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 xl:gap-24">

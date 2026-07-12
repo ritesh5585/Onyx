@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router";
 import { routes } from "./app.router";
 import { useAuth } from "../features/auth/hook/useAuth";
 import { Spinner } from "../features/Shared/Spinner.jsx";
+import { Toaster } from "sonner";
 
 const App = () => {
   const { checkAuth, loading, user } = useAuth();
@@ -15,7 +16,14 @@ const App = () => {
     });
   }, [checkAuth]);
 
-  return isCheckingAuth ? <Spinner /> : <RouterProvider router={routes} />
+  return isCheckingAuth ? (
+    <Spinner />
+  ) : (
+    <>
+      <RouterProvider router={routes} />
+      <Toaster theme="dark" closeButton richColors />
+    </>
+  );
 };
 
 export default App;

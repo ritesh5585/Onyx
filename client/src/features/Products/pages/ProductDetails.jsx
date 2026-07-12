@@ -10,7 +10,7 @@ import ProductOverview from "../components/ProductOverview";
 import { readAttributes } from "../utils/variantUtils";
 import { useCart } from "../../cart/hooks/useCart";
 import { VariantSelector } from "../components/variantSelector";
-import Toast from "../../Shared/Toast";
+import { toast } from "sonner";
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -19,12 +19,6 @@ const ProductDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [isAdding, setIsAdding] = useState(false);
-  const [toast, setToast] = useState({ msg: "", type: "", visible: false });
-
-  const showToast = (msg, type = "success") => {
-    setToast({ msg, type, visible: true });
-    setTimeout(() => setToast((prev) => ({ ...prev, visible: false })), 3000);
-  };
 
   const detail = useSelector((state) => state.product.details);
   const user = useSelector((state) => state.auth.user);
@@ -122,14 +116,13 @@ const ProductDetails = () => {
     setIsAdding(true);
     try {
       await handleAddtoCart(detail._id, resolvedVariant?._id || null);
-      showToast("Item added to cart successfully!", "success");
+      toast.success("Item added to cart successfully!");
     } catch (err) {
       console.error("Add to cart failed", err);
-      showToast(
+      toast.error(
         err?.response?.data?.message ||
           err?.message ||
           "Failed to add item to cart.",
-        "error",
       );
     } finally {
       setIsAdding(false);
@@ -145,7 +138,7 @@ const ProductDetails = () => {
     if (isOutOfStock) return;
     try {
       await onAddToCart();
-      navigate("/cart");
+      navigate("/getyourcart");
     } catch (err) {
       console.error(err);
     }
@@ -153,13 +146,6 @@ const ProductDetails = () => {
 
   return (
     <>
-      {toast.visible && (
-        <Toast
-          msg={toast.msg}
-          type={toast.type}
-          onClose={() => setToast((prev) => ({ ...prev, visible: false }))}
-        />
-      )}
 
       <Layout showBackButton={true}>
         <div className="pt-8 pb-36 md:pt-12 md:pb-40">
