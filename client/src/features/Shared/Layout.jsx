@@ -1,27 +1,27 @@
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { NavLink, useNavigate, useLocation } from "react-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { NavLink, Link, useNavigate, useLocation } from "react-router";
 import { useSelector } from "react-redux";
 import { useAuth } from "../auth/hook/useAuth";
 import { useCart } from "../cart/hooks/useCart";
 import Count from "../cart/components/Count";
 import { initNavbarScrollEffect, animatePageIn } from "./animations";
 
-const Layout = ({ children, showLinks = false, showBackButton = false, transparentNav = false }) => {
+const Layout = ({
+  children,
+  showLinks = false,
+  showBackButton = false,
+  transparentNav = false,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, handleLogout } = useAuth();
-  const cartCount = useSelector((state) => state.cart.items?.items?.length) || 0;
+  const cartCount =
+    useSelector((state) => state.cart.items?.items?.length) || 0;
   const { handleGetCart } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
   const headerRef = useRef(null);
   const contentRef = useRef(null);
-
 
   const logout = useCallback(async () => {
     setMobileMenuOpen(false);
@@ -29,7 +29,8 @@ const Layout = ({ children, showLinks = false, showBackButton = false, transpare
     navigate("/");
   }, [handleLogout, navigate]);
 
-  const userDisplayName = user?.fullname || user?.name || user?.email || "Guest User";
+  const userDisplayName =
+    user?.fullname || user?.name || user?.email || "Guest User";
   const userInitial = userDisplayName.charAt(0).toUpperCase();
   const authStatusLabel = user ? "Signed in" : "Not signed in";
 
@@ -61,8 +62,6 @@ const Layout = ({ children, showLinks = false, showBackButton = false, transpare
     return initNavbarScrollEffect(headerRef.current, 40);
   }, []);
 
-
-
   // Page transition in on each route change
   useEffect(() => {
     animatePageIn(contentRef.current);
@@ -70,46 +69,55 @@ const Layout = ({ children, showLinks = false, showBackButton = false, transpare
 
   return (
     <div className="onyx-bg min-h-screen">
-
-
       <header
         ref={headerRef}
         className={`onyx-navbar sticky top-0 z-40 w-full transition-all duration-300 ${
           showLinks ? "justify-between" : "gap-3"
         }`}
       >
-        <div
-          className={`onyx-container w-full flex items-center ${
-            showLinks ? "justify-between" : "gap-2 sm:gap-4"
-          }`}
-        >
-          {showLinks ? (
-            <NavLink
+        <div className="onyx-container w-full flex items-center justify-between gap-4 relative">
+          <div className="flex items-center gap-3">
+            {showBackButton && (
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center justify-center w-9 h-9 shrink-0 rounded-full border border-white/10 text-onyx-muted transition-all duration-300 hover:text-onyx-gold hover:border-onyx-gold/35 hover:bg-onyx-gold/5"
+                type="button"
+                aria-label="Go back"
+              >
+                ←
+              </button>
+            )}
+            <Link
               to="/"
-              className="text-base sm:text-xl font-semibold uppercase tracking-[0.08em] text-onyx-text font-serif no-underline shrink-0"
+              className="text-xl font-semibold uppercase tracking-[0.08em] !text-onyx-text hover:!text-onyx-gold transition-colors font-serif no-underline shrink-0"
             >
               ONYX
-            </NavLink>
-          ) : (
-            <>
-              {showBackButton && (
-                <button
-                  onClick={() => navigate(-1)}
-                  className="flex items-center justify-center w-9 h-9 shrink-0 rounded-full border border-white/10 text-onyx-muted transition-all duration-300 hover:text-onyx-gold hover:border-onyx-gold/35 hover:bg-onyx-gold/5"
-                  type="button"
-                  aria-label="Go back"
-                >
-                  ←
-                </button>
-              )}
-              <NavLink
-                to="/"
-                className="text-base sm:text-lg font-semibold uppercase tracking-[0.08em] text-onyx-text font-serif no-underline shrink-0"
+            </Link>
+          </div>
+
+          <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2 w-full max-w-[320px] group items-end border-b border-onyx-gold/40 focus-within:border-onyx-gold transition-colors">
+            <input
+              type="text"
+              placeholder="Search for products..."
+              className="w-full bg-transparent border-none py-1.5 px-2 text-[12px] !text-onyx-text outline-none placeholder:text-white/40 tracking-wider"
+            />
+            <button
+              type="button"
+              aria-label="Search"
+              className="flex items-center justify-center w-7 h-7 shrink-0 bg-onyx-gold rounded-t-sm text-onyx-black hover:bg-onyx-gold-lt transition-colors shadow-[0_0_10px_rgba(196,154,82,0.3)]"
+            >
+              <svg
+                className="w-3.5 h-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
               >
-                ONYX
-              </NavLink>
-            </>
-          )}
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+          </div>
 
           <div className="ml-auto flex items-center gap-3">
             {/* Desktop Links inline */}
@@ -215,11 +223,28 @@ const Layout = ({ children, showLinks = false, showBackButton = false, transpare
                 type="button"
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  {mobileMenuOpen
-                    ? <><line x1="4" y1="4" x2="20" y2="20" /><line x1="20" y1="4" x2="4" y2="20" /></>
-                    : <><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></>
-                  }
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {mobileMenuOpen ? (
+                    <>
+                      <line x1="4" y1="4" x2="20" y2="20" />
+                      <line x1="20" y1="4" x2="4" y2="20" />
+                    </>
+                  ) : (
+                    <>
+                      <line x1="4" y1="7" x2="20" y2="7" />
+                      <line x1="4" y1="12" x2="20" y2="12" />
+                      <line x1="4" y1="17" x2="20" y2="17" />
+                    </>
+                  )}
                 </svg>
               </button>
 
@@ -236,18 +261,38 @@ const Layout = ({ children, showLinks = false, showBackButton = false, transpare
                   <nav className="flex flex-col gap-3 text-[11px] uppercase tracking-[0.12em]">
                     {user?.role === "seller" && (
                       <>
-                        <NavLink to="/seller/create-product" onClick={() => setMobileMenuOpen(false)} className="onyx-nav-link py-1">
+                        <NavLink
+                          to="/seller/create-product"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="onyx-nav-link py-1"
+                        >
                           Upload
                         </NavLink>
-                        <NavLink to="/seller/dashboard" onClick={() => setMobileMenuOpen(false)} className="onyx-nav-link py-1">
+                        <NavLink
+                          to="/seller/dashboard"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="onyx-nav-link py-1"
+                        >
                           Dashboard
                         </NavLink>
                       </>
                     )}
                     {!user ? (
                       <>
-                        <NavLink to="/register" onClick={() => setMobileMenuOpen(false)} className="onyx-nav-link py-1">Register</NavLink>
-                        <NavLink to="/login" onClick={() => setMobileMenuOpen(false)} className="onyx-nav-link py-1">Sign In</NavLink>
+                        <NavLink
+                          to="/register"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="onyx-nav-link py-1"
+                        >
+                          Register
+                        </NavLink>
+                        <NavLink
+                          to="/login"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="onyx-nav-link py-1"
+                        >
+                          Sign In
+                        </NavLink>
                       </>
                     ) : (
                       <button
@@ -266,7 +311,9 @@ const Layout = ({ children, showLinks = false, showBackButton = false, transpare
         </div>
       </header>
 
-      <div ref={contentRef} className="onyx-container page-content">{children}</div>
+      <div ref={contentRef} className="onyx-container page-content">
+        {children}
+      </div>
     </div>
   );
 };

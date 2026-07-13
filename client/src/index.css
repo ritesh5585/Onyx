@@ -125,7 +125,17 @@
   }
 
   .onyx-nav-link {
-    @apply transition-colors duration-300 text-onyx-gold-lt/75 hover:text-onyx-text;
+    @apply relative transition-colors duration-300 !text-onyx-text hover:!text-onyx-gold [&.active]:!text-onyx-gold;
+  }
+
+  .onyx-nav-link::after {
+    content: '';
+    @apply absolute -bottom-[6px] left-0 h-[1.5px] w-0 bg-onyx-gold transition-all duration-300 ease-out;
+  }
+
+  .onyx-nav-link:hover::after,
+  .onyx-nav-link.active::after {
+    @apply w-full shadow-[0_0_8px_rgba(196,154,82,0.6)];
   }
 
   .onyx-divider {

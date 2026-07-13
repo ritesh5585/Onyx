@@ -81,7 +81,6 @@ export const useCart = () => {
 
     const handleOrderPayment = useCallback(async (amount, currency) => {
         const data = await createOrderPayment()
-        console.log(data)
         
         return data.orders
     }, [refreshCart])
