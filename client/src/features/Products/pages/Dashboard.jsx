@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -354,14 +355,17 @@ const Dashboard = () => {
       )}
 
       {/* Mobile FAB — replaces the top-right button below sm */}
-      <button
-        type="button"
-        onClick={goToNewListing}
-        aria-label="New Listing"
-        className="sm:hidden fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-onyx-gold text-onyx-black text-2xl font-serif shadow-[var(--shadow-onyx-gold)]"
-      >
-        +
-      </button>
+      {createPortal(
+        <button
+          type="button"
+          onClick={goToNewListing}
+          aria-label="New Listing"
+          className="sm:hidden fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-onyx-gold text-onyx-black text-2xl font-serif shadow-[var(--shadow-onyx-gold)]"
+        >
+          +
+        </button>,
+        document.body
+      )}
     </Layout>
   );
 };

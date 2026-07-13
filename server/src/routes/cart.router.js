@@ -2,6 +2,7 @@ import { Router } from "express"
 import { authenticateUser } from "../middleware/auth.middleware.js"
 import { validateAddToCart } from "../validator/cart.validator.js"
 import { addToCart, viewCartProduct, removeFromCart, updateCartItemQuantity } from "../controller/cart.controller.js"
+import { createOrderPayment } from "../controller/payment.controller.js"
 
 const router = Router()
 
@@ -28,5 +29,11 @@ router.delete("/remove/:cartItemId", authenticateUser, removeFromCart)
  * @description Update the quantity of a specific cart item for the authenticated user.
 */
 router.patch("/update/:cartItemId", authenticateUser, updateCartItemQuantity)
+
+/**
+ * @route PATCH /api/cart/payment/xreate/order
+ * @description razorpay access for payment of order by customer this route
+*/
+router.post('/payment/create/order', authenticateUser, createOrderPayment)
 
 export default router

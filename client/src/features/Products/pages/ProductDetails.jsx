@@ -1,5 +1,6 @@
 // const user = useSelector((state) => state.auth.user);
 import React, { useEffect, useState, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router";
@@ -191,37 +192,40 @@ const ProductDetails = () => {
         </div>
 
         {/* ── Fixed Bottom CTA Bar ── */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-onyx-border/70 bg-onyx-black/95 backdrop-blur-xl">
-          <div className="onyx-container py-3 sm:py-4 flex flex-row gap-2 sm:gap-3">
-            <button
-              type="button"
-              onClick={onAddToCart}
-              disabled={!isInCart && (isOutOfStock || isAdding)}
-              className="onyx-btn-secondary flex-1 !py-3 sm:!py-3.5 text-[11px] sm:text-[12px]"
-              aria-label={isInCart ? "Go to cart" : "Add to cart"}
-            >
-              {isAdding ? (
-                <span className="flex items-center gap-1.5 sm:gap-2 justify-center">
-                  <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full border border-current border-t-transparent animate-spin" />
-                  Adding…
-                </span>
-              ) : isInCart ? (
-                "Go to Cart"
-              ) : (
-                "Add to Cart"
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={onBuyNow}
-              disabled={isOutOfStock || isAdding}
-              className="onyx-btn-primary flex-1 !py-3 sm:!py-3.5 text-[11px] sm:text-[12px]"
-              aria-label="Buy now"
-            >
-              {isOutOfStock ? "Out of Stock" : "Buy Now"}
-            </button>
-          </div>
-        </div>
+        {createPortal(
+          <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-onyx-border/70 bg-onyx-black/95 backdrop-blur-xl">
+            <div className="onyx-container py-3 sm:py-4 flex flex-row gap-2 sm:gap-3">
+              <button
+                type="button"
+                onClick={onAddToCart}
+                disabled={!isInCart && (isOutOfStock || isAdding)}
+                className="onyx-btn-secondary flex-1 !py-3 sm:!py-3.5 text-[11px] sm:text-[12px]"
+                aria-label={isInCart ? "Go to cart" : "Add to cart"}
+              >
+                {isAdding ? (
+                  <span className="flex items-center gap-1.5 sm:gap-2 justify-center">
+                    <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full border border-current border-t-transparent animate-spin" />
+                    Adding…
+                  </span>
+                ) : isInCart ? (
+                  "Go to Cart"
+                ) : (
+                  "Add to Cart"
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={onBuyNow}
+                disabled={isOutOfStock || isAdding}
+                className="onyx-btn-primary flex-1 !py-3 sm:!py-3.5 text-[11px] sm:text-[12px]"
+                aria-label="Buy now"
+              >
+                {isOutOfStock ? "Out of Stock" : "Buy Now"}
+              </button>
+            </div>
+          </div>,
+          document.body
+        )}
       </Layout>
     </>
   );

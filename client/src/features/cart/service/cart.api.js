@@ -20,3 +20,7 @@ export const removeFromCart = async (cartItemId) => {
 export const updateCartQty = async (cartItemId, quantity) => {
     return (await api.patch(`/update/${cartItemId}`, { quantity })).data
 }
+
+export const createOrderPayment = async (amount, currency) => {
+    return (await api.post('/payment/create/order')).data
+}

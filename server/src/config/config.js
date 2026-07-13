@@ -1,30 +1,39 @@
 import dotenv from "dotenv"
+
 dotenv.config()
 
-if (!process.env.MONGO_URI) {
-    throw new Error("MONGO_URI is not defined in environment variables")
-}
-if (!process.env.JWT_TOKEN) {
-    throw new Error("JWT is not defined in environment variables")
-}
-if (!process.env.GOOGLE_CLIENT_SECRET) {
-    throw new Error("google-secret-key is not defined in environment variables")
-}
-if (!process.env.GOOGLE_CLIENT_ID) {
-    throw new Error("google-client-id is not defined in environment variables")
-}
-if (!process.env.NODE_ENV) {
-    throw new Error("NODE_ENV is not defined in environment variables")
-}
-if (!process.env.IMAGE_PRIVATE_KEY) {
-    throw new Error("IMAGE_PRIVATE_KEY is not defined in environment variables")
+// Helper function to get environment variable with validation
+function getEnv(key, required = true, defaultValue = null) {
+    const value = process.env[key]
+
+    if (!value) {
+        if (required) {
+            throw new Error(`${key} is not defined in environment variables`)
+        }
+        return defaultValue
+    }
+
+    return value
 }
 
+// Load and validate all required environment variables
 export const config = {
-    MONGO_URI: process.env.MONGO_URI,
-    JWT: process.env.JWT_TOKEN,
-    GOOGLE_ID: process.env.GOOGLE_CLIENT_ID,
-    GOOGLE_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    NODE_ENV: process.env.NODE_ENV || "development",
-    IMAGEKIT: process.env.IMAGE_PRIVATE_KEY
+    
+    // Database
+    MONGO_URI: getEnv('MONGO_URI'),
+
+    // Authentication
+    JWT: getEnv('JWT_TOKEN'),
+    GOOGLE_ID: getEnv('GOOGLE_CLIENT_ID'),
+    GOOGLE_SECRET: getEnv('GOOGLE_CLIENT_SECRET'),
+
+    // Server
+    NODE_ENV: getEnv('NODE_ENV', false, 'development'),
+
+    // Image Storage
+    IMAGEKIT: getEnv('IMAGE_PRIVATE_KEY'),
+
+    // Payment Gateway
+    RAZORPAY_ID: getEnv('RAZORPAY_KEY_ID'),
+    RAZORPAY_SECRET: getEnv('RAZORPAY_KEY_SECRET'),
 }

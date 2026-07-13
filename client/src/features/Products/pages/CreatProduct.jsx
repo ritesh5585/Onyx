@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
 import { useProduct } from "../hooks/useProduct";
 import Layout from "../../Shared/Layout";
@@ -96,7 +97,7 @@ const CreateProduct = () => {
       type="submit"
       form="cp-form"
       disabled={isSubmitting}
-      className={`onyx-btn-primary ${className}`}
+      className={`onyx-btn-primary flex-1 !py-3 sm:!py-3.5 text-[11px] sm:text-[12px] ${className}`}
     >
       {isSubmitting ? "Publishing…" : "Publish Listing"}
     </button>
@@ -292,9 +293,12 @@ const CreateProduct = () => {
       </div>
 
       {/* Mobile sticky publish bar — thumb-reachable action */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-onyx-border/70 bg-onyx-black/95 px-4 py-3 backdrop-blur-md lg:hidden">
-        <PublishButton />
-      </div>
+      {createPortal(
+        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-onyx-border/70 bg-onyx-black/95 px-4 py-3 backdrop-blur-md lg:hidden">
+          <PublishButton className="w-full" />
+        </div>,
+        document.body
+      )}
       {/* spacer so the sticky bar never covers the last field on mobile */}
       <div className="h-20 lg:hidden" />
     </Layout>

@@ -1,7 +1,13 @@
-import { addToCart, getCart, removeFromCart, updateCartQty } from "../service/cart.api";
 import { useDispatch } from "react-redux";
 import { setItems } from "../state/cart.slice";
 import { useCallback } from "react";
+import {
+    addToCart,
+    createOrderPayment,
+    getCart,
+    removeFromCart,
+    updateCartQty
+} from "../service/cart.api";
 
 export const useCart = () => {
     const dispatch = useDispatch();
@@ -73,11 +79,18 @@ export const useCart = () => {
         }
     }, [refreshCart]);
 
+    const handleOrderPayment = useCallback(async (amount, currency) => {
+        const data = await createOrderPayment()
+        console.log(data)
+        
+        return data.orders
+    }, [refreshCart])
     return {
         handleAddtoCart,
         handleGetCart,
         handleRemoveItem,
         handleIncrementQty,
         handleDecrementQty,
+        handleOrderPayment
     };
 };
