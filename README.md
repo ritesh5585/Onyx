@@ -28,18 +28,6 @@ Instead of stopping after implementing CRUD operations, the project focuses on:
 
 ---
 
-# Demo
-
-## Desktop
-
-(Add GIF here)
-
-## Mobile Responsive
-
-(Add GIF here)
-
----
-
 # Tech Stack
 
 ## Frontend
