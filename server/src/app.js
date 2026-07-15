@@ -12,10 +12,11 @@ import { config } from "./config/config.js"
 const app = express()
 
 app.use(morgan('dev'))
-// app.use(cors({
-//     origin: 'http://localhost:5173',
-//     credentials: true
-// })) using proxy in frontend vite.config.js to bypass  cors error
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true
+}))
+// here, the origin is set to the CLIENT_URL environment variable if not provided. This allows cross-origin requests from the specified client URL while enabling credentials (cookies, authorization headers, etc.) to be sent with requests.
 
 app.use(express.json())
 app.use(urlencoded({ extended: true }))

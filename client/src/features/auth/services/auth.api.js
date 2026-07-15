@@ -1,9 +1,9 @@
 import axios from "axios";
-
-const api = axios.create({
-    baseURL: "/api/auth",
-    withCredentials: true,
-});
+import api from '../../../services/api.baseurl.js'
+// const api = axios.create({
+//     baseURL: "/api/auth",
+//     withCredentials: true,
+// });
 
 export const parseError = (err) =>
     err?.response?.data?.message ||
@@ -11,15 +11,15 @@ export const parseError = (err) =>
     "Something went wrong";
 
 export const authApi = {
-    register: (body) => api.post("/register", body)
+    register: (body) => api.post("auth/register", body)
         .then(res => res.data),
 
-    login: (body) => api.post("/login", body)
+    login: (body) => api.post("auth/login", body)
         .then(res => res.data),
 
-    logout: () => api.post("/logout")
+    logout: () => api.post("auth/logout")
         .then(res => res.data),
 
-    me: () => api.get("/me")
+    me: () => api.get("auth/me")
         .then(res => res.data),
 };

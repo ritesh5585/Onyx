@@ -1,26 +1,27 @@
 import axios from 'axios'
+import api from '../../../services/api.baseurl.js'
 
-const api = axios.create({
-    baseURL: '/api/cart',
-    withCredentials: true
-})
+// const api = axios.create({
+//     baseURL: '/api/cart',
+//     withCredentials: true
+// })
 
 export const addToCart = async ({ productId, variantId, quantity = 1 }) => {
-    return (await api.post(`/add/${productId}/${variantId}`, { quantity })).data
+    return (await api.post(`cart/add/${productId}/${variantId}`, { quantity })).data
 }
 
 export const getCart = async () => {
-    return (await api.get('/get')).data
+    return (await api.get('cart/get')).data
 }
 
 export const removeFromCart = async (cartItemId) => {
-    return (await api.delete(`/remove/${cartItemId}`)).data
+    return (await api.delete(`cart/remove/${cartItemId}`)).data
 }
 
 export const updateCartQty = async (cartItemId, quantity) => {
-    return (await api.patch(`/update/${cartItemId}`, { quantity })).data
+    return (await api.patch(`cart/update/${cartItemId}`, { quantity })).data
 }
 
 export const createOrderPayment = async (amount, currency) => {
-    return (await api.post('/payment/create/order')).data
+    return (await api.post('cart/payment/create/order')).data
 }
