@@ -5,8 +5,9 @@ import { config } from '../config/config.js'
 const COOKIE_OPTS = {
     httpOnly: true,
     secure: config.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    sameSite: 'none', // Browser cookie cross-domain requests mein bhi bhejta hai
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    secure: true, // samesite: 'none' set karta hai varna use nhi kr skta, aur secure: true set krna pdta hai varna use nhi kr skta
 }
 
 const safeUser = (user) => ({
@@ -15,7 +16,10 @@ const safeUser = (user) => ({
 })
 
 const issueToken = (user, res, message) => {
-    const token = jwt.sign({ id: user._id }, config.JWT, { expiresIn: '7d' })
+    const token = jwt.sign({ id: user._id },
+        config.JWT,
+        { expiresIn: '7d' })
+
     res.cookie('token', token, COOKIE_OPTS)
     return res.status(200).json({ success: true, message, user: safeUser(user) })
 }
