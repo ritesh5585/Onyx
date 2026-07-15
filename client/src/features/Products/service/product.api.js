@@ -7,8 +7,9 @@ import api from '../../../services/api.baseurl.js'
 // })
 
 export const createProduct = async (formData) => {
-    return await api.post('product/', formData).then(res => res.data)
+    return await api.post('product', formData).then(res => res.data)
 }
+
 export const getSellerProduct = async () => {
     return await api.get('product/seller').then(res => res.data)
 }
