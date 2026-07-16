@@ -30,10 +30,4 @@ router.delete("/remove/:cartItemId", authenticateUser, removeFromCart)
 */
 router.patch("/update/:cartItemId", authenticateUser, updateCartItemQuantity)
 
-/**
- * @route PATCH /api/cart/payment/xreate/order
- * @description razorpay access for payment of order by customer this route
-*/
-router.post('/payment/create/order', authenticateUser, createOrderPayment)
-
 export default router

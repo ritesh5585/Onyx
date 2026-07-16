@@ -1,10 +1,4 @@
-import axios from 'axios'
 import api from '../../../services/api.baseurl.js'
-
-// const api = axios.create({
-//     baseURL: '/api/product',
-//     withCredentials: true
-// })
 
 export const createProduct = async (formData) => {
     return await api.post('product', formData).then(res => res.data)

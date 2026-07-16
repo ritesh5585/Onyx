@@ -1,9 +1,4 @@
-import axios from "axios";
 import api from '../../../services/api.baseurl.js'
-// const api = axios.create({
-//     baseURL: "/api/auth",
-//     withCredentials: true,
-// });
 
 export const parseError = (err) =>
     err?.response?.data?.message ||
