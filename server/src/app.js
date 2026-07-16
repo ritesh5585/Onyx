@@ -13,7 +13,7 @@ const app = express()
 
 app.use(morgan('dev'))
 app.use(cors({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true
 }))
 // here, the origin is set to the CLIENT_URL environment variable if not provided. This allows cross-origin requests from the specified client URL while enabling credentials (cookies, authorization headers, etc.) to be sent with requests.
@@ -26,7 +26,10 @@ app.use(passport.initialize())
 passport.use(new GoogleStrategy({
     clientID: config.GOOGLE_ID,
     clientSecret: config.GOOGLE_SECRET,
-    callbackURL: "/api/auth/google/callback"
+    // Must be an ABSOLUTE URL — must match exactly what's registered in Google Cloud Console
+    // Dev: http://localhost:3000/api/auth/google/callback
+    // Prod: set GOOGLE_CALLBACK_URL in .env
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback'
 }, (accessToken, refreshToken, profile, done) => {
     return done(null, profile);
 }))

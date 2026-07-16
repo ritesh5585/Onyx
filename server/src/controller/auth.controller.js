@@ -5,10 +5,14 @@ import { config } from '../config/config.js'
 const COOKIE_OPTS = {
     httpOnly: true,
     secure: config.NODE_ENV === 'production',
-    sameSite: 'none', // Browser cookie cross-domain requests mein bhi bhejta hai
+    sameSite: config.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    secure: true, // samesite: 'none' set karta hai varna use nhi kr skta, aur secure: true set krna pdta hai varna use nhi kr skta
+    // Problem: secure:true on localhost means browser BLOCKS the cookie
+// because localhost does NOT use HTTPS
+    // secure: true,  finally isko remove karna pada kyuki chrome sameSite: 'none' ke saath secure: true nhi allow kr rha
+  
 }
+
 
 const safeUser = (user) => ({
     _id: user._id, fullname: user.fullname, email: user.email,
@@ -104,7 +108,8 @@ export const googleCallback = async (req, res) => {
             { expiresIn: '7d' })
 
         res.cookie('token', token, COOKIE_OPTS)
-        res.redirect(config.NODE_ENV === 'production' ? '/' : 'http://localhost:5173/')
+        // CLIENT_URL from .env — 'http://localhost:5173' in dev, deployed URL in production
+        res.redirect(process.env.CLIENT_URL || 'http://localhost:5173')
     } catch (err) {
         res.status(500).json({ message: 'Google auth failed', error: err.message })
     }
