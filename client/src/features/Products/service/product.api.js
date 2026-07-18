@@ -13,7 +13,7 @@ export const getAllproducts = async () => {
 }
 
 export const getProductDetail = async (productId) => {
-    return await api.get(`product/${productId}`).then(res => res.data)
+    return await api.get(`/product/${productId}`).then(res => res.data)
 }
 
 export const addProductvariants = async (productId, variants) => {
@@ -21,13 +21,13 @@ export const addProductvariants = async (productId, variants) => {
 }
 
 export const updateProductInfo = async (productId, payload) => {
-    return await api.patch(`product/${productId}`, payload).then(res => res.data)
+    return await api.patch(`/product/${productId}`, payload).then(res => res.data)
 }
 
 export const deleteProduct = async (productId) => {
-    return await api.delete(`product/product-deleting/${productId}`).then(res => res.data)
+    return await api.delete(`/product/product-deleting/${productId}`).then(res => res.data)
 }
 
 export const deleteProductVariant = async (productId, variantId) => {
-    return await api.delete(`product/product-deleting/${productId}/variants/${variantId}`).then(res => res.data)
+    return await api.delete(`/product/product-deleting/${productId}/variants/${variantId}`).then(res => res.data)
 }

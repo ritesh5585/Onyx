@@ -27,13 +27,9 @@ app.use(passport.initialize())
 passport.use(new GoogleStrategy({
     clientID: config.GOOGLE_ID,
     clientSecret: config.GOOGLE_SECRET,
-    // Must be an ABSOLUTE URL — must match exactly what's registered in Google Cloud Console
-    // Dev: http://localhost:3000/api/auth/google/callback
-    // Prod: set GOOGLE_CALLBACK_URL in .env
-    callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback'
-}, (accessToken, refreshToken, profile, done) => {
-    return done(null, profile);
-}))
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
+    proxy: true 
+}, (_, __, profile, done) => done(null, profile)))
 
 app.get("/", (req, res) => {
     res.status(200).json({ message: "Server is running" });

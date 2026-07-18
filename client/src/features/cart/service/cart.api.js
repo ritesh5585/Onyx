@@ -5,7 +5,7 @@ export const addToCart = async ({ productId, variantId, quantity = 1 }) => {
 }
 
 export const getCart = async () => {
-    return (await api.get('cart/get')).data
+    return (await api.get('/cart/get')).data
 }
 
 export const removeFromCart = async (cartItemId) => {
@@ -13,9 +13,9 @@ export const removeFromCart = async (cartItemId) => {
 }
 
 export const updateCartQty = async (cartItemId, quantity) => {
-    return (await api.patch(`cart/update/${cartItemId}`, { quantity })).data
+    return (await api.patch(`/cart/update/${cartItemId}`, { quantity })).data
 }
 
 export const createOrderPayment = async (amount, currency) => {
-    return (await api.post('payment/create/order')).data
+    return (await api.post('/payment/create/order')).data
 }
