@@ -11,6 +11,7 @@ import paymentRouter from './routes/payment.router.js'
 import { config } from "./config/config.js"
 
 const app = express()
+app.set('trust proxy', 1)
 
 app.use(morgan('dev'))
 app.use(cors({
@@ -28,7 +29,7 @@ passport.use(new GoogleStrategy({
     clientID: config.GOOGLE_ID,
     clientSecret: config.GOOGLE_SECRET,
     callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
-    proxy: true 
+    proxy: true
 }, (_, __, profile, done) => done(null, profile)))
 
 app.get("/", (req, res) => {
@@ -38,6 +39,6 @@ app.get("/", (req, res) => {
 app.use('/api/auth', authRouter)
 app.use('/api/product', productRouter)
 app.use('/api/cart', cartRouter)
-app.use('/api/payment',paymentRouter)
+app.use('/api/payment', paymentRouter)
 
 export default app

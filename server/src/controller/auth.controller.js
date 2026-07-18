@@ -2,15 +2,21 @@ import jwt from 'jsonwebtoken'
 import userModel from '../models/user.js'
 import { config } from '../config/config.js'
 
+const isSecure = config.NODE_ENV === 'production' || process.env.NODE_ENV === 'production' || (process.env.CLIENT_URL && !process.env.CLIENT_URL.includes('localhost'));
+
 const COOKIE_OPTS = {
     httpOnly: true,
-    secure: config.NODE_ENV === 'production',
-    sameSite: config.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: isSecure,
+    sameSite: isSecure ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000,
     // Problem: secure:true on localhost means browser BLOCKS the cookie
 // because localhost does NOT use HTTPS
     // secure: true,  finally isko remove karna pada kyuki chrome sameSite: 'none' ke saath secure: true nhi allow kr rha
-  
+}
+
+const setAuthCookie = (res, user) => {
+    const token = jwt.sign({ id: user._id }, config.JWT, { expiresIn: '7d' })
+    res.cookie('token', token, COOKIE_OPTS)
 }
 
 
@@ -20,11 +26,7 @@ const safeUser = (user) => ({
 })
 
 const issueToken = (user, res, message) => {
-    const token = jwt.sign({ id: user._id },
-        config.JWT,
-        { expiresIn: '7d' })
-
-    res.cookie('token', token, COOKIE_OPTS)
+    setAuthCookie(res, user)
     return res.status(200).json({ success: true, message, user: safeUser(user) })
 }
 
@@ -103,12 +105,7 @@ export const googleCallback = async (req, res) => {
             fullname: displayName,
             profilepic: photos?.[0]?.value
         })
-        const token = jwt.sign({ id: user._id },
-            config.JWT,
-            { expiresIn: '7d' })
-
-        res.cookie('token', token, COOKIE_OPTS)
-        // CLIENT_URL from .env — 'http://localhost:5173' in dev, deployed URL in production
+        setAuthCookie(res, user)
         res.redirect(process.env.CLIENT_URL || 'http://localhost:5173')
     } catch (err) {
         res.status(500).json({ message: 'Google auth failed', error: err.message })
