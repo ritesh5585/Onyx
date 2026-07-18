@@ -2,7 +2,7 @@ import React from "react";
 
 export const GoogleButton = ({ label = "Continue with Google" }) => {
   const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}auth/google`
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`
   };
 
   return (
