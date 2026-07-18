@@ -10,7 +10,7 @@ const COOKIE_OPTS = {
     sameSite: isSecure ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000,
     // Problem: secure:true on localhost means browser BLOCKS the cookie
-// because localhost does NOT use HTTPS
+    // because localhost does NOT use HTTPS
     // secure: true,  finally isko remove karna pada kyuki chrome sameSite: 'none' ke saath secure: true nhi allow kr rha
 }
 
