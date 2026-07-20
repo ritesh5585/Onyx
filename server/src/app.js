@@ -8,6 +8,7 @@ import authRouter from "./routes/auth.router.js"
 import productRouter from './routes/product.routes.js'
 import cartRouter from './routes/cart.router.js'
 import paymentRouter from './routes/payment.router.js'
+import wishListRouter from './routes/wishlist.route.js'
 import { config } from "./config/config.js"
 
 const app = express()
@@ -40,5 +41,6 @@ app.use('/api/auth', authRouter)
 app.use('/api/product', productRouter)
 app.use('/api/cart', cartRouter)
 app.use('/api/payment', paymentRouter)
+app.use('/api/wishlist', wishListRouter)
 
 export default app
