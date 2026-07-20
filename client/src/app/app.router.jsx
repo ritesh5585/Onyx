@@ -17,6 +17,9 @@ const SellerProductDetail = lazy(
 const ProductDetails = lazy(
   () => import("../features/Products/pages/ProductDetails.jsx"),
 );
+const Wishlist = lazy(
+  () => import("../features/Wishlists/pages/getYourList.jsx"),
+);
 const Cart = lazy(() => import("../features/cart/pages/Cart.jsx"));
 const NotFound = lazy(() => import("../features/components/NotFound.jsx"));
 
@@ -69,5 +72,9 @@ export const routes = createBrowserRouter([
   {
     path: "/getyourcart",
     element: <Cart />,
+  },
+  {
+    path: "/getYourList",
+    element: <Wishlist />,
   },
 ]);

@@ -13,7 +13,7 @@ const router = Router();
  * @route Get /api/wishlist
  * @description: get all wishlist items for the authenticated user
  */
-router.get('/', authenticateUser, getWishlist)
+router.get('/get-your-choice', authenticateUser, getWishlist)
 
 /**
  * @route Post /api/wishlist
@@ -25,6 +25,6 @@ router.post('/', authenticateUser, addToWishlist)
  * @route Delete /api/wishlist/:id
  * @description: remove a product from the wishlist for the authenticated user
  */
-router.delete('/:id', authenticateUser, removeFromWishlist)
+router.delete('/remove-from-list/:id', authenticateUser, removeFromWishlist)
 
 export default router;

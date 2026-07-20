@@ -1,5 +1,6 @@
 import React, { useRef, memo } from "react";
 import { animateCardHover } from "../Shared/animations";
+import Feature from "../Wishlists/pages/Feature";
 
 const ProductCard = ({ product, onClick }) => {
   const cardRef = useRef(null);
@@ -32,6 +33,7 @@ const ProductCard = ({ product, onClick }) => {
             </span>
           </div>
         )}
+        <Feature productId={product._id} />
         <div className="card-overlay absolute inset-0 bg-onyx-bg/0 opacity-0" />
       </div>
 

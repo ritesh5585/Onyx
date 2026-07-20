@@ -6,6 +6,21 @@ import { useCart } from "../cart/hooks/useCart";
 import Count from "../cart/components/Count";
 import { initNavbarScrollEffect, animatePageIn } from "./animations";
 
+const WishlistIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+  </svg>
+);
+
 const Layout = ({
   children,
   showLinks = false,
@@ -16,7 +31,9 @@ const Layout = ({
   const location = useLocation();
   const { user, handleLogout } = useAuth();
   const cartCount =
-    useSelector((state) => state.cart.items?.items?.length) || 0;
+    useSelector((state) => state.cart?.items?.items?.length) || 0;
+  const wishlistCount = 
+    useSelector((state) => state.wishlist?.wishlist?.length) || 0;
   const { handleGetCart } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
@@ -142,13 +159,27 @@ const Layout = ({
                 </>
               )}
               {user && (
-                <NavLink
-                  to="/getyourcart"
-                  className="onyx-nav-link relative flex items-center gap-1.5 whitespace-nowrap"
-                  aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
-                >
-                  <Count isMobile={false} cartCount={cartCount} />
-                </NavLink>
+                <>
+                  <NavLink
+                    to="/getYourList"
+                    className="onyx-nav-link relative flex items-center gap-1.5 whitespace-nowrap"
+                    aria-label={`Wishlist${wishlistCount > 0 ? `, ${wishlistCount} items` : ""}`}
+                  >
+                    <WishlistIcon />
+                    {wishlistCount > 0 && (
+                      <span className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-[#c49a52] text-[#06060a] text-[9px] font-bold flex items-center justify-center leading-none">
+                        {wishlistCount > 9 ? "9+" : wishlistCount}
+                      </span>
+                    )}
+                  </NavLink>
+                  <NavLink
+                    to="/getyourcart"
+                    className="onyx-nav-link relative flex items-center gap-1.5 whitespace-nowrap"
+                    aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
+                  >
+                    <Count isMobile={false} cartCount={cartCount} />
+                  </NavLink>
+                </>
               )}
             </div>
 
@@ -206,15 +237,29 @@ const Layout = ({
               className="md:hidden flex items-center relative"
               ref={mobileMenuRef}
             >
-              {/* Cart icon visible on mobile always */}
+              {/* Icons visible on mobile always */}
               {user && (
-                <NavLink
-                  to="/getyourcart"
-                  className="onyx-nav-link relative flex items-center mr-1"
-                  aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
-                >
-                  <Count isMobile={true} cartCount={cartCount} />
-                </NavLink>
+                <>
+                  <NavLink
+                    to="/getYourList"
+                    className="onyx-nav-link relative flex items-center mr-3"
+                    aria-label={`Wishlist${wishlistCount > 0 ? `, ${wishlistCount} items` : ""}`}
+                  >
+                    <WishlistIcon />
+                    {wishlistCount > 0 && (
+                      <span className="ml-2 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-[#c49a52] text-[#06060a] text-[11px] font-bold leading-none">
+                        {wishlistCount > 9 ? "9+" : wishlistCount}
+                      </span>
+                    )}
+                  </NavLink>
+                  <NavLink
+                    to="/getyourcart"
+                    className="onyx-nav-link relative flex items-center mr-2"
+                    aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
+                  >
+                    <Count isMobile={true} cartCount={cartCount} />
+                  </NavLink>
+                </>
               )}
 
               <button
