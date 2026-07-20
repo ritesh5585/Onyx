@@ -228,7 +228,7 @@ const ProductDetails = () => {
               </button>
             </div>
           </div>,
-          document.body
+          document.body,
         )}
       </Layout>
     </>
