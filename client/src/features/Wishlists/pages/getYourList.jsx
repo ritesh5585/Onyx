@@ -50,59 +50,96 @@ const GetYourList = () => {
               const imageUrl = product.images?.[0]?.url || null;
               const unitPrice = product.price?.amount || 0;
               const itemCurrency = product.price?.currency || "INR";
-              const stock = product.stock ?? 0;
+              const stock =
+                product.stock ??
+                product.variants?.reduce((acc, v) => acc + (v.stock || 0), 0) ??
+                0;
               const isInStock = stock > 0;
+              const hasVariants = product.variants?.length > 0;
 
               return (
-                <div key={item._id} className="flex gap-3 sm:gap-5 border-b border-onyx-border/70 py-5 sm:py-7">
+                <div
+                  key={item._id}
+                  className="flex gap-3 sm:gap-5 border-b border-onyx-border/70 py-5 sm:py-7"
+                >
                   {/* Image */}
                   <div
                     className="group/img h-[110px] w-[85px] sm:h-[130px] sm:w-[100px] flex-shrink-0 cursor-pointer overflow-hidden rounded-sm border border-onyx-border/70 bg-onyx-black"
-                    onClick={() => product._id && navigate(`/product/${product._id}`)}
+                    onClick={() =>
+                      product._id && navigate(`/product/${product._id}`)
+                    }
                   >
                     {imageUrl ? (
-                      <img src={imageUrl} alt={product.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105" />
+                      <img
+                        src={imageUrl}
+                        alt={product.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+                      />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center">
-                        <span className="text-[9px] uppercase tracking-[0.15em] text-onyx-muted/40">No Image</span>
+                        <span className="text-[9px] uppercase tracking-[0.15em] text-onyx-muted/40">
+                          No Image
+                        </span>
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Info */}
                   <div className="flex-1 flex flex-col justify-between min-w-0">
                     <div className="flex flex-col gap-1.5 min-w-0">
                       <span
                         className="cursor-pointer truncate font-serif text-sm sm:text-base leading-tight text-onyx-text transition-colors duration-300 hover:text-onyx-gold sm:text-lg"
-                        onClick={() => product._id && navigate(`/product/${product._id}`)}
+                        onClick={() =>
+                          product._id && navigate(`/product/${product._id}`)
+                        }
                       >
                         {product.title || "Untitled Product"}
                       </span>
-                      
+
                       <span className="mt-0.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-onyx-muted/80">
                         {itemCurrency} {unitPrice.toLocaleString()}
                       </span>
-                      
-                      <span className={`mt-0.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] ${isInStock ? "text-[#81c784]" : "text-[#e57373]"}`}>
-                        <span className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${isInStock ? "bg-[#81c784]" : "bg-[#e57373]"}`} />
+
+                      <span
+                        className={`mt-0.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] ${isInStock ? "text-[#81c784]" : "text-[#e57373]"}`}
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${isInStock ? "bg-[#81c784]" : "bg-[#e57373]"}`}
+                        />
                         {isInStock ? `${stock} in stock` : "Out of stock"}
                       </span>
                     </div>
-                    
+
                     {/* Actions */}
-                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <div className="mt-3 flex flex-wrap items-center justify-end gap-3">
                       <button
-                        className="onyx-btn-primary !py-2 !px-4 text-[10px] flex items-center gap-2"
+                        className="onyx-btn-primary !w-auto !py-2 !px-4 text-[10px] flex items-center gap-2"
                         disabled={!isInStock}
                         onClick={() => {
                           if (!isInStock || !product._id) return;
+                          if (hasVariants) {
+                            navigate(`/product/${product._id}`);
+                            return;
+                          }
                           handleAddtoCart(product._id)
                             .then(() => toast.success("Added to cart"))
                             .catch(() => toast.error("Failed to add to cart"));
                         }}
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                        Add to Cart
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                          <line x1="3" y1="6" x2="21" y2="6" />
+                          <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                        {hasVariants ? "Select Options" : "Add to Cart"}
                       </button>
 
                       <button
