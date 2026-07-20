@@ -11,6 +11,7 @@ import ProductOverview from "../components/ProductOverview";
 import { readAttributes } from "../utils/variantUtils";
 import { useCart } from "../../cart/hooks/useCart";
 import { VariantSelector } from "../components/variantSelector";
+import Feature from "../../Wishlists/pages/Feature";
 import { toast } from "sonner";
 
 const ProductDetails = () => {
@@ -141,13 +142,16 @@ const ProductDetails = () => {
         <div className="pt-6 sm:pt-8 pb-32 sm:pb-36 md:pt-12 md:pb-40">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 xl:gap-24">
             {/* ── Image Gallery ── */}
-            <ImageGallery
-              mainImage={imageUrls[selectedImage] || imageUrls[0]}
-              imageUrls={imageUrls}
-              selectedImage={selectedImage}
-              setSelectedImage={setSelectedImage}
-              title={detail.title}
-            />
+            <div className="relative">
+              <Feature productId={detail._id} />
+              <ImageGallery
+                mainImage={imageUrls[selectedImage] || imageUrls[0]}
+                imageUrls={imageUrls}
+                selectedImage={selectedImage}
+                setSelectedImage={setSelectedImage}
+                title={detail.title}
+              />
+            </div>
 
             {/* ── Product Info ── */}
             <div className="flex flex-col">

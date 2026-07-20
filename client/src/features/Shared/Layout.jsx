@@ -242,12 +242,12 @@ const Layout = ({
                 <>
                   <NavLink
                     to="/getYourList"
-                    className="onyx-nav-link relative flex items-center mr-3"
+                    className="onyx-nav-link relative flex items-center mr-4"
                     aria-label={`Wishlist${wishlistCount > 0 ? `, ${wishlistCount} items` : ""}`}
                   >
                     <WishlistIcon />
                     {wishlistCount > 0 && (
-                      <span className="ml-2 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-[#c49a52] text-[#06060a] text-[11px] font-bold leading-none">
+                      <span className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-[#c49a52] text-[#06060a] text-[9px] font-bold flex items-center justify-center leading-none">
                         {wishlistCount > 9 ? "9+" : wishlistCount}
                       </span>
                     )}
@@ -257,7 +257,7 @@ const Layout = ({
                     className="onyx-nav-link relative flex items-center mr-2"
                     aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
                   >
-                    <Count isMobile={true} cartCount={cartCount} />
+                    <Count isMobile={false} cartCount={cartCount} />
                   </NavLink>
                 </>
               )}

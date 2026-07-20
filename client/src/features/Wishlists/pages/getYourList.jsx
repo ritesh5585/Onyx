@@ -44,95 +44,78 @@ const GetYourList = () => {
             cta={{ label: "Discover Products", to: "/" }}
           />
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-8">
+          <div className="flex flex-col border-t border-onyx-border/70">
             {wishlist.map((item) => {
               const product = item.productId || {};
               const imageUrl = product.images?.[0]?.url || null;
               const unitPrice = product.price?.amount || 0;
-              const currency = product.price?.currency || "INR";
-              const isInStock = (product.stock ?? 0) > 0;
+              const itemCurrency = product.price?.currency || "INR";
+              const stock = product.stock ?? 0;
+              const isInStock = stock > 0;
 
               return (
-                <div
-                  key={item._id}
-                  className="onyx-card flex flex-col group h-full"
-                >
+                <div key={item._id} className="flex gap-3 sm:gap-5 border-b border-onyx-border/70 py-5 sm:py-7">
+                  {/* Image */}
                   <div
-                    className="relative w-full aspect-[3/4] overflow-hidden rounded-sm bg-onyx-black cursor-pointer border border-onyx-border/70"
-                    onClick={() =>
-                      product._id && navigate(`/product/${product._id}`)
-                    }
+                    className="group/img h-[110px] w-[85px] sm:h-[130px] sm:w-[100px] flex-shrink-0 cursor-pointer overflow-hidden rounded-sm border border-onyx-border/70 bg-onyx-black"
+                    onClick={() => product._id && navigate(`/product/${product._id}`)}
                   >
                     {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt={product.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
+                      <img src={imageUrl} alt={product.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center">
-                        <span className="text-[10px] uppercase tracking-[0.15em] text-onyx-muted/40">
-                          No Image
-                        </span>
+                        <span className="text-[9px] uppercase tracking-[0.15em] text-onyx-muted/40">No Image</span>
                       </div>
                     )}
-                    <button
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        try {
-                          await handleDeleteWishlist(item._id);
-                          toast.success("Removed from wishlist");
-                        } catch {
-                          toast.error("Failed to remove");
-                        }
-                      }}
-                      className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-red-500/10 text-red-400 border border-red-500/20 backdrop-blur-md transition-all duration-300 hover:bg-red-500/20"
-                      aria-label="Remove"
-                    >
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M18 6L6 18M6 6l12 12" />
-                      </svg>
-                    </button>
                   </div>
-
-                  <div className="pt-4 flex-1 flex flex-col justify-between">
-                    <div>
-                      <h3
-                        className="cursor-pointer line-clamp-1 font-serif text-lg leading-tight text-onyx-text transition-colors duration-300 hover:text-onyx-gold"
-                        onClick={() =>
-                          product._id && navigate(`/product/${product._id}`)
-                        }
+                  
+                  {/* Info */}
+                  <div className="flex-1 flex flex-col justify-between min-w-0">
+                    <div className="flex flex-col gap-1.5 min-w-0">
+                      <span
+                        className="cursor-pointer truncate font-serif text-sm sm:text-base leading-tight text-onyx-text transition-colors duration-300 hover:text-onyx-gold sm:text-lg"
+                        onClick={() => product._id && navigate(`/product/${product._id}`)}
                       >
                         {product.title || "Untitled Product"}
-                      </h3>
-                      <p className="mt-1 text-[13px] font-semibold uppercase tracking-[0.1em] text-onyx-muted">
-                        {currency} {unitPrice.toLocaleString()}
-                      </p>
+                      </span>
+                      
+                      <span className="mt-0.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-onyx-muted/80">
+                        {itemCurrency} {unitPrice.toLocaleString()}
+                      </span>
+                      
+                      <span className={`mt-0.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] ${isInStock ? "text-[#81c784]" : "text-[#e57373]"}`}>
+                        <span className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${isInStock ? "bg-[#81c784]" : "bg-[#e57373]"}`} />
+                        {isInStock ? `${stock} in stock` : "Out of stock"}
+                      </span>
                     </div>
+                    
+                    {/* Actions */}
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <button
+                        className="onyx-btn-primary !py-2 !px-4 text-[10px] flex items-center gap-2"
+                        disabled={!isInStock}
+                        onClick={() => {
+                          if (!isInStock || !product._id) return;
+                          handleAddtoCart(product._id)
+                            .then(() => toast.success("Added to cart"))
+                            .catch(() => toast.error("Failed to add to cart"));
+                        }}
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        Add to Cart
+                      </button>
 
-                    <button
-                      className="onyx-btn-primary mt-4 w-full flex items-center justify-center gap-2"
-                      disabled={!isInStock}
-                      onClick={async () => {
-                        if (!product._id) return;
-                        try {
-                          await handleAddtoCart(product._id);
-                          toast.success("Added to cart");
-                        } catch {
-                          toast.error("Failed to add to cart");
-                        }
-                      }}
-                    >
-                      {isInStock ? "Add to Cart" : "Out of Stock"}
-                    </button>
+                      <button
+                        className="flex cursor-pointer items-center gap-1.5 rounded-md border border-red-400/20 bg-transparent px-3 py-1.5 sm:py-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-red-400 transition-all hover:border-red-400/45 hover:bg-red-400/10"
+                        onClick={() => {
+                          handleDeleteWishlist(item._id)
+                            .then(() => toast.success("Removed from wishlist"))
+                            .catch(() => toast.error("Failed to remove"));
+                        }}
+                      >
+                        ✕ Remove
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
