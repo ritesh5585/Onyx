@@ -66,6 +66,8 @@ const Layout = ({ children, showBackButton = false }) => {
     useSelector((state) => state.wishlist?.wishlist?.length) || 0;
   const { handleGetCart } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   const menuRef = useRef(null);
   const headerRef = useRef(null);
@@ -78,10 +80,30 @@ const Layout = ({ children, showBackButton = false }) => {
   }, [handleLogout, navigate]);
 
   useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // Scrolling down - hide search bar
+        setIsVisible(false);
+      } else {
+        // Scrolling up - show search bar
+        setIsVisible(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
+  useEffect(() => {
     user && handleGetCart().catch(() => {});
   }, [user, handleGetCart]);
+
   useEffect(() => initNavbarScrollEffect(headerRef.current, 40), []);
   useEffect(() => animatePageIn(contentRef.current), [location.pathname]);
+
   useEffect(() => {
     const clickOutside = (e) =>
       menuOpen &&
@@ -97,24 +119,7 @@ const Layout = ({ children, showBackButton = false }) => {
 
   const AuthLinks = ({ isMobile }) => (
     <>
-      {!user ? (
-        <>
-          <NavLink
-            to="/register"
-            onClick={() => setMenuOpen(false)}
-            className={navItemClass(isMobile)}
-          >
-            Register
-          </NavLink>
-          <NavLink
-            to="/login"
-            onClick={() => setMenuOpen(false)}
-            className={navItemClass(isMobile)}
-          >
-            Sign In
-          </NavLink>
-        </>
-      ) : (
+      {!user ? null : ( // If no user, show nothing in menu (handled separately)
         <button
           onClick={logout}
           className={`${navItemClass(isMobile)} bg-transparent border-none cursor-pointer p-0 text-left ${isMobile && "w-full"}`}
@@ -125,6 +130,13 @@ const Layout = ({ children, showBackButton = false }) => {
       )}
     </>
   );
+
+  const handleProtectedClick = (path) => (e) => {
+    if (!user) {
+      e.preventDefault();
+      navigate(`/login?redirect=${path}`);
+    }
+  };
 
   return (
     <div className="onyx-bg min-h-screen">
@@ -151,11 +163,19 @@ const Layout = ({ children, showBackButton = false }) => {
             </Link>
           </div>
 
-          {/* Desktop Search */}
+          {/* Desktop Search - Always visible on desktop */}
           <SearchBar className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[320px]" />
 
-          {/* Mobile Search (Full Width, jumps to new row) */}
-          <SearchBar className="flex lg:hidden w-full order-last mt-1" />
+          {/* Mobile Search - Shows/Hides on scroll */}
+          <div
+            className={`flex lg:hidden w-full order-last mt-1 transition-all duration-300 ${
+              isVisible
+                ? "opacity-100 max-h-20"
+                : "opacity-0 max-h-0 pointer-events-none mt-0"
+            }`}
+          >
+            <SearchBar className="w-full" />
+          </div>
 
           {/* Navigation Items */}
           <div className="flex items-center gap-4 ml-auto">
@@ -219,24 +239,23 @@ const Layout = ({ children, showBackButton = false }) => {
             ) : (
               <button
                 onClick={() => navigate("/login")}
-                className="px-4 py-2 bg-[#c49a52] text-black rounded-lg hover:bg-[#c49a52]/80 transition-colors text-sm font-medium"
+                className="hidden lg:block px-4 py-2 bg-[#c49a52] text-black rounded-lg hover:bg-[#c49a52]/80 transition-colors text-sm font-medium"
               >
                 Sign In
               </button>
             )}
-
-            {/* Mobile Menu & Icons */}
             <div className="lg:hidden flex items-center relative" ref={menuRef}>
-              {user && (
-                <NavLink
-                  to="/getYourList"
-                  className="onyx-nav-link relative flex items-center mr-3"
-                >
-                  <WishlistIcon />
-                  <Badge count={wishlistCount} />
-                </NavLink>
-              )}
+              {/* Wishlist - ALWAYS VISIBLE on mobile */}
+              <NavLink
+                to={user ? "/getYourList" : "#"}
+                onClick={handleProtectedClick("/getYourList")}
+                className="relative flex items-center mr-3"
+              >
+                <WishlistIcon />
+                {user && <Badge count={wishlistCount} />}
+              </NavLink>
 
+              {/* Menu Toggle Button */}
               <button
                 className="text-onyx-text hover:text-onyx-gold transition-colors duration-150"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -266,8 +285,10 @@ const Layout = ({ children, showBackButton = false }) => {
                 </svg>
               </button>
 
+              {/* Mobile Dropdown Menu */}
               {menuOpen && (
                 <div className="absolute right-0 top-full mt-3 w-[min(280px,90vw)] rounded-2xl border border-white/10 bg-onyx-card p-5 shadow-2xl z-50">
+                  {/* User Info or Guest */}
                   <div className="mb-4 border-b border-onyx-border/70 pb-3">
                     <p className="truncate text-sm font-semibold uppercase tracking-[0.12em] text-onyx-text">
                       {user?.fullname || user?.name || user?.email || "Guest"}
@@ -278,6 +299,7 @@ const Layout = ({ children, showBackButton = false }) => {
                   </div>
 
                   <nav className="flex flex-col gap-3 text-[11px] uppercase tracking-[0.12em]">
+                    {/* Seller Links */}
                     {user?.role === "seller" && (
                       <>
                         <NavLink
@@ -296,16 +318,50 @@ const Layout = ({ children, showBackButton = false }) => {
                         </NavLink>
                       </>
                     )}
-                    {user && (
-                      <NavLink
-                        to="/getyourcart"
-                        onClick={() => setMenuOpen(false)}
-                        className="onyx-nav-link py-2 flex items-center justify-between"
+
+                    {/* Cart Link - Always show in menu */}
+                    <NavLink
+                      to={user ? "/getyourcart" : "#"}
+                      onClick={(e) => {
+                        if (!user) {
+                          e.preventDefault();
+                          navigate("/login?redirect=/getyourcart");
+                        }
+                        setMenuOpen(false);
+                      }}
+                      className=" py-2 flex items-center justify-between"
+                    >
+                      <Count isMobile={true} cartCount={cartCount} />
+                    </NavLink>
+
+                    {!user ? (
+                      // If no user - Show Sign In & Register inside menu
+                      <>
+                        <NavLink
+                          to="/login"
+                          onClick={() => setMenuOpen(false)}
+                          className="onyx-nav-link py-2"
+                        >
+                          Sign In
+                        </NavLink>
+                        <NavLink
+                          to="/register"
+                          onClick={() => setMenuOpen(false)}
+                          className="onyx-nav-link py-2"
+                        >
+                          Register
+                        </NavLink>
+                      </>
+                    ) : (
+                      // If user - Show Logout
+                      <button
+                        onClick={logout}
+                        className="onyx-nav-link py-2 bg-transparent border-none cursor-pointer text-left w-full"
+                        type="button"
                       >
-                        <Count isMobile={true} cartCount={cartCount} />
-                      </NavLink>
+                        Logout
+                      </button>
                     )}
-                    <AuthLinks isMobile={true} />
                   </nav>
                 </div>
               )}
@@ -313,6 +369,7 @@ const Layout = ({ children, showBackButton = false }) => {
           </div>
         </div>
       </header>
+
       <div ref={contentRef} className="onyx-container page-content">
         {children}
       </div>
