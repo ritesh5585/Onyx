@@ -194,7 +194,7 @@ const Layout = ({ children, showBackButton = false }) => {
             </div>
 
             {/* User Dropdown (Desktop) */}
-            {user && (
+            {user ? (
               <div className="hidden lg:block relative group">
                 <button
                   type="button"
@@ -204,18 +204,25 @@ const Layout = ({ children, showBackButton = false }) => {
                     {(user.fullname || user.name || user.email || "U")[0]}
                   </span>
                 </button>
-                <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-2xl border border-white/10 bg-[#13131a] p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
-                  <p className="truncate text-[11px] font-semibold uppercase tracking-[0.12em] text-[#eee9e1]">
-                    {user.fullname || user.name || user.email}
-                  </p>
-                  <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-[#eee9e1]/70">
-                    Signed in
-                  </p>
+                <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-2xl border border-white/10 bg-[#13131a] p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 ">
+                  <div className="mb-4 border-b border-onyx-border pb-3">
+                    <p className="truncate text-[11px] font-semibold uppercase tracking-[0.12em] text-[#eee9e1]">
+                      {user.fullname || user.name || user.email}
+                    </p>
+                  </div>
+
                   <div className="mt-4 flex flex-col gap-2 text-[11px] uppercase tracking-[0.12em] text-[#eee9e1]">
                     <AuthLinks isMobile={false} />
                   </div>
                 </div>
               </div>
+            ) : (
+              <button
+                onClick={() => navigate("/login")}
+                className="px-4 py-2 bg-[#c49a52] text-black rounded-lg hover:bg-[#c49a52]/80 transition-colors text-sm font-medium"
+              >
+                Sign In
+              </button>
             )}
 
             {/* Mobile Menu & Icons */}
@@ -265,7 +272,7 @@ const Layout = ({ children, showBackButton = false }) => {
                     <p className="truncate text-sm font-semibold uppercase tracking-[0.12em] text-onyx-text">
                       {user?.fullname || user?.name || user?.email || "Guest"}
                     </p>
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-onyx-muted">
+                    <p className="text-[8px] uppercase mt-1 tracking-[0.18em] text-onyx-muted">
                       {user ? "Signed in" : "Not signed in"}
                     </p>
                   </div>

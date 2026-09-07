@@ -25,9 +25,8 @@ const GetYourList = () => {
         <div className="mb-8 sm:mb-10 border-b border-onyx-border/70 pb-6 sm:pb-8">
           <p className="onyx-eyebrow mb-3">Your Favorites</p>
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light leading-[1.1] tracking-tight text-onyx-text">
-            Wishlist
+            Wishlists
           </h1>
-          <div className="onyx-divider" />
           {!isEmpty && (
             <span className="mt-3 block text-[11px] font-semibold uppercase tracking-[0.18em] text-onyx-muted/70">
               {wishlist.length} {wishlist.length === 1 ? "item" : "items"}

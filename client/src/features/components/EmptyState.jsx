@@ -17,13 +17,8 @@ const EmptyState = ({ icon, eyebrow, title, body, cta }) => (
         {title}
       </p>
     )}
-    {body && (
-      <p className="max-w-xs text-[13px] leading-relaxed text-[rgba(238,233,225,0.35)]">
-        {body}
-      </p>
-    )}
     {cta && (
-      <div className="mt-4">
+      <div >
         {cta.to ? (
           <NavLink
             to={cta.to}
