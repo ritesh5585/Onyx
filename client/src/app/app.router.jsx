@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import Protected from "../features/auth/components/Protected.jsx";
 import Home from "../features/Products/pages/Home.jsx";
 

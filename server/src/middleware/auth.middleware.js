@@ -33,9 +33,9 @@ export const authenticateUser = async (req, res, next) => {
 
 // Seller-only guard — call after authenticateUser
 export const requireSeller = (req, res, next) =>
-      req.user?.role == 'seller' ?
+    req.user?.role == 'seller' ?
         next() :
         res.status(403).json({
             message: 'Seller access required',
-            
+
         })
