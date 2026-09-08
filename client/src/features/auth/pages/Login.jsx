@@ -10,24 +10,72 @@ const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [form, setForm] = useState({ email: "", password: "" });
 
-  const onChange = ({ target: { name, value } }) =>
+  const onChange = ({ target: { name, value } }) => {
     setForm((p) => ({ ...p, [name]: value }));
+    // Clear field-specific errors when user types
+    if (fieldErrors[name]) {
+      setFieldErrors((p) => ({ ...p, [name]: "" }));
+    }
+    if (error) setError("");
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
     setLoading(true);
+
     try {
-      await handleLogin({ email: form.email.trim(), password: form.password });
+      await handleLogin({
+        email: form.email.trim(),
+        password: form.password,
+      });
       navigate("/");
     } catch (err) {
-      setError(
-        err?.response?.data?.message ||
-          err?.response?.data?.errors?.[0]?.msg ||
-          "Login failed. Please check your credentials.",
-      );
+      const status = err?.response?.status;
+      const data = err?.response?.data;
+
+      // Case 1: Wrong password (401 Unauthorized)
+      if (status === 401) {
+        setError("❌ Incorrect password. Please try again.");
+        setFieldErrors({ password: "Wrong password" });
+      }
+      // Case 2: User not found (404)
+      else if (status === 404) {
+        setError("❌ Account not found with this email.");
+        setFieldErrors({ email: "Email not registered" });
+      }
+      // Case 3: Validation errors from backend
+      else if (data?.errors?.length) {
+        const firstError = data.errors[0];
+        if (firstError.param === "email") {
+          setFieldErrors({ email: firstError.msg });
+        } else if (firstError.param === "password") {
+          setFieldErrors({ password: firstError.msg });
+        }
+        setError(`❌ ${firstError.msg}`);
+      }
+      // Case 4: Rate limiting or too many attempts
+      else if (status === 429) {
+        setError("⏳ Too many attempts. Please wait a moment.");
+      }
+      // Case 5: Server error
+      else if (status >= 500) {
+        setError("⚠️ Server error. Please try again later.");
+      }
+      // Case 6: Network error
+      else if (err.code === "ERR_NETWORK") {
+        setError("🌐 Network error. Please check your connection.");
+      }
+      // Case 7: Generic error
+      else {
+        setError(
+          data?.message || "Login failed. Please check your credentials.",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -48,24 +96,31 @@ const Login = () => {
         <h2 className="auth-panel__title">Welcome Back!</h2>
 
         <form className="flex flex-col gap-3" onSubmit={onSubmit} noValidate>
+          {/* General Error */}
           {error && (
-            <p className="auth-error" role="alert">
-              {error}
-            </p>
+            <div
+              className="auth-error p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm flex items-start gap-2"
+              role="alert"
+            >
+              <span className="text-base">⚠️</span>
+              <span>{error}</span>
+            </div>
           )}
 
-          {/* Email */}
+          {/* Email Field */}
           <div className="auth-field">
             <label className="auth-label" htmlFor="l-email">
               Email
             </label>
-            <div className="auth-input-wrap">
+            <div
+              className={`auth-input-wrap ${fieldErrors.email ? "border-red-500/50" : ""}`}
+            >
               <span className="auth-input-icon">
                 <IcoMail />
               </span>
               <input
                 id="l-email"
-                className="auth-input"
+                className={`auth-input ${fieldErrors.email ? "text-red-400" : ""}`}
                 type="email"
                 name="email"
                 value={form.email}
@@ -75,9 +130,14 @@ const Login = () => {
                 required
               />
             </div>
+            {fieldErrors.email && (
+              <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+                <span>❌</span> {fieldErrors.email}
+              </p>
+            )}
           </div>
 
-          {/* Password */}
+          {/* Password Field */}
           <div className="auth-field">
             <div className="flex items-center justify-between">
               <label className="auth-label" htmlFor="l-pass">
@@ -91,13 +151,15 @@ const Login = () => {
                 Forgot?
               </a>
             </div>
-            <div className="auth-input-wrap">
+            <div
+              className={`auth-input-wrap ${fieldErrors.password ? "border-red-500/50" : ""}`}
+            >
               <span className="auth-input-icon">
                 <IcoLock />
               </span>
               <input
                 id="l-pass"
-                className="auth-input"
+                className={`auth-input ${fieldErrors.password ? "text-red-400" : ""}`}
                 type="password"
                 name="password"
                 value={form.password}
@@ -107,9 +169,14 @@ const Login = () => {
                 required
               />
             </div>
+            {fieldErrors.password && (
+              <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+                <span>❌</span> {fieldErrors.password}
+              </p>
+            )}
           </div>
 
-          {/* Submit */}
+          {/* Submit Button */}
           <button
             id="login-submit"
             type="submit"
