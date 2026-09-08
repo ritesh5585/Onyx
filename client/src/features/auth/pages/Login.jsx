@@ -25,8 +25,8 @@ const Login = () => {
     } catch (err) {
       setError(
         err?.response?.data?.message ||
-        err?.response?.data?.errors?.[0]?.msg ||
-        "Login failed. Please check your credentials.",
+          err?.response?.data?.errors?.[0]?.msg ||
+          "Login failed. Please check your credentials.",
       );
     } finally {
       setLoading(false);
@@ -117,7 +117,11 @@ const Login = () => {
             disabled={loading}
           >
             <span>
-              {loading ? <span className="inline-block w-4 h-4 border-[1.5px] border-black/20 border-t-black rounded-full animate-[spin_0.7s_linear_infinite]" /> : "Continue"}
+              {loading ? (
+                <span className="inline-block w-4 h-4 border-[1.5px] border-black/20 border-t-black rounded-full animate-[spin_0.7s_linear_infinite]" />
+              ) : (
+                "Continue"
+              )}
             </span>
             {!loading && <span className="text-[1.1rem] leading-none">→</span>}
           </button>
@@ -127,7 +131,10 @@ const Login = () => {
 
         <p className="auth-footer">
           Don't have an account?{" "}
-          <Link to="/register" className="text-[#eee9e1] font-semibold no-underline border-b border-[#eee9e1]/20 pb-[1px] transition-colors hover:text-[#c49a52] hover:border-[#c49a52]">
+          <Link
+            to="/register"
+            className="text-[#eee9e1] font-semibold no-underline border-b border-[#eee9e1]/20 pb-[1px] transition-colors hover:text-[#c49a52] hover:border-[#c49a52]"
+          >
             Register Now
           </Link>
         </p>

@@ -5,6 +5,7 @@ import { useAuth } from "../auth/hook/useAuth";
 import { useCart } from "../cart/hooks/useCart";
 import Count from "../cart/components/Count";
 import { initNavbarScrollEffect, animatePageIn } from "./animations";
+import SearchBar from "../components/SearchBar";
 
 const WishlistIcon = () => (
   <svg
@@ -19,34 +20,6 @@ const WishlistIcon = () => (
   >
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
   </svg>
-);
-
-const SearchBar = ({ className }) => (
-  <div
-    className={`group flex items-end border-b border-onyx-gold/40 focus-within:border-onyx-gold transition-colors duration-150 ${className}`}
-  >
-    <input
-      type="text"
-      placeholder="Search for products..."
-      className="w-full bg-transparent border-none py-1.5 px-2 text-[12px] !text-onyx-text outline-none placeholder:text-white/40 tracking-wider"
-    />
-    <button
-      type="button"
-      aria-label="Search"
-      className="flex items-center justify-center w-7 h-7 shrink-0 bg-onyx-gold rounded-t-sm text-onyx-black hover:bg-onyx-gold-lt transition-colors duration-150 shadow-[0_0_10px_rgba(196,154,82,0.3)]"
-    >
-      <svg
-        className="w-3.5 h-3.5"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-      >
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-    </button>
-  </div>
 );
 
 const Badge = ({ count }) =>
@@ -164,7 +137,7 @@ const Layout = ({ children, showBackButton = false }) => {
           </div>
 
           {/* Desktop Search - Always visible on desktop */}
-          <SearchBar className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[320px]" />
+          <SearchBar className="hidden lg:flex absolute left-1/2 top-3.5 -translate-x-1/2 -translate-y-1/2 w-full max-w-[320px]" />
 
           {/* Mobile Search - Shows/Hides on scroll */}
           <div
