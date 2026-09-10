@@ -34,10 +34,6 @@ const Register = () => {
     if (error) setError("");
   };
 
-  // ============================================
-  // CLIENT-SIDE VALIDATION
-  // ============================================
-
   const validateForm = () => {
     const errors = {};
 

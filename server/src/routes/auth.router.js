@@ -4,7 +4,6 @@ import { validateRegisterUser, validateLoginUser } from '../validator/auth.valid
 import { register, login, logout, getMe, googleCallback } from '../controller/auth.controller.js'
 import { authenticateUser } from '../middleware/auth.middleware.js'
 import { config } from '../config/config.js'
-
 const router = Router()
 
 /**
