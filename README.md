@@ -1,448 +1,210 @@
 <div align="center">
 
 # ONYX
-### Premium Full-Stack Fashion Commerce Platform
+### Luxury Full-Stack Fashion Commerce Platform
 
-A modern, production-inspired e-commerce application built with the MERN Stack, designed with a luxury fashion experience while focusing on scalability, security, and real-world engineering practices.
+A modern e-commerce application built with the MERN stack, featuring a high-end luxury fashion storefront for buyers and a comprehensive management portal for sellers.
 
-Live: https://onyx-e-commerce.netlify.app/
----
+[Live Demo](https://onyx-e-commerce.netlify.app/) · [Issue Tracker](./issues.md)
 
-# Overview
-
-ONYX is a premium fashion commerce platform inspired by modern luxury brands.
-
-The objective was **not only to build an e-commerce website**, but to understand how production-grade applications are designed.
-
-Instead of stopping after implementing CRUD operations, the project focuses on:
-
-- Production-like architecture
-- Secure backend practices
-- Seller & Buyer workflows
-- Cloud asset management
-- Payment processing
-- Performance optimization
-- Mobile-first responsive UI
-- Better state management
-- Real engineering debugging
+</div>
 
 ---
 
-# Tech Stack
+## Overview
 
-## Frontend
-
-- React 19
-- React Router
-- Redux Toolkit
-- GSAP
-- SCSS Modules
-- Axios
-- React Icons
+**ONYX** is a dual-persona commerce platform designed to mirror real-world production architectures. It bridges buyer-facing retail experiences (rich animations, dynamic variant selection, server-side cart aggregation) with seller-side catalog and inventory workflows (multi-image uploads, variant pricing, cloud asset lifecycle management).
 
 ---
 
-## Backend
+## Tech Stack
 
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT Authentication
-- Bcrypt
-- Multer
-- Cloudinary
-- Razorpay
+### Frontend
+- **Framework**: React 19 (Vite 7)
+- **State Management**: Redux Toolkit (`@reduxjs/toolkit`, `react-redux`)
+- **Routing**: React Router v7 (`react-router`, `react-router-dom`)
+- **Styling**: TailwindCSS v4 (`@tailwindcss/vite`)
+- **Animations**: GSAP (GreenSock Animation Platform)
+- **HTTP Client**: Axios with credential cookies
+- **Payment SDK**: `react-razorpay`
+- **UI Notifications**: Sonner
 
----
-
-# Features
-
-## Authentication
-
-- Register
-- Login
-- JWT Authentication
-- Google OAuth
-- Seller Registration
-- Protected Routes
-- Logout
+### Backend
+- **Runtime & Server**: Node.js, Express 5.x
+- **Database & ODM**: MongoDB, Mongoose 9.x
+- **Authentication**: JWT (HttpOnly secure cookies), Passport.js (Google OAuth 2.0), Bcrypt.js
+- **File Uploads & Cloud Storage**: Multer (memoryStorage), ImageKit SDK (`@imagekit/nodejs`)
+- **Payment Gateway**: Razorpay SDK
+- **Logging & Utilities**: Morgan, Cookie-Parser, Express-Validator
 
 ---
 
-## Buyer
+## Core Features & System Capabilities
 
-- Browse Products
-- Product Details
-- Add To Cart
-- Quantity Management
-- Remove Cart Item
-- Checkout
-- Razorpay Payment
+### 1. Authentication & Role-Based Access
+- Local authentication (Registration & Login) with Bcrypt password hashing.
+- Google OAuth 2.0 integration via Passport.
+- JWT-based authentication delivered over `httpOnly` secure cookies.
+- Role-based authorization: **Buyer** and **Seller** accounts with dedicated route protection.
 
----
+### 2. Buyer Storefront
+- **Curated Catalog**: Luxury editorial design with GSAP animations, parallax banners, and category previews.
+- **Product Details & Variant Picker**: Dynamic multi-attribute selector (Size, Color) that reflects real-time price differences and stock availability.
+- **Cart System**: Powered by MongoDB aggregation pipelines to calculate itemized pricing, subtotal, and stock validation on the server.
+- **Wishlist**: Quick add/remove toggle with live item count badge and move-to-cart capability.
 
-## Seller Portal
-
-- Seller Dashboard
-- Upload Products
-- Edit Product
-- Delete Product
-- Variant Management
-- Inventory Management
-- Cloud Image Management
+### 3. Seller Portal
+- **Dashboard**: Overview of active listings and product inventory.
+- **Product Creation**: Multi-image file upload (up to 7 images per product) processed via Multer memory storage and synced to ImageKit.
+- **Variant Management**: Attach custom variants with individual stock, pricing, and attribute configurations.
+- **Asset Lifecycle Management**: Automatically deletes associated ImageKit assets when products or individual variants are removed.
 
 ---
 
-## Product Variants
+## Project Status & Roadmap
 
-Supports
+| Module | Status | Description |
+|---|---|---|
+| **Authentication** | ✅ Active | Local JWT + Google OAuth2, role-based route guarding |
+| **Catalog & Storefront** | ✅ Active | Product listing, dynamic variant selectors, luxury UI |
+| **Seller Management** | ✅ Active | Product upload, variant creation, ImageKit cloud cleanup |
+| **Cart Engine** | ✅ Active | Aggregation-driven server price calculation & stock checks |
+| **Wishlist** | ✅ Active | Add/remove items and one-click transfer to cart |
+| **Payment Verification** | ⚠️ In Progress | Razorpay order creation active; signature verification & webhook in progress |
+| **Order Management (OMS)** | ⏳ In Progress | Order model, buyer order history, and seller fulfillment |
+| **Checkout & Addresses** | ⏳ In Progress | Saved shipping address book & multi-step checkout |
 
-- Size
-- Color
-- Price
-- Stock
-
-Seller can
-
-- Add Variant
-- Remove Variant
-- Update Variant
+*For detailed tracking and issue tickets, check [issues.md](./issues.md).*
 
 ---
 
-## Payment
-
-Integrated with Razorpay
-
-Flow
+## Project Architecture
 
 ```
-Create Order
-      ↓
-Open Razorpay Checkout
-      ↓
-Payment
-      ↓
-Signature Verification
-      ↓
-Order Confirmation
+                                  ┌─────────────────────────────┐
+                                  │   React 19 + Vite Client    │
+                                  │   (TailwindCSS v4 + GSAP)   │
+                                  └──────────────┬──────────────┘
+                                                 │ HTTP / REST (Axios)
+                                                 ▼
+                                  ┌─────────────────────────────┐
+                                  │     Express 5.x Server      │
+                                  │  (Routes -> Controllers)    │
+                                  └──────┬───────────┬──────────┘
+                         ┌───────────────┘           └───────────────┐
+                         ▼                                           ▼
+            ┌────────────────────────┐                  ┌────────────────────────┐
+            │   DAO & Services Layer │                  │  Third-Party Services  │
+            │ • cart.dao / product   │                  │ • ImageKit (Storage)   │
+            │ • cartStats.service    │                  │ • Razorpay (Payments)  │
+            └───────────┬────────────┘                  │ • Google OAuth 2.0     │
+                        ▼                               └────────────────────────┘
+            ┌────────────────────────┐
+            │   MongoDB Database     │
+            │ • Users, Products      │
+            │ • Carts, Payments      │
+            └────────────────────────┘
 ```
 
 ---
 
-# Architecture
+## Local Development & Setup
 
-```
-               React Frontend
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18 or higher recommended)
+- [MongoDB](https://www.mongodb.com/) (Local instance or MongoDB Atlas cluster)
+- Package Manager: `npm` (comes with Node.js)
 
-                      │
-
-                      ▼
-
-             Express REST APIs
-
-                      │
-
-      ┌───────────────┴───────────────┐
-
-      ▼                               ▼
-
- MongoDB                        Cloudinary
-
-      │
-
-      ▼
-
- Razorpay
+### 1. Clone the Repository
+```bash
+git clone https://github.com/ritesh5585/Onyx.git
+cd Onyx
 ```
 
----
-
-# Project Structure
-
-```
-client/
-
-src/
-
-app/
-
-features/
-
-auth/
-
-products/
-
-cart/
-
-checkout/
-
-shared/
-
-hooks/
-
-redux/
-
-components/
-
-server/
-
-src/
-
-config/
-
-controllers/
-
-middlewares/
-
-models/
-
-routes/
-
-services/
-
-validators/
-
-utils/
-
+### 2. Backend Setup
+```bash
+cd server
+npm install
 ```
 
----
+Create a `.env` file in the `server/` directory:
+```env
+PORT=3000
+NODE_ENV=development
+MONGO_URI=your_mongodb_connection_string
+JWT_TOKEN=your_jwt_secret_key
+CLIENT_URL=http://localhost:5173
 
-# Engineering Challenges
+# ImageKit Storage
+IMAGE_PRIVATE_KEY=your_imagekit_private_key
 
-This project taught much more than writing components.
+# Razorpay Payments
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 
-## 1. React Re-rendering
-
-### Problem
-
-Updating cart quantity wasn't updating UI.
-
-User had to refresh the page.
-
-### Solution
-
-- Better Redux state updates
-- useEffect dependency corrections
-- Better component rendering
-
----
-
-## 2. Cloudinary Cleanup
-
-### Problem
-
-Deleting products removed MongoDB records.
-
-Cloudinary images still existed.
-
-Which means
-
-Database
-
-✅ Deleted
-
-Cloud Storage
-
-❌ Not Deleted
-
-Eventually increasing storage usage.
-
-### Solution
-
-Implemented proper Cloudinary cleanup while deleting products.
-
-Now
-
-```
-Delete Product
-
-↓
-
-Delete Mongo Document
-
-↓
-
-Delete Cloudinary Images
-
-↓
-
-Return Success
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=/api/auth/google/callback
 ```
 
----
-
-## 3. Aggregation Pipeline
-
-Most beginner projects calculate cart totals on frontend.
-
-That allows manipulation.
-
-Instead,
-
-MongoDB Aggregation Pipeline calculates
-
-- Total
-- Quantity
-- Price
-- Currency
-
-inside database.
-
-Benefits
-
-- Secure
-- Faster
-- Harder to manipulate
-- Production-like
-
----
-
-## 4. Responsive Design
-
-One of the hardest parts.
-
-Instead of relying completely on AI-generated layouts, every screen was manually adjusted.
-
-Responsive support
-
-Desktop
-
-Tablet
-
-Mobile
-
----
-
-## 5. Payment Security
-
-Implemented Razorpay payment flow
-
-```
-Create Order
-
-↓
-
-Payment
-
-↓
-
-Verify Signature
-
-↓
-
-Save Order
-
-↓
-
-Clear Cart
+Start the backend development server:
+```bash
+npm run dev
+# Server running on http://localhost:3000
 ```
 
-Learning
+### 3. Frontend Setup
+Open a new terminal window:
+```bash
+cd client
+npm install
+```
 
-Never trust frontend payment response directly.
+Create a `.env` file in the `client/` directory (optional for local dev, defaults to `/api` proxy):
+```env
+VITE_API_URL=/api
+VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
+```
 
-Always verify on backend.
+Start the frontend development server:
+```bash
+npm run dev
+# Client running on http://localhost:5173
+```
 
----
-
-# UI Philosophy
-
-ONYX follows a luxury fashion aesthetic.
-
-Design Principles
-
-- Minimal
-- Editorial
-- Premium
-- Spacious
-- Elegant Typography
-- Dark Theme
-- Gold Accent
-
----
-
-# What I Learned
-
-Building this project changed how I think.
-
-I learned
-
-- Backend architecture
-- REST API Design
-- Authentication
-- State Management
-- MongoDB Aggregation
-- Payment Integration
-- Cloud Asset Lifecycle
-- Debugging Production Bugs
-- Component Architecture
-- Performance Optimization
-
-Most importantly
-
-> Building features is easy.
-
-> Understanding systems is difficult.
+> **Note on Local Proxy**: Vite is configured in `client/vite.config.js` to automatically forward requests starting with `/api` to `http://localhost:3000`.
 
 ---
 
-# Future Roadmap
+## REST API Overview
 
-- Wishlist
-- Reviews
-- Coupons
-- Order Tracking
-- Admin Dashboard
-- Analytics
-- Email Notifications
-- Search
-- Filters
-- Recommendation Engine
-- AI Product Search
-- Redis Caching
-- Docker
-- CI/CD
-- AWS Deployment
-
----
-
-# Screenshots
-
-| Home | Dashboard |
-|-------|-----------|
-| Image | Image |
-
-| Cart | Checkout |
-|-------|----------|
-| Image | Image |
-
-| Product | Mobile |
-|----------|--------|
-| Image | Image |
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| **POST** | `/api/auth/register` | Public | Register new buyer or seller account |
+| **POST** | `/api/auth/login` | Public | Authenticate user & issue HttpOnly JWT cookie |
+| **POST** | `/api/auth/logout` | Authenticated | Clear session cookie |
+| **GET** | `/api/auth/me` | Authenticated | Fetch authenticated user profile |
+| **GET** | `/api/auth/google` | Public | Initiate Google OAuth flow |
+| **GET** | `/api/product` | Public | Get all active products |
+| **GET** | `/api/product/:id` | Public | Get detailed product information |
+| **GET** | `/api/product/seller` | Seller | Retrieve products created by logged-in seller |
+| **POST** | `/api/product` | Seller | Upload new product with images |
+| **PATCH** | `/api/product/:id` | Seller | Update product details |
+| **POST** | `/api/product/:id/variants` | Seller | Add variants to existing product |
+| **DELETE** | `/api/product/product-deleting/:id` | Seller | Delete product and associated ImageKit assets |
+| **GET** | `/api/cart/get` | Authenticated | Retrieve user cart with aggregated pricing |
+| **POST** | `/api/cart/add/:productId/:variantId` | Authenticated | Add item to cart with stock validation |
+| **PATCH** | `/api/cart/update/:cartItemId` | Authenticated | Update item quantity |
+| **DELETE** | `/api/cart/remove/:cartItemId` | Authenticated | Remove item from cart |
+| **GET** | `/api/wishlist` | Authenticated | Retrieve user wishlist |
+| **POST** | `/api/wishlist` | Authenticated | Add product to wishlist |
+| **DELETE** | `/api/wishlist/:id` | Authenticated | Remove product from wishlist |
+| **POST** | `/api/payment/create/order` | Authenticated | Initialize Razorpay payment order |
+| **POST** | `/api/payment/verify` | Authenticated | Verify Razorpay payment signature |
 
 ---
 
-# Author
+## License
 
-## Ritesh Vishwakarma
-
-Full Stack Developer
-
-Building products while learning how real systems work.
-
-LinkedIn
-
-GitHub
-
-Portfolio
-
----
-
-# If you like this project
-
-⭐ Give this repository a Star.
-
-Feedback and suggestions are always welcome.
+This project is licensed under the [ISC License](./server/package.json).
