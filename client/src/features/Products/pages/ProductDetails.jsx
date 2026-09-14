@@ -18,6 +18,8 @@ const ProductDetails = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
 
+const {handleOrderPayment} = useCart()
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [isAdding, setIsAdding] = useState(false);

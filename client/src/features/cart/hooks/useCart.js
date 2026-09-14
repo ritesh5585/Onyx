@@ -6,7 +6,8 @@ import {
     createOrderPayment,
     getCart,
     removeFromCart,
-    updateCartQty
+    updateCartQty,
+    verifyOrderPayment
 } from "../service/cart.api";
 
 export const useCart = () => {
@@ -79,17 +80,26 @@ export const useCart = () => {
         }
     }, [refreshCart]);
 
-    const handleOrderPayment = useCallback(async (amount, currency) => {
-        const data = await createOrderPayment()
-        
-        return data.orders
-    }, [refreshCart])
+    const handleOrderPayment = useCallback(async () => {
+        const data = await createOrderPayment();
+
+        if (!data?.order?.id) {
+            throw new Error("Payment order was not created");
+        }
+
+        return data.order;
+    }, [])
+
+    const verifyPayment = useCallback(async (paymentDetails) => {
+        return verifyOrderPayment(paymentDetails);
+    }, [])
     return {
         handleAddtoCart,
         handleGetCart,
         handleRemoveItem,
         handleIncrementQty,
         handleDecrementQty,
-        handleOrderPayment
+        handleOrderPayment,
+        verifyPayment
     };
 };

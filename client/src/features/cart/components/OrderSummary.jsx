@@ -2,19 +2,26 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { useCart } from "../hooks/useCart";
 import RazorPay from "./RazorPay";
+import { toast } from "sonner";
 
 const OrderSummary = ({ count, subtotal, shipping, total, currency }) => {
   const { handleOrderPayment } = useCart();
 
   const [paymentData, setPaymentData] = useState(null);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   const handleCheckout = async () => {
+    if (isCheckoutLoading) return;
+
     try {
+      setIsCheckoutLoading(true);
       setPaymentData(null);
       const data = await handleOrderPayment();
-      if (data?.id) setPaymentData(data);
+      setPaymentData(data);
     } catch (err) {
-      console.error(err);
+      toast.error(err.response?.data?.message || err.message || "Unable to start checkout");
+    } finally {
+      setIsCheckoutLoading(false);
     }
   };
 
@@ -59,9 +66,10 @@ const OrderSummary = ({ count, subtotal, shipping, total, currency }) => {
 
         <button
           onClick={handleCheckout}
+          disabled={isCheckoutLoading}
           className="onyx-btn-primary flex w-full justify-between px-6"
         >
-          <span>Proceed to Checkout</span>
+          <span>{isCheckoutLoading ? "Preparing payment..." : "Proceed to Checkout"}</span>
           <span>→</span>
         </button>
 
@@ -85,8 +93,8 @@ const OrderSummary = ({ count, subtotal, shipping, total, currency }) => {
         <RazorPay
           key={paymentData.id}
           orderId={paymentData.id}
-          amount={total}
-          currency={currency}
+          amount={paymentData.amount}
+          currency={paymentData.currency || currency}
         />
       )}
     </>

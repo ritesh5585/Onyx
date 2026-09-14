@@ -19,3 +19,7 @@ export const updateCartQty = async (cartItemId, quantity) => {
 export const createOrderPayment = async (amount, currency) => {
     return (await api.post('/payment/create/order')).data
 }
+
+export const verifyOrderPayment = async (paymentDetails) => {
+    return (await api.post('/payment/verify', paymentDetails)).data
+}
