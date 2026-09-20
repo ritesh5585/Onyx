@@ -2,9 +2,11 @@ import crypto from "node:crypto"
 import { createPayment } from "../services/payment.service.js"
 import paymentModel from '../models/payment.js'
 import { getCartDetails } from "../dao/cart.dao.js"
+import addressModel from "../models/address.js"
 
 export const createOrderPayment = async (req, res) => {
     try {
+        const { addressId } = req.body
         const cart = await getCartDetails(req.user._id)
 
         if (!cart.items.length) {
@@ -14,12 +16,31 @@ export const createOrderPayment = async (req, res) => {
             })
         }
 
+        let shippingAddress = null
+        if (addressId) {
+            const addr = await addressModel.findOne({ _id: addressId, user: req.user._id })
+            if (addr) {
+                shippingAddress = {
+                    name: addr.name,
+                    phone: addr.phone,
+                    alternativePhone: addr.alternativePhone || "",
+                    email: addr.email || "",
+                    addressLine: addr.addressLine,
+                    city: addr.city,
+                    state: addr.state,
+                    zip: addr.zip,
+                    country: addr.country
+                }
+            }
+        }
+
         const order = await createPayment({    // ← FIX: "orders" → "order"
             amount: cart.totalPrice,
             currency: cart.currency
         })
         const payment = await paymentModel.create({
             user: req.user._id,
+            shippingAddress,
             razorpay: {
                 orderId: order.id,    // ✅ Ab sahi hai
             },

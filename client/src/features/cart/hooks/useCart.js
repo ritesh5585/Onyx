@@ -80,8 +80,8 @@ export const useCart = () => {
         }
     }, [refreshCart]);
 
-    const handleOrderPayment = useCallback(async () => {
-        const data = await createOrderPayment();
+    const handleOrderPayment = useCallback(async (addressId) => {
+        const data = await createOrderPayment(addressId);
 
         if (!data?.order?.id) {
             throw new Error("Payment order was not created");

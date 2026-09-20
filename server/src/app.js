@@ -9,6 +9,7 @@ import productRouter from './routes/product.routes.js'
 import cartRouter from './routes/cart.router.js'
 import paymentRouter from './routes/payment.router.js'
 import wishListRouter from './routes/wishList.route.js'
+import addressRouter from './routes/address.router.js'
 import { config } from "./config/config.js"
 
 const app = express()
@@ -42,5 +43,6 @@ app.use('/api/product', productRouter)
 app.use('/api/cart', cartRouter)
 app.use('/api/payment', paymentRouter)
 app.use('/api/wishlist', wishListRouter)
+app.use('/api/address', addressRouter)
 
 export default app
