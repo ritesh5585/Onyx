@@ -4,7 +4,15 @@ import { useCart } from "../hooks/useCart";
 import RazorPay from "./RazorPay";
 import { toast } from "sonner";
 
-const OrderSummary = ({ count, subtotal, shipping, total, currency }) => {
+const OrderSummary = ({
+  count,
+  subtotal,
+  shipping,
+  total,
+  currency,
+  selectedAddress = null,
+  onPromptAddress,
+}) => {
   const { handleOrderPayment } = useCart();
 
   const [paymentData, setPaymentData] = useState(null);
@@ -13,13 +21,21 @@ const OrderSummary = ({ count, subtotal, shipping, total, currency }) => {
   const handleCheckout = async () => {
     if (isCheckoutLoading) return;
 
+    if (!selectedAddress) {
+      toast.error("Please select or add a delivery address to proceed");
+      onPromptAddress?.();
+      return;
+    }
+
     try {
       setIsCheckoutLoading(true);
       setPaymentData(null);
-      const data = await handleOrderPayment();
+      const data = await handleOrderPayment(selectedAddress._id);
       setPaymentData(data);
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message || "Unable to start checkout");
+      toast.error(
+        err.response?.data?.message || err.message || "Unable to start checkout"
+      );
     } finally {
       setIsCheckoutLoading(false);
     }
@@ -32,19 +48,46 @@ const OrderSummary = ({ count, subtotal, shipping, total, currency }) => {
           Order Summary
         </h2>
 
+        {/* Selected Shipping Destination Badge */}
+        {selectedAddress ? (
+          <div className="mb-5 rounded-xl border border-onyx-border/60 bg-onyx-card/60 p-3.5 transition-all">
+            <div className="flex items-center justify-between text-[10px] text-onyx-muted uppercase tracking-[0.14em] font-semibold mb-1">
+              <span className="text-onyx-gold flex items-center gap-1">
+                <span>📍</span>
+                <span>Deliver To</span>
+              </span>
+              <span>{selectedAddress.zip}</span>
+            </div>
+            <p className="font-medium text-xs text-onyx-text truncate">
+              {selectedAddress.name} ({selectedAddress.phone})
+            </p>
+            <p className="text-onyx-muted truncate text-[11px] mt-0.5">
+              {selectedAddress.addressLine}, {selectedAddress.city}
+            </p>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={onPromptAddress}
+            className="mb-5 w-full rounded-xl border border-dashed border-onyx-gold/40 bg-onyx-gold-muted/30 p-3 text-center text-xs text-onyx-gold hover:bg-onyx-gold-muted/50 transition-colors"
+          >
+            + Select / Add Delivery Address
+          </button>
+        )}
+
         <div className="space-y-3">
-          <div className="flex justify-between border-b border-onyx-border/60 pb-3">
-            <span className="text-[12px] text-onyx-muted/70">
+          <div className="flex justify-between border-b border-onyx-border/60 pb-3 text-xs">
+            <span className="text-onyx-muted/70">
               Subtotal ({count} {count === 1 ? "item" : "items"})
             </span>
 
-            <span>
+            <span className="text-onyx-text">
               {currency} {subtotal.toLocaleString()}
             </span>
           </div>
 
-          <div className="flex justify-between">
-            <span className="text-[12px] text-onyx-muted/70">Shipping</span>
+          <div className="flex justify-between text-xs">
+            <span className="text-onyx-muted/70">Shipping</span>
 
             <span
               className={shipping === 0 ? "text-emerald-400" : "text-onyx-text"}
@@ -56,8 +99,10 @@ const OrderSummary = ({ count, subtotal, shipping, total, currency }) => {
 
         <hr className="my-4 border-onyx-border/70" />
 
-        <div className="flex justify-between pb-6">
-          <span>Total</span>
+        <div className="flex justify-between pb-6 items-baseline">
+          <span className="text-xs uppercase tracking-wider text-onyx-muted">
+            Total
+          </span>
 
           <span className="text-2xl font-semibold text-onyx-gold">
             {currency} {total.toLocaleString()}
@@ -69,7 +114,13 @@ const OrderSummary = ({ count, subtotal, shipping, total, currency }) => {
           disabled={isCheckoutLoading}
           className="onyx-btn-primary flex w-full justify-between px-6"
         >
-          <span>{isCheckoutLoading ? "Preparing payment..." : "Proceed to Checkout"}</span>
+          <span>
+            {isCheckoutLoading
+              ? "Preparing payment..."
+              : selectedAddress
+              ? "Proceed to Payment"
+              : "Select Address to Pay"}
+          </span>
           <span>→</span>
         </button>
 

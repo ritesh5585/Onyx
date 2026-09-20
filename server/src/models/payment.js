@@ -20,7 +20,18 @@ const paymentSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
-        required: true
+        required: true,
+    },
+    shippingAddress: {
+        name: String,
+        phone: String,
+        alternativePhone: String,
+        email: String,
+        addressLine: String,
+        city: String,
+        state: String,
+        zip: String,
+        country: String
     },
     orderItems: [
         {
