@@ -93,13 +93,22 @@ const Layout = ({ children, showBackButton = false }) => {
   const AuthLinks = ({ isMobile }) => (
     <>
       {!user ? null : ( // If no user, show nothing in menu (handled separately)
-        <button
-          onClick={logout}
-          className={`${navItemClass(isMobile)} bg-transparent border-none cursor-pointer p-0 text-left ${isMobile && "w-full"}`}
-          type="button"
-        >
-          Logout
-        </button>
+        <>
+          <NavLink
+            to="/my-orders"
+            className={`${navItemClass(isMobile)} block w-full text-left bg-transparent border-none cursor-pointer p-0 mb-2`}
+            onClick={() => isMobile && setMenuOpen(false)}
+          >
+            My Orders
+          </NavLink>
+          <button
+            onClick={logout}
+            className={`${navItemClass(isMobile)} bg-transparent border-none cursor-pointer p-0 text-left ${isMobile && "w-full"}`}
+            type="button"
+          >
+            Logout
+          </button>
+        </>
       )}
     </>
   );

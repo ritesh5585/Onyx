@@ -32,7 +32,10 @@ export const createAddress = async (req, res) => {
 
     // If this address is set as default, unset default on all other addresses
     if (shouldBeDefault && existingCount > 0) {
-      await addressModel.updateMany({ user: userId }, { $set: { isDefault: false } });
+      await addressModel.updateMany(
+        { user: userId },
+        { $set: { isDefault: false } },
+      );
     }
 
     const newAddress = await addressModel.create({
@@ -144,7 +147,10 @@ export const updateAddress = async (req, res) => {
       isDefault,
     } = req.body;
 
-    const existingAddress = await addressModel.findOne({ _id: id, user: userId });
+    const existingAddress = await addressModel.findOne({
+      _id: id,
+      user: userId,
+    });
     if (!existingAddress) {
       return res.status(404).json({
         success: false,
@@ -153,12 +159,16 @@ export const updateAddress = async (req, res) => {
     }
 
     if (isDefault === true && !existingAddress.isDefault) {
-      await addressModel.updateMany({ user: userId }, { $set: { isDefault: false } });
+      await addressModel.updateMany(
+        { user: userId },
+        { $set: { isDefault: false } },
+      );
     }
 
     if (name !== undefined) existingAddress.name = name;
     if (phone !== undefined) existingAddress.phone = phone;
-    if (alternativePhone !== undefined) existingAddress.alternativePhone = alternativePhone;
+    if (alternativePhone !== undefined)
+      existingAddress.alternativePhone = alternativePhone;
     if (email !== undefined) existingAddress.email = email;
     if (addressLine !== undefined || address !== undefined) {
       existingAddress.addressLine = addressLine || address;
@@ -195,7 +205,10 @@ export const deleteAddress = async (req, res) => {
     const { id } = req.params;
     const userId = req.user._id;
 
-    const deletedAddress = await addressModel.findOneAndDelete({ _id: id, user: userId });
+    const deletedAddress = await addressModel.findOneAndDelete({
+      _id: id,
+      user: userId,
+    });
 
     if (!deletedAddress) {
       return res.status(404).json({
@@ -249,7 +262,10 @@ export const setDefaultAddress = async (req, res) => {
     }
 
     // Unset all existing defaults for this user
-    await addressModel.updateMany({ user: userId }, { $set: { isDefault: false } });
+    await addressModel.updateMany(
+      { user: userId },
+      { $set: { isDefault: false } },
+    );
 
     // Set targeted address as default
     address.isDefault = true;
