@@ -22,6 +22,7 @@ const Wishlist = lazy(
 );
 const Cart = lazy(() => import("../features/cart/pages/Cart.jsx"));
 const NotFound = lazy(() => import("../features/components/NotFound.jsx"));
+const MyOrders = lazy(() => import("../features/orders/pages/MyOrders.jsx"));
 
 export const routes = createBrowserRouter([
   {
@@ -76,5 +77,9 @@ export const routes = createBrowserRouter([
   {
     path: "/getYourList",
     element: <Wishlist />,
+  },
+  {
+    path: "/my-orders",
+    element: <MyOrders />,
   },
 ]);
