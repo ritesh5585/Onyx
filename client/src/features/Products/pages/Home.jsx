@@ -473,7 +473,7 @@ const ProductRow = ({
   title,
   products,
   onNavigate,
-  cols = 4,
+  cols = 16,
   linkId,
   linkLabel,
 }) => {
@@ -743,7 +743,7 @@ const Home = () => {
         trending:
           len > 4 ? products.slice(4, 8) : products.slice(0, Math.min(4, len)),
         newArrivals: [...products].reverse().slice(0, 5),
-        bestSellers: products.slice(Math.max(0, len - 4)),
+        bestSellers: products.slice(Math.max(0, len - 16)),
       };
     }, [allProduct]);
   const hasProducts = total > 0;
