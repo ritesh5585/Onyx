@@ -13,6 +13,7 @@ import { useCart } from "../../cart/hooks/useCart";
 import { VariantSelector } from "../components/variantSelector";
 import Feature from "../../Wishlists/pages/Feature";
 import { toast } from "sonner";
+import ProductReviews from "../../reviews/components/ProductReviews";
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -195,6 +196,9 @@ const {handleOrderPayment} = useCart()
               </div>
             </div>
           </div>
+
+          {/* ── Reviews Section ── */}
+          <ProductReviews productId={detail._id} />
         </div>
 
         {/* ── Fixed Bottom CTA Bar ── */}

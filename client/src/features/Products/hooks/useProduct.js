@@ -1,9 +1,10 @@
-import { useDispatch } from "react-redux";
-import { setSellerProduct, setProducts, setDetails } from "../state/product.slice.js";
+import { useDispatch, useSelector } from "react-redux";
+import { setSellerProduct, setProducts, setDetails, setCategories, setFilters, resetFilters } from "../state/product.slice.js";
 import {
     createProduct,
     getSellerProduct,
     getAllproducts,
+    getProductCategories,
     getProductDetail,
     addProductvariants,
     updateProductInfo,
@@ -14,6 +15,8 @@ import { useCallback } from "react";
 
 export const useProduct = () => {
     const dispatch = useDispatch();
+    const filters = useSelector((state) => state.product?.filters);
+    const categories = useSelector((state) => state.product?.categories);
 
     const handleCreateProduct = useCallback(async (formData) => {
         try {
@@ -36,15 +39,34 @@ export const useProduct = () => {
         }
     }, [dispatch]);
 
-    const handleGetAllProducts = useCallback(async () => {
+    const handleGetAllProducts = useCallback(async (params = {}) => {
         try {
-            const data = await getAllproducts();
+            const data = await getAllproducts(params);
             dispatch(setProducts(data?.products));
             return data;
         } catch (error) {
             console.error("Fetch all products failed:", error);
             throw error;
         }
+    }, [dispatch]);
+
+    const handleGetCategories = useCallback(async () => {
+        try {
+            const data = await getProductCategories();
+            dispatch(setCategories(data?.categories || []));
+            return data?.categories;
+        } catch (error) {
+            console.error("Fetch categories failed:", error);
+            return [];
+        }
+    }, [dispatch]);
+
+    const handleSetFilters = useCallback((newFilters) => {
+        dispatch(setFilters(newFilters));
+    }, [dispatch]);
+
+    const handleResetFilters = useCallback(() => {
+        dispatch(resetFilters());
     }, [dispatch]);
 
     const handleProductDetails = useCallback(async (productId) => {
@@ -102,9 +124,14 @@ export const useProduct = () => {
     }, [dispatch]);
 
     return {
+        filters,
+        categories,
         handleCreateProduct,
         handleGetSellerProduct,
         handleGetAllProducts,
+        handleGetCategories,
+        handleSetFilters,
+        handleResetFilters,
         handleProductDetails,
         handleProductVariants,
         handleUpdateProduct,

@@ -3,7 +3,7 @@ import uploadFile, { deleteFile } from "../services/storage.service.js";
 
 export const createProduct = async (req, res) => {
   try {
-    const { title, description, priceAmount, priceCurrency } = req.body;
+    const { title, description, priceAmount, priceCurrency, category } = req.body;
     const seller = req.user;
 
     if (!req.files || req.files.length === 0) {
@@ -26,6 +26,7 @@ export const createProduct = async (req, res) => {
     const product = await productModel.create({
       title,
       description,
+      category: category ? category.trim() : "Accessories",
       price: {
         amount: priceAmount,
         currency: priceCurrency || "INR",
@@ -62,13 +63,81 @@ export const getSellerProducts = async (req, res) => {
 };
 
 export const getAllProducts = async (req, res) => {
-  const products = await productModel.find();
+  try {
+    const { search, category, minPrice, maxPrice, sortBy } = req.query;
 
-  return res.status(200).json({
-    message: "Availble Products",
-    success: true,
-    products,
-  });
+    const query = {};
+
+    // Search filter across title, description, and category
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      query.$or = [
+        { title: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } },
+        { category: { $regex: searchRegex } },
+      ];
+    }
+
+    // Category filter
+    if (category && category.trim() && category.trim().toLowerCase() !== "all") {
+      query.category = { $regex: new RegExp(`^${category.trim()}$`, "i") };
+    }
+
+    // Price range filter
+    const hasMin = minPrice !== undefined && minPrice !== "" && !isNaN(Number(minPrice));
+    const hasMax = maxPrice !== undefined && maxPrice !== "" && !isNaN(Number(maxPrice));
+    if (hasMin || hasMax) {
+      query["price.amount"] = {};
+      if (hasMin) query["price.amount"].$gte = Number(minPrice);
+      if (hasMax) query["price.amount"].$lte = Number(maxPrice);
+    }
+
+    // Sorting options
+    let sortOptions = { createdAt: -1 }; // default newest
+    if (sortBy === "price_asc" || sortBy === "price-low") {
+      sortOptions = { "price.amount": 1 };
+    } else if (sortBy === "price_desc" || sortBy === "price-high") {
+      sortOptions = { "price.amount": -1 };
+    } else if (sortBy === "newest") {
+      sortOptions = { createdAt: -1 };
+    } else if (sortBy === "oldest") {
+      sortOptions = { createdAt: 1 };
+    } else if (sortBy === "title_asc" || sortBy === "name-asc") {
+      sortOptions = { title: 1 };
+    }
+
+    const products = await productModel.find(query).sort(sortOptions);
+
+    return res.status(200).json({
+      message: "Availble Products",
+      success: true,
+      count: products.length,
+      products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching products",
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const getProductCategories = async (req, res) => {
+  try {
+    const categories = await productModel.distinct("category");
+    const cleanCategories = categories.filter(Boolean);
+    return res.status(200).json({
+      success: true,
+      categories: cleanCategories,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching categories",
+      error: error.message,
+    });
+  }
 };
 
 export const getProductDetail = async (req, res) => {
@@ -149,7 +218,7 @@ export const addProductvariants = async (req, res) => {
 export const updateProductInfo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, priceAmount, priceCurrency } = req.body;
+    const { title, description, priceAmount, priceCurrency, category } = req.body;
 
     const product = await productModel.findById(id);
 
@@ -169,6 +238,7 @@ export const updateProductInfo = async (req, res) => {
 
     if (title) product.title = title;
     if (description) product.description = description;
+    if (category) product.category = category.trim();
     if (priceAmount) product.price.amount = Number(priceAmount);
     if (priceCurrency) product.price.currency = priceCurrency;
 

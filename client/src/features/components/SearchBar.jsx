@@ -74,9 +74,21 @@ const SearchBar = ({ className }) => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      setShowResults(false);
+      navigate(`/?search=${encodeURIComponent(searchTerm.trim())}#catalog-section`);
+      // smooth scroll if already on home
+      if (window.location.pathname === "/") {
+        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <div className={`search-container relative ${className}`}>
-      <div className="group flex items-end border-b border-onyx-gold/40 focus-within:border-onyx-gold transition-colors duration-150">
+      <form onSubmit={handleFormSubmit} className="group flex items-end border-b border-onyx-gold/40 focus-within:border-onyx-gold transition-colors duration-150">
         <input
           type="text"
           value={searchTerm}
@@ -86,9 +98,9 @@ const SearchBar = ({ className }) => {
           onFocus={() => searchTerm && setShowResults(true)}
         />
         <button
-          type="button"
+          type="submit"
           aria-label="Search"
-          className="flex items-center justify-center w-7 h-7 shrink-0 bg-onyx-gold rounded-t-sm text-onyx-black hover:bg-onyx-gold-lt transition-colors duration-150 shadow-[0_0_10px_rgba(196,154,82,0.3)]"
+          className="flex items-center justify-center w-7 h-7 shrink-0 bg-onyx-gold rounded-t-sm text-onyx-black hover:bg-onyx-gold-lt transition-colors duration-150 shadow-[0_0_10px_rgba(196,154,82,0.3)] cursor-pointer"
         >
           <svg
             className="w-3.5 h-3.5"
@@ -101,7 +113,7 @@ const SearchBar = ({ className }) => {
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
         </button>
-      </div>
+      </form>
 
       {/* Search Results Dropdown */}
       {showResults && (

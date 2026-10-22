@@ -11,6 +11,7 @@ import paymentRouter from "./routes/payment.router.js";
 import wishListRouter from "./routes/wishList.route.js";
 import addressRouter from "./routes/address.router.js";
 import orderRouter from "./routes/order.routes.js";
+import reviewRouter from "./routes/review.routes.js";
 import { config } from "./config/config.js";
 
 const app = express();
@@ -54,5 +55,6 @@ app.use("/api/payment", paymentRouter);
 app.use("/api/wishlist", wishListRouter);
 app.use("/api/address", addressRouter);
 app.use("/api/order", orderRouter);
+app.use("/api/review", reviewRouter);
 
 export default app;

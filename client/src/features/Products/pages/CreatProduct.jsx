@@ -6,9 +6,18 @@ import Layout from "../../Shared/Layout";
 
 const MAX_IMAGES = 7;
 const CURRENCIES = ["INR", "USD", "EUR", "GBP"];
+const PRODUCT_CATEGORIES = [
+  "Outerwear",
+  "Tailoring",
+  "Knitwear",
+  "Denim",
+  "Footwear",
+  "Accessories"
+];
 const INITIAL_FORM = {
   title: "",
   description: "",
+  category: "Accessories",
   priceAmount: "",
   priceCurrency: "INR",
 };
@@ -190,6 +199,27 @@ const CreateProduct = () => {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              <div>
+                <label className="onyx-label" htmlFor="cp-category">Category</label>
+                <select
+                  id="cp-category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  className={`${fieldClass} text-onyx-gold`}
+                >
+                  {PRODUCT_CATEGORIES.map((cat) => (
+                    <option
+                      key={cat}
+                      value={cat}
+                      className="bg-onyx-card text-onyx-text"
+                    >
+                      {cat}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Tips */}

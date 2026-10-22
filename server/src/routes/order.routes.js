@@ -5,6 +5,7 @@ import {
   getMyOrders,
   getOrderById,
   cancelOrder,
+  updateOrderStatus,
 } from "../controller/order.controller.js";
 
 const router = Router();
@@ -32,5 +33,11 @@ router.get("/:id", authenticateUser, getOrderById);
  * @description Cancel an order
  */
 router.patch("/:id/cancel", authenticateUser, cancelOrder);
+
+/**
+ * @route PATCH /api/order/:id/status
+ * @description DEV-ONLY: Manually update order status to test timeline
+ */
+router.patch("/:id/status", authenticateUser, updateOrderStatus);
 
 export default router;

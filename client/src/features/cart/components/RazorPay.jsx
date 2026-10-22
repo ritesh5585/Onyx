@@ -3,11 +3,16 @@ import { useRazorpay } from "react-razorpay";
 import { useAuth } from "../../auth/hook/useAuth";
 import { useCart } from "../hooks/useCart";
 import { toast } from "sonner";
+import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { resetCart } from "../state/cart.slice";
 
 const RazorPay = ({ orderId, amount, currency }) => {
   const { Razorpay } = useRazorpay();
   const { user } = useAuth();
   const { verifyPayment } = useCart();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!Razorpay || !orderId || !amount) return;
@@ -29,7 +34,9 @@ const RazorPay = ({ orderId, amount, currency }) => {
         handler: async (response) => {
           try {
             await verifyPayment(response);
-            toast.success("Payment successful");
+            toast.success("Payment successful! Your order has been placed.");
+            dispatch(resetCart());
+            navigate("/my-orders");
           } catch (error) {
             toast.error(error.response?.data?.message || "Payment verification failed");
           }
@@ -49,7 +56,7 @@ const RazorPay = ({ orderId, amount, currency }) => {
       console.error("Unable to open Razorpay", err);
       toast.error("Unable to open payment gateway");
     }
-  }, [Razorpay, orderId, amount, currency, user, verifyPayment]);
+  }, [Razorpay, orderId, amount, currency, user, verifyPayment, navigate, dispatch]);
 
   return null;
 };

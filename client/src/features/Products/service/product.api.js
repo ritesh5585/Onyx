@@ -8,8 +8,12 @@ export const getSellerProduct = async () => {
     return await api.get('product/seller').then(res => res.data)
 }
 
-export const getAllproducts = async () => {
-    return await api.get('product').then(res => res.data)
+export const getAllproducts = async (params = {}) => {
+    return await api.get('product', { params }).then(res => res.data)
+}
+
+export const getProductCategories = async () => {
+    return await api.get('product/categories').then(res => res.data)
 }
 
 export const getProductDetail = async (productId) => {

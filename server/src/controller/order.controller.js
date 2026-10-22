@@ -115,3 +115,40 @@ export const cancelOrder = async (req, res) => {
     });
   }
 };
+
+/**
+ * DEV-ONLY: PATCH /api/order/:id/status
+ * Manually advance order status for testing the timeline
+ * Remove this before going to production!
+ */
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ["placed", "processing", "shipped", "out_for_delivery", "delivered", "cancelled"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: `Invalid status. Must be one of: ${validStatuses.join(", ")}` });
+    }
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    order.status = status;
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Order status updated to "${status}"`,
+      order,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error updating order status",
+      error: error.message,
+    });
+  }
+};
