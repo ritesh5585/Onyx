@@ -23,6 +23,9 @@ const Wishlist = lazy(
 const Cart = lazy(() => import("../features/cart/pages/Cart.jsx"));
 const NotFound = lazy(() => import("../features/components/NotFound.jsx"));
 const MyOrders = lazy(() => import("../features/orders/pages/MyOrders.jsx"));
+const OrderConfirmation = lazy(
+  () => import("../features/orders/pages/OrderConfirmation.jsx"),
+);
 
 export const routes = createBrowserRouter([
   {
@@ -81,5 +84,13 @@ export const routes = createBrowserRouter([
   {
     path: "/my-orders",
     element: <MyOrders />,
+  },
+  {
+    path: "/order-confirmation/:orderId",
+    element: (
+      <Protected>
+        <OrderConfirmation />
+      </Protected>
+    ),
   },
 ]);

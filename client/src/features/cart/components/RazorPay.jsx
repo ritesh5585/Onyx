@@ -33,10 +33,15 @@ const RazorPay = ({ orderId, amount, currency }) => {
         order_id: orderId,
         handler: async (response) => {
           try {
-            await verifyPayment(response);
+            const verifyRes = await verifyPayment(response);
             toast.success("Payment successful! Your order has been placed.");
             dispatch(resetCart());
-            navigate("/my-orders");
+            const confirmedOrderId = verifyRes?.order?._id || verifyRes?.data?.order?._id;
+            if (confirmedOrderId) {
+              navigate(`/order-confirmation/${confirmedOrderId}`);
+            } else {
+              navigate("/my-orders");
+            }
           } catch (error) {
             toast.error(error.response?.data?.message || "Payment verification failed");
           }

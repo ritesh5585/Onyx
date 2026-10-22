@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronUp, ExternalLink, RefreshCw, Calendar, Hash, DollarSign, XCircle } from 'lucide-react';
 import OrderTimeline from './OrderTimeline';
 
@@ -107,9 +108,12 @@ const OrderCard = ({ order, onCancel }) => {
 
             {/* Actions */}
             <div className="flex flex-col gap-3">
-              <button className="onyx-btn-secondary">
-                <ExternalLink size={16} className="mr-2" /> View Invoice
-              </button>
+              <Link
+                to={`/order-confirmation/${order._id || order.id}`}
+                className="onyx-btn-secondary inline-flex items-center justify-center text-center"
+              >
+                <ExternalLink size={16} className="mr-2" /> View Confirmation & Receipt
+              </Link>
               {order.status === 'delivered' && (
                 <button className="onyx-btn-primary">
                   <RefreshCw size={16} className="mr-2" /> Return / Exchange
