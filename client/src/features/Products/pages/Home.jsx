@@ -5,12 +5,13 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { useNavigate, NavLink } from "react-router";
+import { useNavigate, NavLink, useSearchParams } from "react-router";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import Layout from "../../Shared/Layout";
 import ProductCard from "../../components/ProductCard";
 import EmptyState from "../../components/EmptyState";
+import ProductCatalogSection from "../components/ProductCatalogSection";
 import {
   animateHeroReveal,
   animateHeroImageZoom,
@@ -288,7 +289,7 @@ const Hero = ({ onShop, onExplore }) => {
    (styling only — icon now sits in a circular gold-ring
    badge instead of floating flat, stronger hover state)
 ───────────────────────────────────────────── */
-const CategoryStrip = () => {
+const CategoryStrip = ({ activeCategory = "All", onSelectCategory }) => {
   const containerRef = useRef(null);
   useEffect(() => {
     if (containerRef.current)
@@ -301,24 +302,49 @@ const CategoryStrip = () => {
         ref={containerRef}
         className="grid grid-cols-2 gap-0 sm:grid-cols-3 md:grid-cols-6"
       >
-        {CATEGORIES.map((cat, i) => (
-          <div
-            key={cat.label}
-            className={`group flex cursor-pointer flex-col items-center gap-2 sm:gap-2.5 py-5 sm:py-6 transition-colors duration-300 hover:bg-onyx-gold/5 ${
-              i < CATEGORIES.length - 1 ? "border-r border-onyx-border/70" : ""
-            }`}
-          >
-            <span className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-onyx-border-hover text-lg sm:text-xl transition-all duration-300 group-hover:border-onyx-gold/40 group-hover:bg-onyx-gold/5">
-              {cat.icon}
-            </span>
-            <span className="font-serif text-[0.85rem] sm:text-[0.95rem] font-medium text-onyx-text/70 transition-colors group-hover:text-onyx-text text-center">
-              {cat.label}
-            </span>
-            <span className="hidden text-[10px] uppercase tracking-wide text-onyx-muted/60 group-hover:text-onyx-gold transition-colors sm:block text-center">
-              {cat.sub}
-            </span>
-          </div>
-        ))}
+        {CATEGORIES.map((cat, i) => {
+          const isSelected = activeCategory?.toLowerCase() === cat.label.toLowerCase();
+          return (
+            <div
+              key={cat.label}
+              onClick={() => onSelectCategory?.(isSelected ? "All" : cat.label)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectCategory?.(isSelected ? "All" : cat.label)}
+              className={`group flex cursor-pointer flex-col items-center gap-2 sm:gap-2.5 py-5 sm:py-6 transition-all duration-300 ${
+                isSelected
+                  ? "bg-onyx-gold/10 shadow-inner"
+                  : "hover:bg-onyx-gold/5"
+              } ${
+                i < CATEGORIES.length - 1 ? "border-r border-onyx-border/70" : ""
+              }`}
+            >
+              <span
+                className={`flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full border text-lg sm:text-xl transition-all duration-300 ${
+                  isSelected
+                    ? "border-onyx-gold bg-onyx-gold/20 text-onyx-gold shadow-[0_0_12px_rgba(196,154,82,0.3)]"
+                    : "border-onyx-border-hover group-hover:border-onyx-gold/40 group-hover:bg-onyx-gold/5"
+                }`}
+              >
+                {cat.icon}
+              </span>
+              <span
+                className={`font-serif text-[0.85rem] sm:text-[0.95rem] font-medium transition-colors text-center ${
+                  isSelected ? "text-onyx-gold font-semibold" : "text-onyx-text/70 group-hover:text-onyx-text"
+                }`}
+              >
+                {cat.label}
+              </span>
+              <span
+                className={`hidden text-[10px] uppercase tracking-wide transition-colors sm:block text-center ${
+                  isSelected ? "text-onyx-gold/90" : "text-onyx-muted/60 group-hover:text-onyx-gold"
+                }`}
+              >
+                {cat.sub}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
@@ -719,7 +745,19 @@ const Home = () => {
   const allProduct = useSelector((state) => state.product.products);
   const { handleGetAllProducts } = useProduct();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const urlSearch = searchParams.get("search") || "";
+  const urlCategory = searchParams.get("category") || "All";
+
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState(urlCategory);
+
+  // Sync category state with URL if it changes
+  useEffect(() => {
+    if (urlCategory) {
+      setActiveCategory(urlCategory);
+    }
+  }, [urlCategory]);
 
   useEffect(() => {
     handleGetAllProducts().finally(() => setLoading(false));
@@ -751,11 +789,27 @@ const Home = () => {
   return (
     <Layout showLinks={true}>
       <Hero
-        onShop={() => scrollTo("new-arrivals")}
+        onShop={() => scrollTo("catalog-section")}
         onExplore={() => scrollTo("featured")}
       />
 
-      <CategoryStrip />
+      <CategoryStrip
+        activeCategory={activeCategory}
+        onSelectCategory={(cat) => {
+          setActiveCategory(cat);
+          scrollTo("catalog-section");
+        }}
+      />
+
+      {/* ── Search, Filter & Categories Catalog Section ── */}
+      <ProductCatalogSection
+        products={allProduct}
+        loading={loading}
+        onNavigate={goTo}
+        activeCategory={activeCategory}
+        onSelectCategory={setActiveCategory}
+        initialSearch={urlSearch}
+      />
 
       {loading ? (
         <section className="onyx-section">

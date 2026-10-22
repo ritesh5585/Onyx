@@ -5,6 +5,7 @@ import { authenticateUser, requireSeller } from '../middleware/auth.middleware.j
 import {
     createProduct,
     getAllProducts,
+    getProductCategories,
     getSellerProducts,
     getProductDetail,
     addProductvariants,
@@ -22,9 +23,15 @@ const upload = multer({
 
 /**
  * @route Get /api/products 
- * @description: get all product posted by all seller
+ * @description: get all product posted by all seller (with search, filter, category, sort)
  */
 router.get("/", getAllProducts)
+
+/**
+ * @route GET /api/products/categories
+ * @description: get all distinct product categories
+ */
+router.get("/categories", getProductCategories)
 
 /**
  * @route GET /api/products/seller 

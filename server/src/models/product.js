@@ -10,6 +10,11 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    category: {
+        type: String,
+        trim: true,
+        default: 'Accessories'
+    },
     seller: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
@@ -59,6 +64,10 @@ const productSchema = new mongoose.Schema({
 
 
 }, { timestamps: true })
+
+productSchema.index({ title: 'text', description: 'text', category: 'text' })
+productSchema.index({ category: 1 })
+productSchema.index({ 'price.amount': 1 })
 
 const productModel = mongoose.model('Product', productSchema)
 

@@ -3,6 +3,9 @@ import { createPayment } from "../services/payment.service.js";
 import paymentModel from "../models/payment.js";
 import { getCartDetails } from "../dao/cart.dao.js";
 import addressModel from "../models/address.js";
+import orderModel from "../models/order.js";
+import cartModel from "../models/cart.js";
+import { config } from "../config/config.js";
 
 export const createOrderPayment = async (req, res) => {
   try {
@@ -101,7 +104,7 @@ export const verifyPayment = async (req, res) => {
     }
 
     const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .createHmac("sha256", config.RAZORPAY_SECRET)
       .update(`${orderId}|${paymentId}`)
       .digest("hex");
 
@@ -136,9 +139,41 @@ export const verifyPayment = async (req, res) => {
         .json({ message: "Payment order not found", success: false });
     }
 
+    // Connect Cart -> Order Creation
+    const orderItems = payment.orderItems.map((item) => ({
+      product: item.productId,
+      variantId: item.variantId,
+      name: item.title,
+      image: item.images?.[0]?.url || "",
+      quantity: item.quantity,
+      price: item.price.amount,
+    }));
+
+    const newOrder = await orderModel.create({
+      user: req.user._id,
+      items: orderItems,
+      shippingAddress: {
+        fullName: payment.shippingAddress.name,
+        addressLine1: payment.shippingAddress.addressLine,
+        city: payment.shippingAddress.city,
+        state: payment.shippingAddress.state,
+        zipCode: payment.shippingAddress.zip,
+        country: payment.shippingAddress.country,
+      },
+      paymentMethod: "Razorpay",
+      totalAmount: payment.price.amount,
+      status: "placed",
+    });
+
+    // Clear the cart
+    await cartModel.findOneAndUpdate(
+      { user: req.user._id },
+      { $set: { items: [], subtotal: 0, totalPrice: 0 } }
+    );
+
     return res
       .status(200)
-      .json({ message: "Payment verified", payment, success: true });
+      .json({ message: "Payment verified and order created", payment, order: newOrder, success: true });
   } catch (error) {
     console.error("Payment verification failed:", error);
     return res

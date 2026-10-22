@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setOrders, addOrder, updateOrder, setLoading, setError } from "../state/order.slice";
 import { useCallback } from "react";
-import { getMyOrders, createOrder, cancelOrder, getOrderById } from "../service/order.api";
+import { getMyOrders, createOrder, cancelOrder, getOrderById, updateOrderStatusApi } from "../service/order.api";
 
 export const useOrder = () => {
     const dispatch = useDispatch();
@@ -24,6 +24,16 @@ export const useOrder = () => {
             dispatch(setLoading(false));
         }
     }, [dispatch]);
+
+    const fetchOrderById = useCallback(async (orderId) => {
+        try {
+            const data = await getOrderById(orderId);
+            return data?.order;
+        } catch (err) {
+            console.error("Failed to fetch order", err);
+            throw err;
+        }
+    }, []);
 
     const handleCreateOrder = useCallback(async (orderData) => {
         try {
@@ -51,12 +61,27 @@ export const useOrder = () => {
         }
     }, [dispatch]);
 
+    const handleUpdateStatus = useCallback(async (orderId, status) => {
+        try {
+            const data = await updateOrderStatusApi(orderId, status);
+            if (data.success && data.order) {
+                dispatch(updateOrder(data.order));
+            }
+            return data.order;
+        } catch (err) {
+            console.error("Failed to update order status", err);
+            throw err;
+        }
+    }, [dispatch]);
+
     return {
         orders,
         isLoading,
         error,
         fetchMyOrders,
+        fetchOrderById,
         handleCreateOrder,
-        handleCancelOrder
+        handleCancelOrder,
+        handleUpdateStatus
     };
 };

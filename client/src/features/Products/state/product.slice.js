@@ -5,7 +5,15 @@ const productSlice = createSlice({
     initialState: {
         sellerProducts: [],
         products: [],
-        details: null
+        details: null,
+        categories: [],
+        filters: {
+            search: '',
+            category: 'All',
+            minPrice: '',
+            maxPrice: '',
+            sortBy: 'newest'
+        }
     },
     reducers: {
         setSellerProduct: (state, action) => {
@@ -16,9 +24,24 @@ const productSlice = createSlice({
         },
         setDetails: (state, action) => {
             state.details = action.payload
+        },
+        setCategories: (state, action) => {
+            state.categories = action.payload
+        },
+        setFilters: (state, action) => {
+            state.filters = { ...state.filters, ...action.payload }
+        },
+        resetFilters: (state) => {
+            state.filters = {
+                search: '',
+                category: 'All',
+                minPrice: '',
+                maxPrice: '',
+                sortBy: 'newest'
+            }
         }
     }
 })
 
-export const { setSellerProduct, setProducts, setDetails } = productSlice.actions
+export const { setSellerProduct, setProducts, setDetails, setCategories, setFilters, resetFilters } = productSlice.actions
 export default productSlice.reducer
