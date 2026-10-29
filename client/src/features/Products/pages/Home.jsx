@@ -27,6 +27,7 @@ import {
    CONSTANTS
 ───────────────────────────────────────────── */
 const CATEGORIES = [
+  { label: "All", sub: "The full edit", icon: "✦" },
   { label: "Outerwear", sub: "Coats & Jackets", icon: "🧥" },
   { label: "Tailoring", sub: "Suits & Blazers", icon: "👔" },
   { label: "Knitwear", sub: "Sweaters & Cardigans", icon: "🧣" },
@@ -285,64 +286,73 @@ const Hero = ({ onShop, onExplore }) => {
 };
 
 /* ─────────────────────────────────────────────
-   CATEGORY STRIP
-   (styling only — icon now sits in a circular gold-ring
-   badge instead of floating flat, stronger hover state)
+   HORIZONTAL CATEGORY RAIL
 ───────────────────────────────────────────── */
 const CategoryStrip = ({ activeCategory = "All", onSelectCategory }) => {
   const containerRef = useRef(null);
+
   useEffect(() => {
-    if (containerRef.current)
-      animateStaggerFadeUp(containerRef.current.children);
+    const animation = animateStaggerFadeUp(containerRef.current?.children);
+    return () => {
+      animation?.scrollTrigger?.kill();
+      animation?.kill();
+    };
   }, []);
 
   return (
-    <section className="border-y border-onyx-border/70 bg-onyx-black px-3 py-8 sm:px-8 sm:py-10 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20">
+    <section className="border-y border-onyx-border/70 bg-onyx-black py-6 sm:py-8">
+      <div className="mb-4 flex items-end justify-between px-5 sm:px-8 lg:px-12 xl:px-20">
+        <div>
+          <p className="onyx-eyebrow mb-1">The collection</p>
+          <h2 className="font-serif text-xl font-light text-onyx-text sm:text-2xl">
+            Shop by category
+          </h2>
+        </div>
+        <span className="pb-1 text-[9px] uppercase tracking-[0.16em] text-onyx-muted sm:text-[10px]">
+          Swipe to explore <span className="ml-1 text-onyx-gold" aria-hidden="true">→</span>
+        </span>
+      </div>
       <div
         ref={containerRef}
-        className="grid grid-cols-2 gap-0 sm:grid-cols-3 md:grid-cols-6"
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-4 sm:px-8 lg:px-12 xl:px-20"
+        aria-label="Shop product categories"
       >
         {CATEGORIES.map((cat, i) => {
           const isSelected = activeCategory?.toLowerCase() === cat.label.toLowerCase();
           return (
-            <div
+            <button
+              type="button"
               key={cat.label}
-              onClick={() => onSelectCategory?.(isSelected ? "All" : cat.label)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectCategory?.(isSelected ? "All" : cat.label)}
-              className={`group flex cursor-pointer flex-col items-center gap-2 sm:gap-2.5 py-5 sm:py-6 transition-all duration-300 ${
+              onClick={() => onSelectCategory?.(cat.label)}
+              aria-pressed={isSelected}
+              className={`group relative flex h-[112px] w-[132px] shrink-0 snap-start flex-col justify-between overflow-hidden rounded-xl border p-3.5 text-left transition-all duration-300 sm:h-[132px] sm:w-[168px] sm:p-4 ${
                 isSelected
-                  ? "bg-onyx-gold/10 shadow-inner"
-                  : "hover:bg-onyx-gold/5"
-              } ${
-                i < CATEGORIES.length - 1 ? "border-r border-onyx-border/70" : ""
+                  ? "border-onyx-gold/70 bg-gradient-to-br from-onyx-gold/20 via-onyx-card to-onyx-surface shadow-[0_8px_24px_rgba(196,154,82,0.12)]"
+                  : "border-onyx-border bg-gradient-to-br from-white/[0.06] to-onyx-surface hover:border-onyx-gold/40 hover:from-onyx-gold/10"
               }`}
             >
               <span
-                className={`flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full border text-lg sm:text-xl transition-all duration-300 ${
-                  isSelected
-                    ? "border-onyx-gold bg-onyx-gold/20 text-onyx-gold shadow-[0_0_12px_rgba(196,154,82,0.3)]"
-                    : "border-onyx-border-hover group-hover:border-onyx-gold/40 group-hover:bg-onyx-gold/5"
+                className={`text-xl transition-transform duration-300 group-hover:-translate-y-0.5 sm:text-2xl ${
+                  isSelected ? "text-onyx-gold" : "text-onyx-text/80"
                 }`}
+                aria-hidden="true"
               >
                 {cat.icon}
               </span>
-              <span
-                className={`font-serif text-[0.85rem] sm:text-[0.95rem] font-medium transition-colors text-center ${
-                  isSelected ? "text-onyx-gold font-semibold" : "text-onyx-text/70 group-hover:text-onyx-text"
-                }`}
-              >
-                {cat.label}
+              <span>
+                <span className={`block font-serif text-base leading-tight sm:text-lg ${isSelected ? "text-onyx-gold" : "text-onyx-text"}`}>
+                  {cat.label}
+                </span>
+                <span className="mt-1 block truncate text-[8px] uppercase tracking-[0.12em] text-onyx-muted sm:text-[9px]">
+                  {cat.sub}
+                </span>
               </span>
-              <span
-                className={`hidden text-[10px] uppercase tracking-wide transition-colors sm:block text-center ${
-                  isSelected ? "text-onyx-gold/90" : "text-onyx-muted/60 group-hover:text-onyx-gold"
-                }`}
-              >
-                {cat.sub}
-              </span>
-            </div>
+              {i === 0 && (
+                <span className="absolute right-3 top-3 text-[9px] uppercase tracking-[0.12em] text-onyx-gold/80">
+                  Edit
+                </span>
+              )}
+            </button>
           );
         })}
       </div>
@@ -533,6 +543,109 @@ const ProductRow = ({
             onClick={() => onNavigate(p._id)}
           />
         ))}
+      </div>
+    </section>
+  );
+};
+
+const NewArrivalsCollection = ({ products = [], onNavigate }) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const animation = animateStaggerFadeUp(ref.current?.children);
+    return () => {
+      animation?.scrollTrigger?.kill();
+      animation?.kill();
+    };
+  }, [products]);
+
+  if (products.length === 0) return null;
+
+  return (
+    <section id="new-arrivals" className="onyx-section border-t border-onyx-border/60 py-14 sm:py-20 lg:py-28">
+      <div className="mb-8 flex items-end justify-between gap-4 sm:mb-10 md:mb-14">
+        <div>
+          <p className="onyx-eyebrow mb-2 sm:mb-3">Just Dropped</p>
+          <h2 className="font-serif text-2xl font-light leading-tight tracking-tight text-onyx-text sm:text-3xl lg:text-4xl">
+            New Arrivals
+          </h2>
+          <div className="onyx-divider" />
+        </div>
+        <button
+          type="button"
+          onClick={() =>
+            document
+              .getElementById("catalog-section")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
+          className="hidden items-center gap-2 pb-1 text-[10px] font-medium uppercase tracking-[0.16em] text-onyx-muted transition-colors hover:text-onyx-gold sm:inline-flex"
+        >
+          Explore collection <span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <div
+        ref={ref}
+        className="grid grid-cols-1 gap-4 sm:grid-cols-4 sm:auto-rows-[168px] sm:gap-5"
+        aria-label="New arrivals product collage"
+      >
+        {products.slice(0, 5).map((product, index) => {
+          const imageUrl = product.images?.[0]?.url;
+          const collageSize = [
+            "h-[228px] sm:col-span-2 sm:row-span-2 sm:h-full",
+            "h-[184px] sm:col-span-2 sm:h-full",
+            "h-[220px] sm:col-span-1 sm:h-full",
+            "h-[184px] sm:col-span-1 sm:h-full",
+            "h-[220px] sm:col-span-2 sm:h-full",
+          ][index];
+
+          return (
+            <article
+              key={product._id}
+              role="button"
+              tabIndex={0}
+              onClick={() => onNavigate(product._id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onNavigate(product._id);
+                }
+              }}
+              aria-label={`${product.title}, ${product.price?.currency || "INR"} ${product.price?.amount?.toLocaleString() || "0"}`}
+              className={`group relative isolate cursor-pointer overflow-hidden rounded-sm border border-onyx-border/70 bg-onyx-surface outline-none focus-visible:ring-2 focus-visible:ring-onyx-gold ${collageSize}`}
+            >
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={product.title}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-onyx-card" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
+              {index === 0 && (
+                <span className="absolute left-3 top-3 rounded-full border border-onyx-gold/35 bg-onyx-black/70 px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.14em] text-onyx-gold backdrop-blur sm:left-4 sm:top-4 sm:text-[9px]">
+                  New season
+                </span>
+              )}
+              <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-onyx-gold/60 bg-onyx-black/45 text-lg font-light leading-none text-onyx-gold backdrop-blur transition-colors group-hover:bg-onyx-gold group-hover:text-onyx-black sm:right-4 sm:top-4">
+                +
+              </span>
+              <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+                <h3 className="line-clamp-1 font-serif text-lg leading-tight text-white sm:text-xl">
+                  {product.title}
+                </h3>
+                <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-onyx-gold sm:text-[11px]">
+                  {product.price?.currency === "INR"
+                    ? "₹"
+                    : product.price?.currency || ""}
+                  {product.price?.amount?.toLocaleString() || "0"}
+                </p>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
@@ -795,10 +908,7 @@ const Home = () => {
 
       <CategoryStrip
         activeCategory={activeCategory}
-        onSelectCategory={(cat) => {
-          setActiveCategory(cat);
-          scrollTo("catalog-section");
-        }}
+        onSelectCategory={setActiveCategory}
       />
 
       {/* ── Search, Filter & Categories Catalog Section ── */}
@@ -841,15 +951,9 @@ const Home = () => {
             cols={4}
           />
           <StyleInspiration />
-          <ProductRow
-            id="new-arrivals"
-            eyebrow="Just Dropped"
-            title="New Arrivals"
+          <NewArrivalsCollection
             products={newArrivals}
             onNavigate={goTo}
-            cols={5}
-            linkId="best-sellers"
-            linkLabel="View Best Sellers"
           />
           <ProductRow
             id="best-sellers"

@@ -4,6 +4,8 @@ import EmptyState from "../../components/EmptyState";
 import { animateStaggerFadeUp } from "../../Shared/animations";
 import { debounce } from "lodash";
 
+const PAGE_SIZE = 4;
+
 const CATEGORIES_LIST = [
   { label: "All", icon: "✦" },
   { label: "Outerwear", icon: "🧥", sub: "Coats & Jackets" },
@@ -46,6 +48,7 @@ const ProductCatalogSection = ({
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const gridRef = useRef(null);
 
@@ -62,7 +65,7 @@ const ProductCatalogSection = ({
       setSearchTerm(initialSearch);
       setDebouncedQuery(initialSearch);
     }
-  }, [initialSearch]);
+  }, [initialSearch, searchTerm]);
 
   // Debounced search term updater
   const debouncedHandler = useMemo(
@@ -87,11 +90,11 @@ const ProductCatalogSection = ({
     debouncedHandler.cancel();
   };
 
-  const handleCategoryClick = (catLabel) => {
+  const handleCategoryClick = useCallback((catLabel) => {
     const next = selectedCategory === catLabel && catLabel !== "All" ? "All" : catLabel;
     setSelectedCategory(next);
     onSelectCategory?.(next);
-  };
+  }, [onSelectCategory, selectedCategory]);
 
   const handlePricePresetSelect = (preset) => {
     setPricePreset(preset.label);
@@ -146,9 +149,8 @@ const ProductCatalogSection = ({
 
     // Category filter
     if (selectedCategory && selectedCategory !== "All") {
-      list = list.filter(
-        (p) => p.category?.toLowerCase() === selectedCategory.toLowerCase()
-      );
+      const category = selectedCategory.trim().toLowerCase();
+      list = list.filter((p) => p.category?.trim().toLowerCase() === category);
     }
 
     // Min price
@@ -176,12 +178,23 @@ const ProductCatalogSection = ({
     return list;
   }, [products, debouncedQuery, selectedCategory, minPrice, maxPrice, sortBy]);
 
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [debouncedQuery, selectedCategory, minPrice, maxPrice, sortBy]);
+
+  const visibleProducts = useMemo(
+    () => filteredProducts.slice(0, visibleCount),
+    [filteredProducts, visibleCount],
+  );
+
   // Animate grid cards when filtered list changes
   useEffect(() => {
-    if (gridRef.current?.children?.length > 0) {
-      animateStaggerFadeUp(gridRef.current.children);
-    }
-  }, [filteredProducts]);
+    const animation = animateStaggerFadeUp(gridRef.current?.children);
+    return () => {
+      animation?.scrollTrigger?.kill();
+      animation?.kill();
+    };
+  }, [visibleProducts]);
 
   // Count active filters (for badge)
   const activeFiltersCount = useMemo(() => {
@@ -196,9 +209,9 @@ const ProductCatalogSection = ({
   const hasAnyFilter = activeFiltersCount > 0;
 
   return (
-    <section id="catalog-section" className="onyx-section border-t border-onyx-border/70 scroll-mt-20">
+    <section id="catalog-section" className="onyx-section scroll-mt-20 border-t border-onyx-border/70 py-14 sm:py-20 lg:py-28">
       {/* ── Section Header ── */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2 sm:mb-3">
             <span className="onyx-eyebrow">The Curated Archive</span>
@@ -214,11 +227,11 @@ const ProductCatalogSection = ({
         </div>
 
         {/* Filter Toggle + Sort dropdown (Desktop right) */}
-        <div className="flex items-center gap-3">
+        <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
           <button
             type="button"
             onClick={() => setIsFilterPanelOpen((prev) => !prev)}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border text-[11px] font-semibold uppercase tracking-[0.14em] transition-all duration-200 cursor-pointer ${
+            className={`inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] transition-all duration-200 cursor-pointer sm:flex-none sm:px-4 sm:text-[11px] ${
               isFilterPanelOpen || activeFiltersCount > 0
                 ? "border-onyx-gold bg-onyx-gold/10 text-onyx-gold shadow-[0_0_12px_rgba(196,154,82,0.15)]"
                 : "border-onyx-border/80 bg-onyx-surface text-onyx-text/80 hover:border-onyx-gold/40 hover:text-onyx-gold"
@@ -257,7 +270,7 @@ const ProductCatalogSection = ({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="appearance-none bg-onyx-surface border border-onyx-border/80 text-onyx-text/90 rounded-lg pl-3 pr-8 py-2.5 text-[11px] font-medium tracking-wide outline-none focus:border-onyx-gold transition-colors cursor-pointer"
+              className="min-h-11 w-full appearance-none rounded-lg border border-onyx-border/80 bg-onyx-surface py-2.5 pl-3 pr-8 text-[10px] font-medium tracking-wide text-onyx-text/90 outline-none transition-colors focus:border-onyx-gold cursor-pointer sm:w-auto sm:text-[11px]"
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value} className="bg-onyx-surface text-onyx-text">
@@ -273,7 +286,7 @@ const ProductCatalogSection = ({
       </div>
 
       {/* ── Search Input Bar ── */}
-      <div className="mb-6 relative">
+      <div className="relative mb-6">
         <div className="relative flex items-center w-full rounded-xl border border-onyx-border/80 bg-onyx-surface/80 backdrop-blur-sm px-4 py-3 shadow-inner focus-within:border-onyx-gold/80 focus-within:ring-1 focus-within:ring-onyx-gold/30 transition-all duration-200">
           <svg
             className="w-4 h-4 text-onyx-gold shrink-0 mr-3"
@@ -291,7 +304,7 @@ const ProductCatalogSection = ({
             type="text"
             value={searchTerm}
             onChange={handleSearchChange}
-            placeholder="Search archive by keyword, silhouette, tailoring, fabric..."
+            placeholder="Search by keyword, style, or fabric..."
             className="w-full bg-transparent border-none text-sm text-onyx-text placeholder:text-onyx-muted/50 outline-none tracking-wide"
           />
           {searchTerm && (
@@ -308,7 +321,7 @@ const ProductCatalogSection = ({
       </div>
 
       {/* ── Category Navigation Tabs / Pills ── */}
-      <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <div className="-mx-5 mb-6 flex items-center gap-2 overflow-x-auto px-5 pb-2 scrollbar-none sm:mx-0 sm:px-0">
         {CATEGORIES_LIST.map((cat) => {
           const isSelected = selectedCategory.toLowerCase() === cat.label.toLowerCase();
           return (
@@ -316,6 +329,7 @@ const ProductCatalogSection = ({
               key={cat.label}
               type="button"
               onClick={() => handleCategoryClick(cat.label)}
+              aria-pressed={isSelected}
               className={`flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all duration-200 cursor-pointer ${
                 isSelected
                   ? "bg-onyx-gold text-onyx-black font-semibold shadow-[0_0_15px_rgba(196,154,82,0.3)] scale-[1.02]"
@@ -472,7 +486,7 @@ const ProductCatalogSection = ({
 
       {/* ── Products Grid or Empty State ── */}
       {loading ? (
-        <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="flex flex-col gap-3">
               <div className="onyx-skeleton aspect-[3/4] w-full rounded-sm" />
@@ -496,15 +510,32 @@ const ProductCatalogSection = ({
       ) : (
         <div
           ref={gridRef}
-          className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 md:grid-cols-4"
+          className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4"
         >
-          {filteredProducts.map((p) => (
+          {visibleProducts.map((p) => (
             <ProductCard
               key={p._id}
               product={p}
               onClick={() => onNavigate(p._id)}
             />
           ))}
+        </div>
+      )}
+      {!loading && visibleProducts.length > 0 && (
+        <div className="mt-10 flex flex-col items-center gap-4 text-center">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-onyx-muted">
+            Showing {visibleProducts.length} of {filteredProducts.length} pieces
+          </p>
+          {visibleProducts.length < filteredProducts.length && (
+            <button
+              type="button"
+              onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+              className="group inline-flex min-h-11 items-center gap-3 rounded-full border border-onyx-gold/40 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-onyx-gold transition-all hover:border-onyx-gold hover:bg-onyx-gold hover:text-onyx-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-onyx-gold focus-visible:ring-offset-2 focus-visible:ring-offset-onyx-black"
+            >
+              Show more pieces
+              <span className="transition-transform group-hover:translate-y-0.5" aria-hidden="true">↓</span>
+            </button>
+          )}
         </div>
       )}
     </section>
