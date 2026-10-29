@@ -19,7 +19,9 @@ const RazorPay = ({ orderId, amount, currency }) => {
 
     const key = import.meta.env.VITE_RAZORPAY_KEY_ID;
     if (!key) {
-      toast.error("Payment gateway is not configured");
+      toast.error(
+        "Payment gateway is not configured. Set VITE_RAZORPAY_KEY_ID in client/.env and restart the client.",
+      );
       return;
     }
 
