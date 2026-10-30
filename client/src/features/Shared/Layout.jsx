@@ -40,7 +40,9 @@ const Layout = ({ children, showBackButton = false }) => {
   const { handleGetCart } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
+  const isVisibleRef = useRef(true);
+  const searchFocusedRef = useRef(false);
 
   const menuRef = useRef(null);
   const headerRef = useRef(null);
@@ -55,20 +57,21 @@ const Layout = ({ children, showBackButton = false }) => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      const shouldShow =
+        searchFocusedRef.current ||
+        currentScrollY <= lastScrollYRef.current ||
+        currentScrollY <= 50;
 
-      if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        // Scrolling down - hide search bar
-        setIsVisible(false);
-      } else {
-        // Scrolling up - show search bar
-        setIsVisible(true);
+      if (shouldShow !== isVisibleRef.current) {
+        isVisibleRef.current = shouldShow;
+        setIsVisible(shouldShow);
       }
-      setLastScrollY(currentScrollY);
+      lastScrollYRef.current = currentScrollY;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   useEffect(() => {
     user && handleGetCart().catch(() => {});
@@ -155,6 +158,16 @@ const Layout = ({ children, showBackButton = false }) => {
                 ? "opacity-100 max-h-20"
                 : "opacity-0 max-h-0 pointer-events-none mt-0"
             }`}
+            onFocus={() => {
+              searchFocusedRef.current = true;
+              isVisibleRef.current = true;
+              setIsVisible(true);
+            }}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                searchFocusedRef.current = false;
+              }
+            }}
           >
             <SearchBar className="w-full" />
           </div>

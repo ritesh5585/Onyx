@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { debounce } from "lodash";
@@ -13,23 +13,8 @@ const SearchBar = ({ className }) => {
   // Get products from Redux or API
   const products = useSelector((state) => state.product?.products || []);
 
-  // Debounced search function
-  const debouncedSearch = useCallback(
-    debounce((term, availableProducts) => {
-      if (term.trim().length > 0) {
-        performSearch(term, availableProducts);
-      } else {
-        setResults([]);
-        setShowResults(false);
-      }
-    }, 300),
-    [],
-  );
-
-  useEffect(() => () => debouncedSearch.cancel(), [debouncedSearch]);
-
   // Perform search
-  const performSearch = async (term, availableProducts = products) => {
+  const performSearch = useCallback(async (term, availableProducts = products) => {
     setIsLoading(true);
     try {
       // // Option 1: Search from Redux (if products already loaded)
@@ -47,7 +32,14 @@ const SearchBar = ({ className }) => {
       setIsLoading(false);
       setShowResults(true);
     }
-  };
+  }, [products]);
+
+  const debouncedSearch = useMemo(
+    () => debounce(performSearch, 300),
+    [performSearch],
+  );
+
+  useEffect(() => () => debouncedSearch.cancel(), [debouncedSearch]);
 
   // Handle input change
   const handleInputChange = (e) => {
@@ -94,13 +86,13 @@ const SearchBar = ({ className }) => {
           value={searchTerm}
           onChange={handleInputChange}
           placeholder="Search for products..."
-          className="w-full bg-transparent border-none py-1.5 px-2 text-[12px] !text-onyx-text outline-none placeholder:text-white/40 tracking-wider"
+          className="min-h-11 w-full min-w-0 bg-transparent border-none py-2 px-2 text-base !text-onyx-text outline-none placeholder:text-white/40 tracking-wider sm:text-[12px]"
           onFocus={() => searchTerm && setShowResults(true)}
         />
         <button
           type="submit"
           aria-label="Search"
-          className="flex items-center justify-center w-7 h-7 shrink-0 bg-onyx-gold rounded-t-sm text-onyx-black hover:bg-onyx-gold-lt transition-colors duration-150 shadow-[0_0_10px_rgba(196,154,82,0.3)] cursor-pointer"
+          className="flex min-h-11 min-w-11 items-center justify-center shrink-0 bg-onyx-gold rounded-t-sm text-onyx-black hover:bg-onyx-gold-lt transition-colors duration-150 shadow-[0_0_10px_rgba(196,154,82,0.3)] cursor-pointer"
         >
           <svg
             className="w-3.5 h-3.5"

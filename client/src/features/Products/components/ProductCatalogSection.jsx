@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import ProductCard from "../../components/ProductCard";
 import EmptyState from "../../components/EmptyState";
-import { animateStaggerFadeUp } from "../../Shared/animations";
+import { animateScrollRevealBatch } from "../../Shared/animations";
 import { debounce } from "lodash";
 
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 6 ;
 
 const CATEGORIES_LIST = [
   { label: "All", icon: "✦" },
@@ -189,11 +189,7 @@ const ProductCatalogSection = ({
 
   // Animate grid cards when filtered list changes
   useEffect(() => {
-    const animation = animateStaggerFadeUp(gridRef.current?.children);
-    return () => {
-      animation?.scrollTrigger?.kill();
-      animation?.kill();
-    };
+    return animateScrollRevealBatch(gridRef.current?.children);
   }, [visibleProducts]);
 
   // Count active filters (for badge)
@@ -305,7 +301,7 @@ const ProductCatalogSection = ({
             value={searchTerm}
             onChange={handleSearchChange}
             placeholder="Search by keyword, style, or fabric..."
-            className="w-full bg-transparent border-none text-sm text-onyx-text placeholder:text-onyx-muted/50 outline-none tracking-wide"
+            className="w-full bg-transparent border-none text-base text-onyx-text placeholder:text-onyx-muted/50 outline-none tracking-wide sm:text-sm"
           />
           {searchTerm && (
             <button

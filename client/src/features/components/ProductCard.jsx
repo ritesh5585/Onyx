@@ -12,7 +12,12 @@ const ProductCard = ({ product, onClick }) => {
       role="button"
       tabIndex={0}
       onClick={onClick}
-      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick?.()}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
       onMouseEnter={() => animateCardHover(cardRef.current, true)}
       onMouseLeave={() => animateCardHover(cardRef.current, false)}
       className="group flex cursor-pointer flex-col rounded-sm outline-none focus-visible:ring-1 focus-visible:ring-onyx-gold"

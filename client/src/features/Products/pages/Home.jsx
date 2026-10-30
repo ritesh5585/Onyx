@@ -17,10 +17,13 @@ import {
   animateHeroImageZoom,
   animateParallax,
   resetParallax,
-  animateStaggerFadeUp,
+  animateCardHover,
   animateFadeUp,
-  animateScrollReveal,
+  animateHeroScroll,
+  animateScrollParallax,
+  animateScrollRevealBatch,
   animateButtonPress,
+  prefersReducedMotion,
 } from "../../Shared/animations";
 
 /* ─────────────────────────────────────────────
@@ -34,13 +37,6 @@ const CATEGORIES = [
   { label: "Denim", sub: "Jeans & Shorts", icon: "👖" },
   { label: "Footwear", sub: "Shoes & Boots", icon: "👞" },
   { label: "Accessories", sub: "Bags & Jewellery", icon: "👜" },
-];
-
-const HERO_IMAGES = [
-  "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1200&auto=format&fit=crop",
 ];
 
 const EDITORIAL_IMAGES = [
@@ -78,6 +74,28 @@ const PROMO_PERKS = [
     sub: "Every piece verified & certified",
   },
 ];
+
+const getNewArrivals = (products) => {
+  const newest = [...products].reverse().slice(0, 7);
+  const cropTop = newest.find((product) =>
+    /\bcrop top\b/i.test(product.title || ""),
+  );
+  const casualSweater = newest.find((product) =>
+    /\bcasual sweater\b/i.test(product.title || ""),
+  );
+  const featured = newest.find(
+    (product) => product !== cropTop && product !== casualSweater,
+  );
+  const usedIds = new Set();
+
+  return [featured, cropTop, casualSweater, ...newest]
+    .filter((product) => {
+      if (!product || usedIds.has(product._id)) return false;
+      usedIds.add(product._id);
+      return true;
+    })
+    .slice(0, 7);
+};
 
 const FOOTER_COLS = [
   {
@@ -135,7 +153,9 @@ const SectionHeader = ({ eyebrow, title, linkId, linkLabel }) => (
         onClick={() =>
           document
             .getElementById(linkId)
-            ?.scrollIntoView({ behavior: "smooth" })
+            ?.scrollIntoView({
+              behavior: prefersReducedMotion() ? "auto" : "smooth",
+            })
         }
         className="group hidden shrink-0 items-center gap-1.5 text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.16em] text-onyx-muted transition-colors hover:text-onyx-gold sm:flex"
         aria-label={linkLabel}
@@ -151,77 +171,82 @@ const SectionHeader = ({ eyebrow, title, linkId, linkLabel }) => (
 
 /* ─────────────────────────────────────────────
    HERO
-   (animation calls untouched — only visual polish:
-   softer vignette, pill eyebrow, refined CTA spacing)
 ───────────────────────────────────────────── */
 const Hero = ({ onShop, onExplore }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const contentRef = useRef(null);
+  const contentMotionRef = useRef(null);
   const activeImgRef = useRef(null);
   const sectionRef = useRef(null);
+  const imageLayerRef = useRef(null);
+  const overlayRef = useRef(null);
   const zoomTweenRef = useRef(null);
+  const scrollAnimationRef = useRef(null);
 
   useEffect(() => {
-    // Cinematic hero reveal
-    animateHeroReveal(contentRef.current, activeImgRef.current);
-    // Slow zoom loop on the active image
-    zoomTweenRef.current = animateHeroImageZoom(activeImgRef.current);
-    // Slide show
-    const id = setInterval(
-      () => setCurrentIndex((p) => (p + 1) % HERO_IMAGES.length),
-      4500,
+    const reveal = animateHeroReveal(
+      contentMotionRef.current,
+      activeImgRef.current,
     );
+    zoomTweenRef.current = animateHeroImageZoom(activeImgRef.current, 1.2);
+    scrollAnimationRef.current = animateHeroScroll(
+      sectionRef.current,
+      imageLayerRef.current,
+      activeImgRef.current,
+      contentRef.current,
+      overlayRef.current,
+    );
+
     return () => {
-      clearInterval(id);
+      reveal?.kill();
+      scrollAnimationRef.current?.revert();
       zoomTweenRef.current?.kill();
     };
   }, []);
 
-  // Restart zoom on slide change
-  useEffect(() => {
-    zoomTweenRef.current?.kill();
-    if (activeImgRef.current) {
-      zoomTweenRef.current = animateHeroImageZoom(activeImgRef.current);
-    }
-  }, [currentIndex]);
-
   const handleMouseMove = useCallback(
-    (e) => animateParallax(e, contentRef.current, 0.012),
+    (e) => animateParallax(e, contentMotionRef.current, 0.008),
     [],
   );
   const handleMouseLeave = useCallback(
-    () => resetParallax(contentRef.current),
+    () => resetParallax(contentMotionRef.current),
     [],
   );
 
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[100svh] sm:min-h-[92vh] items-end overflow-hidden px-5 pb-14 pt-12 sm:px-8 sm:pb-24 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20 bg-onyx-black"
+      className="relative z-0 isolate flex min-h-[100svh] items-end overflow-hidden bg-onyx-black px-5 pb-14 pt-12 sm:min-h-[92vh] sm:px-8 sm:pb-24 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20"
       aria-label="Hero"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {HERO_IMAGES.map((img, i) => (
+      <div
+        ref={imageLayerRef}
+        aria-hidden="true"
+        className="absolute inset-0 z-0 will-change-transform"
+      >
         <img
-          key={img}
-          ref={i === currentIndex ? activeImgRef : null}
-          src={img}
-          alt={`Hero ${i + 1}`}
-          className={`absolute inset-0 h-full w-full object-cover object-[center_30%] transition-opacity duration-1200 ease-in-out will-change-[opacity,transform] ${
-            i === currentIndex ? "opacity-100" : "opacity-0"
-          }`}
+          ref={activeImgRef}
+          src="/onyx-hero.png"
+          alt=""
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover object-[36%_20%] will-change-transform sm:object-[40%_20%] md:left-auto md:right-0 md:w-[70%] md:object-cover md:object-[34%_20%]"
         />
-      ))}
-
-      {/* Gradient overlays — slightly deeper vignette for text contrast */}
-      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_top,rgba(6,6,10,1)_0%,rgba(6,6,10,0.82)_32%,rgba(6,6,10,0.32)_68%,transparent_100%),linear-gradient(to_right,rgba(6,6,10,0.75)_0%,transparent_62%)]" />
+      </div>
+      <div
+        ref={overlayRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(6,6,10,0.96)_0%,rgba(6,6,10,0.82)_30%,rgba(6,6,10,0.28)_72%,rgba(6,6,10,0.12)_100%),linear-gradient(to_right,rgba(6,6,10,0.82)_0%,rgba(6,6,10,0.4)_48%,transparent_85%)] opacity-75"
+      />
 
       {/* Content */}
       <div
         ref={contentRef}
         className="relative z-10 max-w-2xl will-change-transform"
       >
+        <div ref={contentMotionRef} className="will-change-transform">
         <span className="onyx-eyebrow mb-4 sm:mb-5 inline-flex items-center gap-2 rounded-full border border-onyx-gold/25 bg-onyx-gold/5 px-3.5 py-1.5 !mb-5">
           New Season — 2026
         </span>
@@ -256,22 +281,7 @@ const Hero = ({ onShop, onExplore }) => {
             Explore Archive
           </button>
         </div>
-      </div>
-
-      {/* Slide indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {HERO_IMAGES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrentIndex(i)}
-            aria-label={`Go to slide ${i + 1}`}
-            className={`h-px transition-all duration-500 ${
-              i === currentIndex
-                ? "w-10 bg-onyx-gold"
-                : "w-4 bg-onyx-text/30 hover:bg-onyx-text/60"
-            }`}
-          />
-        ))}
+        </div>
       </div>
 
       {/* Scroll indicator */}
@@ -292,15 +302,11 @@ const CategoryStrip = ({ activeCategory = "All", onSelectCategory }) => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    const animation = animateStaggerFadeUp(containerRef.current?.children);
-    return () => {
-      animation?.scrollTrigger?.kill();
-      animation?.kill();
-    };
+    return animateScrollRevealBatch(containerRef.current?.children);
   }, []);
 
   return (
-    <section className="border-y border-onyx-border/70 bg-onyx-black py-6 sm:py-8">
+    <section className="relative z-10 -mt-8 border-y border-onyx-border/70 bg-onyx-black py-6 sm:-mt-12 sm:py-8">
       <div className="mb-4 flex items-end justify-between px-5 sm:px-8 lg:px-12 xl:px-20">
         <div>
           <p className="onyx-eyebrow mb-1">The collection</p>
@@ -375,7 +381,12 @@ const FeaturedCard = ({ product, isHero = false, onNavigate }) => {
       onClick={() => onNavigate(product._id)}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onNavigate(product._id)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onNavigate(product._id);
+        }
+      }}
       aria-label={product.title}
     >
       {imgUrl ? (
@@ -383,7 +394,7 @@ const FeaturedCard = ({ product, isHero = false, onNavigate }) => {
           src={imgUrl}
           alt={product.title}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          className="h-full w-full object-cover"
         />
       ) : (
         <div className="flex h-full items-center justify-center">
@@ -425,9 +436,16 @@ const FeaturedCard = ({ product, isHero = false, onNavigate }) => {
 
 const FeaturedCollection = ({ products, onNavigate }) => {
   const ref = useRef(null);
+  const cardsRef = useRef(null);
   useEffect(() => {
-    animateFadeUp(ref.current);
-  }, []);
+    const animation = animateFadeUp(ref.current);
+    const cardAnimation = animateScrollRevealBatch(cardsRef.current?.children);
+    return () => {
+      animation?.scrollTrigger?.kill();
+      animation?.kill();
+      cardAnimation?.();
+    };
+  }, [products]);
 
   if (!products || products.length < 2) return null;
   const [hero, ...rest] = products; // Already sliced from parent
@@ -440,7 +458,10 @@ const FeaturedCollection = ({ products, onNavigate }) => {
         linkId="new-arrivals"
         linkLabel="View All"
       />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+      <div
+        ref={cardsRef}
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3"
+      >
         <FeaturedCard product={hero} isHero={true} onNavigate={onNavigate} />
         {rest.map((p) => (
           <FeaturedCard
@@ -459,19 +480,12 @@ const FeaturedCollection = ({ products, onNavigate }) => {
 //    EDITORIAL GRID (style inspiration — static)
 // ───────────────────────────────────────────── */
 const EditorialGrid = () => {
-  const ref = useRef(null);
   const itemRefs = useRef([]);
 
-  useEffect(() => {
-    itemRefs.current.forEach((el, i) => {
-      animateScrollReveal(el, i % 2 === 0 ? "left" : "right", {
-        delay: i * 0.07,
-      });
-    });
-  }, []);
+  useEffect(() => animateScrollRevealBatch(itemRefs.current), []);
 
   return (
-    <section ref={ref} className="onyx-section border-t border-onyx-border/60">
+    <section className="onyx-section border-t border-onyx-border/60">
       <SectionHeader eyebrow="Style Stories" title="Editorial" />
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 sm:gap-5">
         {EDITORIALS_DATA.map((e, i) => (
@@ -484,7 +498,7 @@ const EditorialGrid = () => {
               src={e.img}
               alt={e.label}
               loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+              className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-onyx-black/80 via-transparent to-transparent" />
             <div className="absolute inset-0 bg-onyx-black/0 transition-colors duration-500 group-hover:bg-onyx-black/30" />
@@ -514,9 +528,7 @@ const ProductRow = ({
   linkLabel,
 }) => {
   const ref = useRef(null);
-  useEffect(() => {
-    if (ref.current) animateStaggerFadeUp(ref.current.children);
-  }, [products]);
+  useEffect(() => animateScrollRevealBatch(ref.current?.children), [products]);
 
   if (!products || products.length === 0) return null;
 
@@ -551,13 +563,7 @@ const ProductRow = ({
 const NewArrivalsCollection = ({ products = [], onNavigate }) => {
   const ref = useRef(null);
 
-  useEffect(() => {
-    const animation = animateStaggerFadeUp(ref.current?.children);
-    return () => {
-      animation?.scrollTrigger?.kill();
-      animation?.kill();
-    };
-  }, [products]);
+  useEffect(() => animateScrollRevealBatch(ref.current?.children), [products]);
 
   if (products.length === 0) return null;
 
@@ -576,7 +582,9 @@ const NewArrivalsCollection = ({ products = [], onNavigate }) => {
           onClick={() =>
             document
               .getElementById("catalog-section")
-              ?.scrollIntoView({ behavior: "smooth" })
+              ?.scrollIntoView({
+                behavior: prefersReducedMotion() ? "auto" : "smooth",
+              })
           }
           className="hidden items-center gap-2 pb-1 text-[10px] font-medium uppercase tracking-[0.16em] text-onyx-muted transition-colors hover:text-onyx-gold sm:inline-flex"
         >
@@ -585,21 +593,28 @@ const NewArrivalsCollection = ({ products = [], onNavigate }) => {
       </div>
       <div
         ref={ref}
-        className="grid grid-cols-1 gap-4 sm:grid-cols-4 sm:auto-rows-[168px] sm:gap-5"
+        className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:auto-rows-[minmax(160px,14vw)] xl:auto-rows-[220px]"
         aria-label="New arrivals product collage"
       >
-        {products.slice(0, 5).map((product, index) => {
+        {products.map((product, index) => {
           const imageUrl = product.images?.[0]?.url;
-          const collageSize = [
-            "h-[228px] sm:col-span-2 sm:row-span-2 sm:h-full",
-            "h-[184px] sm:col-span-2 sm:h-full",
-            "h-[220px] sm:col-span-1 sm:h-full",
-            "h-[184px] sm:col-span-1 sm:h-full",
-            "h-[220px] sm:col-span-2 sm:h-full",
-          ][index];
+          const featuredSize =
+            products.length >= 5
+              ? "col-span-2 aspect-[4/3] lg:aspect-auto lg:row-span-2"
+              : "col-span-2 aspect-[4/3] lg:aspect-auto";
+          const cardSize =
+            index === 0
+              ? featuredSize
+              : `aspect-[3/4] lg:aspect-auto ${index >= 5 ? "lg:col-span-2" : ""}`;
 
           return (
             <article
+              onMouseEnter={(event) =>
+                animateCardHover(event.currentTarget, true)
+              }
+              onMouseLeave={(event) =>
+                animateCardHover(event.currentTarget, false)
+              }
               key={product._id}
               role="button"
               tabIndex={0}
@@ -611,14 +626,15 @@ const NewArrivalsCollection = ({ products = [], onNavigate }) => {
                 }
               }}
               aria-label={`${product.title}, ${product.price?.currency || "INR"} ${product.price?.amount?.toLocaleString() || "0"}`}
-              className={`group relative isolate cursor-pointer overflow-hidden rounded-sm border border-onyx-border/70 bg-onyx-surface outline-none focus-visible:ring-2 focus-visible:ring-onyx-gold ${collageSize}`}
+              className={`group relative isolate cursor-pointer overflow-hidden rounded-sm border border-onyx-border/70 bg-onyx-surface outline-none focus-visible:ring-2 focus-visible:ring-onyx-gold ${cardSize} lg:h-full`}
             >
               {imageUrl ? (
                 <img
                   src={imageUrl}
                   alt={product.title}
                   loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : (
                 <div className="absolute inset-0 bg-onyx-card" />
@@ -654,80 +670,121 @@ const NewArrivalsCollection = ({ products = [], onNavigate }) => {
 /* ─────────────────────────────────────────────
    STYLE INSPIRATION BANNER (full-width mood)
 ───────────────────────────────────────────── */
-const StyleInspiration = () => (
-  <section className="relative py-0 overflow-hidden border-t border-onyx-border/60 lg:-mx-12 xl:-mx-20">
-    <div
-      className="relative h-[55vh] min-h-[360px] flex items-center justify-center"
-      style={{
-        backgroundImage: `linear-gradient(to right, rgba(6,6,10,0.92) 0%, rgba(6,6,10,0.6) 50%, rgba(6,6,10,0.3) 100%), url("https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1400&auto=format&fit=crop")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center 35%",
-      }}
+const StyleInspiration = () => {
+  const sectionRef = useRef(null);
+  const backgroundRef = useRef(null);
+  const contentRef = useRef(null);
+
+  useEffect(() => {
+    const reveal = animateFadeUp(contentRef.current);
+    const parallax = animateScrollParallax(
+      backgroundRef.current,
+      sectionRef.current,
+    );
+    return () => {
+      reveal?.scrollTrigger?.kill();
+      reveal?.kill();
+      parallax?.revert();
+    };
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden border-t border-onyx-border/60 lg:-mx-12 xl:-mx-20"
     >
-      <div className="text-center px-6 max-w-2xl mx-auto">
-        <p className="onyx-eyebrow mb-4">Style Philosophy</p>
-        <h2 className="font-serif text-4xl lg:text-5xl font-light leading-[1.1] tracking-tight text-onyx-text mb-6">
-          Wear what moves you.
-          <br />
-          <em className="not-italic text-onyx-gold">Leave the rest.</em>
-        </h2>
-        <p className="text-[14px] leading-relaxed text-onyx-muted max-w-md mx-auto">
-          Fashion is not just clothing. It is the language of your identity.
-          Discover pieces built for those who live with intention.
-        </p>
+      <div className="relative flex h-[55vh] min-h-[360px] items-center justify-center overflow-hidden">
+        <div
+          ref={backgroundRef}
+          aria-hidden="true"
+          className="absolute inset-0 scale-[1.08] bg-cover bg-[center_35%] will-change-transform"
+          style={{
+            backgroundImage: `linear-gradient(to right, rgba(6,6,10,0.92) 0%, rgba(6,6,10,0.6) 50%, rgba(6,6,10,0.3) 100%), url("https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1400&auto=format&fit=crop")`,
+          }}
+        />
+        <div
+          ref={contentRef}
+          className="relative z-10 mx-auto max-w-2xl px-6 text-center"
+        >
+          <p className="onyx-eyebrow mb-4">Style Philosophy</p>
+          <h2 className="mb-6 font-serif text-3xl font-light leading-[1.1] tracking-tight text-onyx-text sm:text-4xl lg:text-5xl">
+            Wear what moves you.
+            <br />
+            <em className="not-italic text-onyx-gold">Leave the rest.</em>
+          </h2>
+          <p className="mx-auto max-w-md text-[14px] leading-relaxed text-onyx-muted">
+            Fashion is not just clothing. It is the language of your identity.
+            Discover pieces built for those who live with intention.
+          </p>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 /* ─────────────────────────────────────────────
    PROMO BANNER (Seller CTA + Free shipping)
    (styling only — icons now in gold-ring circles,
    CTA card gets a soft gold border glow on hover)
 ───────────────────────────────────────────── */
-const PromoBanner = () => (
-  <section className="py-12 lg:py-16 border-t border-onyx-border/60">
-    {/* Perks strip */}
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-14">
-      {PROMO_PERKS.map((p) => (
-        <div
-          key={p.title}
-          className="flex items-center gap-4 rounded-xl border border-onyx-border/60 bg-onyx-surface p-5 transition-colors duration-300 hover:border-onyx-gold/25"
-        >
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-onyx-gold/25 bg-onyx-gold/5 text-onyx-gold text-lg">
-            {p.icon}
-          </span>
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-onyx-text mb-1">
-              {p.title}
-            </p>
-            <p className="text-[12px] leading-relaxed text-onyx-muted/70">
-              {p.sub}
-            </p>
-          </div>
-        </div>
-      ))}
-    </div>
+const PromoBanner = () => {
+  const sectionRef = useRef(null);
 
-    {/* Seller CTA */}
-    <div className="bg-onyx-card border border-white/5 rounded-2xl flex flex-col items-start justify-between gap-8 p-10 sm:p-14 lg:flex-row lg:items-center lg:p-16 transition-colors duration-300 hover:border-onyx-gold/20">
-      <div>
-        <p className="onyx-eyebrow mb-3">Partner with Onyx</p>
-        <h2 className="max-w-md font-serif text-3xl font-light leading-tight text-onyx-text lg:text-4xl">
-          Sell your curated pieces to a global luxury audience.
-        </h2>
+  useEffect(() => {
+    const animation = animateFadeUp(sectionRef.current);
+    return () => {
+      animation?.scrollTrigger?.kill();
+      animation?.kill();
+    };
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="border-t border-onyx-border/60 py-12 lg:py-16"
+    >
+      {/* Perks strip */}
+      <div className="mb-14 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {PROMO_PERKS.map((p) => (
+          <div
+            key={p.title}
+            className="flex items-center gap-4 rounded-xl border border-onyx-border/60 bg-onyx-surface p-5 transition-colors duration-300 hover:border-onyx-gold/25"
+          >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-onyx-gold/25 bg-onyx-gold/5 text-lg text-onyx-gold">
+              {p.icon}
+            </span>
+            <div>
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-onyx-text">
+                {p.title}
+              </p>
+              <p className="text-[12px] leading-relaxed text-onyx-muted/70">
+                {p.sub}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
-      <div className="flex flex-shrink-0 flex-col gap-4 sm:flex-row">
-        <NavLink to="/register" className="onyx-btn-primary !w-auto px-8">
-          Become a Seller
-        </NavLink>
-        <NavLink to="/login" className="onyx-btn-secondary !w-auto px-8">
-          Sign In
-        </NavLink>
+
+      {/* Seller CTA */}
+      <div className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-white/5 bg-onyx-card p-10 transition-colors duration-300 hover:border-onyx-gold/20 sm:p-14 lg:flex-row lg:items-center lg:p-16">
+        <div>
+          <p className="onyx-eyebrow mb-3">Partner with Onyx</p>
+          <h2 className="max-w-md font-serif text-3xl font-light leading-tight text-onyx-text lg:text-4xl">
+            Sell your curated pieces to a global luxury audience.
+          </h2>
+        </div>
+        <div className="flex flex-shrink-0 flex-col gap-4 sm:flex-row">
+          <NavLink to="/register" className="onyx-btn-primary !w-auto px-8">
+            Become a Seller
+          </NavLink>
+          <NavLink to="/login" className="onyx-btn-secondary !w-auto px-8">
+            Sign In
+          </NavLink>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 /* ─────────────────────────────────────────────
    NEWSLETTER
@@ -879,7 +936,10 @@ const Home = () => {
   const goTo = useCallback((id) => navigate(`/product/${id}`), [navigate]);
 
   const scrollTo = useCallback(
-    (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }),
+    (id) =>
+      document.getElementById(id)?.scrollIntoView({
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
+      }),
     [],
   );
 
@@ -893,7 +953,7 @@ const Home = () => {
         featured: products.slice(0, 5),
         trending:
           len > 4 ? products.slice(4, 8) : products.slice(0, Math.min(4, len)),
-        newArrivals: [...products].reverse().slice(0, 5),
+        newArrivals: getNewArrivals(products),
         bestSellers: products.slice(Math.max(0, len - 16)),
       };
     }, [allProduct]);

@@ -3,7 +3,7 @@
  *
  * Rules:
  *  - All animations respect prefers-reduced-motion.
- *  - Target 60 fps: only transform + opacity animated (compositor-safe).
+ *  - Prefer transform + opacity; keep filter motion short and restrained.
  *  - Durations kept ≤ 800ms for interactive elements.
  *  - Existing exports preserved 1:1 so no existing call-site breaks.
  */
@@ -18,7 +18,8 @@ gsap.registerPlugin(ScrollTrigger);
    Returns a modified option object that disables
    animation when the OS preference is set.
 ───────────────────────────────────────────── */
-const prefersReducedMotion = () =>
+export const prefersReducedMotion = () =>
+  typeof window === "undefined" ||
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const rm = (opts) =>
@@ -28,9 +29,13 @@ const rm = (opts) =>
 /** Scroll-triggered fade + rise for a single element */
 export const animateFadeUp = (element, options = {}) => {
   if (!element) return;
+  if (prefersReducedMotion()) {
+    gsap.set(element, { y: 0, opacity: 1 });
+    return;
+  }
   return gsap.fromTo(
     element,
-    { y: prefersReducedMotion() ? 0 : 24, opacity: 0 },
+    { y: 24, opacity: 0 },
     rm({
       y: 0,
       opacity: 1,
@@ -49,9 +54,13 @@ export const animateFadeUp = (element, options = {}) => {
 /** Scroll-triggered stagger fade for a NodeList / HTMLCollection */
 export const animateStaggerFadeUp = (elements, options = {}) => {
   if (!elements || elements.length === 0) return;
+  if (prefersReducedMotion()) {
+    gsap.set(elements, { y: 0, opacity: 1 });
+    return;
+  }
   return gsap.fromTo(
     elements,
-    { y: prefersReducedMotion() ? 0 : 28, opacity: 0 },
+    { y: 28, opacity: 0 },
     rm({
       y: 0,
       opacity: 1,
@@ -94,9 +103,10 @@ export const animateCardHover = (element, isHovering) => {
   if (!element || prefersReducedMotion()) return;
   const img = element.querySelector("img");
   if (img) {
+    gsap.killTweensOf(img);
     gsap.to(img, {
-      scale: isHovering ? 1.06 : 1,
-      duration: 0.55,
+      scale: isHovering ? 1.035 : 1,
+      duration: 0.42,
       ease: "power2.out",
     });
   }
@@ -104,14 +114,14 @@ export const animateCardHover = (element, isHovering) => {
   if (overlay) {
     gsap.to(overlay, {
       opacity: isHovering ? 0.12 : 0,
-      duration: 0.35,
+      duration: 0.3,
     });
   }
   const title = element.querySelector("h3");
   if (title) {
     gsap.to(title, {
       color: isHovering ? "#c49a52" : "#eee9e1",
-      duration: 0.25,
+      duration: 0.22,
     });
   }
 };
@@ -122,7 +132,7 @@ export const animateCardHover = (element, isHovering) => {
 
 /**
  * HERO REVEAL
- * Cinematic entry: background images fade in, then content staggers up.
+ * Cinematic entry: the active image scales in, then content staggers up.
  * Call once on mount from the Hero component.
  */
 export const animateHeroReveal = (contentEl, imageEl) => {
@@ -131,7 +141,7 @@ export const animateHeroReveal = (contentEl, imageEl) => {
 
   if (!prefersReducedMotion()) {
     if (imageEl) {
-      tl.fromTo(imageEl, { scale: 1.08, opacity: 0 }, { scale: 1, opacity: 1, duration: 1.2 }, 0);
+      tl.fromTo(imageEl, { scale: 1.08 }, { scale: 1, duration: 1.2 }, 0);
     }
     tl.fromTo(
       contentEl.children,
@@ -140,25 +150,151 @@ export const animateHeroReveal = (contentEl, imageEl) => {
       imageEl ? 0.3 : 0
     );
   } else {
-    tl.set(contentEl.children, { opacity: 1 });
+    tl.set(contentEl.children, { opacity: 1, y: 0 });
+    if (imageEl) tl.set(imageEl, { scale: 1 });
   }
   return tl;
 };
 
 /**
  * SLOW IMAGE ZOOM (Hero background)
- * Animates a continuous slow zoom on the active hero image.
+ * Adds a restrained one-time zoom to the active hero image.
  * Returns a killable GSAP tween.
  */
-export const animateHeroImageZoom = (imageEl) => {
+export const animateHeroImageZoom = (imageEl, delay = 0) => {
   if (!imageEl || prefersReducedMotion()) return null;
   return gsap.to(imageEl, {
-    scale: 1.06,
+    scale: 1.025,
     duration: 8,
-    ease: "power1.inOut",
-    yoyo: true,
-    repeat: -1,
+    ease: "power2.out",
+    delay,
   });
+};
+
+/** Scrubs the hero back as the next section naturally overlaps it. */
+export const animateHeroScroll = (
+  heroEl,
+  imageLayerEl,
+  imageEl,
+  contentEl,
+  overlayEl,
+) => {
+  if (!heroEl || !imageLayerEl || !imageEl || !contentEl || !overlayEl) return;
+
+  const media = gsap.matchMedia();
+  const createTransition = (pin) => {
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: heroEl,
+        start: "top top",
+        end: pin ? "+=55%" : "bottom top",
+        pin: pin ? heroEl : false,
+        pinSpacing: false,
+        scrub: 0.65,
+        anticipatePin: pin ? 1 : 0,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    timeline
+      .to(imageLayerEl, { scale: 0.94 }, 0)
+      .to(imageEl, { filter: "blur(3px)", opacity: 0.68 }, 0)
+      .to(overlayEl, { opacity: 1 }, 0)
+      .to(contentEl, { y: -20, opacity: 0 }, 0);
+
+    return () => timeline.scrollTrigger?.kill();
+  };
+
+  media.add(
+    "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
+    () => createTransition(true),
+  );
+  media.add(
+    "(max-width: 1023px) and (prefers-reduced-motion: no-preference)",
+    () => createTransition(false),
+  );
+  return media;
+};
+
+/** Reveals cards in small batches as they approach the viewport. */
+export const animateScrollRevealBatch = (elements) => {
+  const targets = Array.from(elements || []).filter(Boolean);
+  if (!targets.length) return;
+
+  if (prefersReducedMotion()) {
+    gsap.set(targets, { autoAlpha: 1, y: 0 });
+    return;
+  }
+
+  const images = targets
+    .map((element) => element.querySelector("img"))
+    .filter(Boolean);
+  const activeTweens = new Set();
+  const triggers = ScrollTrigger.batch(targets, {
+    start: "top 92%",
+    once: true,
+    batchMax: 4,
+    interval: 0.12,
+    onEnter: (batch) => {
+      const tween = gsap.to(batch, {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.6,
+        stagger: 0.07,
+        ease: "back.out(1.35)",
+        onComplete: () => activeTweens.delete(tween),
+      });
+      activeTweens.add(tween);
+
+      const batchImages = batch
+        .map((element) => element.querySelector("img"))
+        .filter(Boolean);
+      if (batchImages.length) {
+        const imageTween = gsap.to(batchImages, {
+          scale: 1,
+          duration: 0.65,
+          stagger: 0.08,
+          ease: "power2.out",
+        });
+        activeTweens.add(imageTween);
+        imageTween.eventCallback("onComplete", () =>
+          activeTweens.delete(imageTween),
+        );
+      }
+    },
+  });
+  gsap.set(targets, { autoAlpha: 0, y: 24, scale: 0.96 });
+  gsap.set(images, { scale: 1.035 });
+
+  return () => {
+    triggers.forEach((trigger) => trigger.kill());
+    activeTweens.forEach((tween) => tween.kill());
+    gsap.set(targets, { clearProps: "opacity,visibility,transform" });
+    gsap.set(images, { clearProps: "transform" });
+  };
+};
+
+/** Subtle desktop-only background movement for editorial banners. */
+export const animateScrollParallax = (backgroundEl, triggerEl) => {
+  if (!backgroundEl || !triggerEl) return;
+
+  const media = gsap.matchMedia();
+  media.add(
+    "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+    () =>
+      gsap.to(backgroundEl, {
+        yPercent: 8,
+        ease: "none",
+        scrollTrigger: {
+          trigger: triggerEl,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      }),
+  );
+  return media;
 };
 
 /**
@@ -298,14 +434,16 @@ export const animatePageIn = (containerEl) => {
  */
 export const animateScrollReveal = (element, direction = "up", options = {}) => {
   if (!element) return;
+  if (prefersReducedMotion()) {
+    gsap.set(element, { opacity: 1, x: 0, y: 0 });
+    return;
+  }
 
   const fromVars = { opacity: 0 };
-  if (!prefersReducedMotion()) {
-    if (direction === "up") fromVars.y = 36;
-    else if (direction === "down") fromVars.y = -36;
-    else if (direction === "left") fromVars.x = 36;
-    else if (direction === "right") fromVars.x = -36;
-  }
+  if (direction === "up") fromVars.y = 36;
+  else if (direction === "down") fromVars.y = -36;
+  else if (direction === "left") fromVars.x = 36;
+  else if (direction === "right") fromVars.x = -36;
 
   return gsap.fromTo(
     element,
@@ -314,7 +452,7 @@ export const animateScrollReveal = (element, direction = "up", options = {}) => 
       opacity: 1,
       x: 0,
       y: 0,
-      duration: 0.6,
+      duration: 0.5,
       ease: "power3.out",
       scrollTrigger: {
         trigger: element,
@@ -337,5 +475,3 @@ export const animateSpinner = (ringEl, textEl) => {
   }
   return tl;
 };
-
-
