@@ -1,14 +1,15 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useWishlist } from "../hooks/useWishlist";
 import { toast } from "sonner";
 
 const Feature = ({ productId }) => {
-  const wishlist = useSelector((state) => state.wishlist?.wishlist) || [];
+  const wishlist = useSelector((state) => state.wishlist?.wishlist);
   const { handleAddToWishlist, handleDeleteWishlist } = useWishlist();
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const wishlistItem = useMemo(() => {
-    return wishlist.find(
+    return     (wishlist || []).find(
       (item) =>
         item.productId?._id === productId || item.productId === productId,
     );
@@ -19,28 +20,38 @@ const Feature = ({ productId }) => {
   const toggleWishlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isUpdating) return;
+
+    setIsUpdating(true);
     try {
       if (isInWishlist) {
         await handleDeleteWishlist(wishlistItem._id);
         toast.success("Removed from wishlist");
       } else {
-        await handleAddToWishlist(productId);
-        toast.success("Added to wishlist");
+        const result = await handleAddToWishlist(productId);
+        toast.success(
+          result?.alreadyExists
+            ? "Already in wishlist"
+            : "Added to wishlist",
+        );
       }
     } catch {
       toast.error(isInWishlist ? "Failed to remove" : "Failed to add");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
   return (
     <button
       onClick={toggleWishlist}
+      disabled={isUpdating}
       className={`absolute top-2 right-2 z-10 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full backdrop-blur-md transition-all duration-300 ${
         isInWishlist
           ? "bg-onyx-surface/90 text-onyx-gold border border-onyx-gold shadow-[0_0_8px_rgba(196,154,82,0.4)]"
           : "bg-onyx-surface/60 text-onyx-text/50 border border-onyx-border/70 hover:text-onyx-text hover:bg-onyx-surface/90 hover:border-onyx-border-hover"
       }`}
-      aria-label="Toggle Wishlist"
+      aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
     >
       <svg
         width="14"

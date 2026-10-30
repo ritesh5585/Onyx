@@ -25,6 +25,16 @@ export const useWishlist = () => {
             }
             return data
         } catch (error) {
+            if (error?.response?.status === 409) {
+                try {
+                    const data = await getWishList()
+                    dispatch(setWishlist(data?.wishlist || []))
+                    return { alreadyExists: true }
+                } catch (refreshError) {
+                    console.error("Wishlist refresh failed:", refreshError);
+                    throw refreshError;
+                }
+            }
             console.error("add to wishlist failed:", error);
             throw error;
         }

@@ -1,4 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { NavLink, Link, useNavigate, useLocation } from "react-router";
 import { useSelector } from "react-redux";
 import { useAuth } from "../auth/hook/useAuth";
@@ -78,7 +83,10 @@ const Layout = ({ children, showBackButton = false }) => {
   }, [user, handleGetCart]);
 
   useEffect(() => initNavbarScrollEffect(headerRef.current, 40), []);
-  useEffect(() => animatePageIn(contentRef.current), [location.pathname]);
+  useEffect(() => {
+    const animation = animatePageIn(contentRef.current);
+    return () => animation?.kill();
+  }, [location.pathname]);
 
   useEffect(() => {
     const clickOutside = (e) =>

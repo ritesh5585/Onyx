@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
+import RouteScrollReset from "./RouteScrollReset.jsx";
 import Protected from "../features/auth/components/Protected.jsx";
 import Home from "../features/Products/pages/Home.jsx";
 
@@ -28,6 +29,9 @@ const OrderConfirmation = lazy(
 );
 
 export const routes = createBrowserRouter([
+  {
+    element: <RouteScrollReset />,
+    children: [
   {
     path: "/",
     element: <Home />,
@@ -92,5 +96,7 @@ export const routes = createBrowserRouter([
         <OrderConfirmation />
       </Protected>
     ),
+  },
+    ],
   },
 ]);

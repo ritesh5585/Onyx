@@ -215,7 +215,7 @@ const Hero = ({ onShop, onExplore }) => {
   return (
     <section
       ref={sectionRef}
-      className="relative z-0 isolate flex min-h-[100svh] items-end overflow-hidden bg-onyx-black px-5 pb-14 pt-12 sm:min-h-[92vh] sm:px-8 sm:pb-24 lg:-mx-12 lg:px-12 xl:-mx-20 xl:px-20"
+      className="relative left-1/2 z-0 isolate flex min-h-[100svh] w-screen max-w-none -translate-x-1/2 items-end overflow-hidden bg-black px-5 pb-14 pt-12 sm:min-h-[92vh] sm:px-8 sm:pb-24 lg:px-12 xl:px-20"
       aria-label="Hero"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}

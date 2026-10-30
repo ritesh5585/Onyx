@@ -171,7 +171,7 @@ export const animateHeroImageZoom = (imageEl, delay = 0) => {
   });
 };
 
-/** Scrubs the hero back as the next section naturally overlaps it. */
+/** Scrubs the hero back while the following section naturally overlaps it. */
 export const animateHeroScroll = (
   heroEl,
   imageLayerEl,
@@ -182,36 +182,27 @@ export const animateHeroScroll = (
   if (!heroEl || !imageLayerEl || !imageEl || !contentEl || !overlayEl) return;
 
   const media = gsap.matchMedia();
-  const createTransition = (pin) => {
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: heroEl,
-        start: "top top",
-        end: pin ? "+=55%" : "bottom top",
-        pin: pin ? heroEl : false,
-        pinSpacing: false,
-        scrub: 0.65,
-        anticipatePin: pin ? 1 : 0,
-        invalidateOnRefresh: true,
-      },
-    });
-
-    timeline
-      .to(imageLayerEl, { scale: 0.94 }, 0)
-      .to(imageEl, { filter: "blur(3px)", opacity: 0.68 }, 0)
-      .to(overlayEl, { opacity: 1 }, 0)
-      .to(contentEl, { y: -20, opacity: 0 }, 0);
-
-    return () => timeline.scrollTrigger?.kill();
-  };
-
   media.add(
-    "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
-    () => createTransition(true),
-  );
-  media.add(
-    "(max-width: 1023px) and (prefers-reduced-motion: no-preference)",
-    () => createTransition(false),
+    "(prefers-reduced-motion: no-preference)",
+    () => {
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: heroEl,
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.65,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      timeline
+        .to(imageLayerEl, { scale: 0.94 }, 0)
+        .to(imageEl, { filter: "blur(3px)", opacity: 0.68 }, 0)
+        .to(overlayEl, { opacity: 1 }, 0)
+        .to(contentEl, { y: -20, opacity: 0 }, 0);
+
+      return () => timeline.scrollTrigger?.kill();
+    },
   );
   return media;
 };
@@ -324,36 +315,23 @@ export const resetParallax = (targetEl) => {
 };
 
 /**
- * TEXT REVEAL — character split
- * Wraps each character in a span and staggers them in.
- * Works on any heading or paragraph element.
+ * TEXT REVEAL
+ * Reveals the existing element without replacing React-managed children.
  */
 export const animateTextReveal = (element, options = {}) => {
   if (!element) return;
   if (prefersReducedMotion()) {
-    element.style.opacity = "1";
+    gsap.set(element, { autoAlpha: 1, y: 0 });
     return;
   }
 
-  const text = element.innerText;
-  element.innerHTML = text
-    .split("")
-    .map((ch) =>
-      ch === " "
-        ? " "
-        : `<span class="reveal-char" style="display:inline-block;will-change:transform">${ch}</span>`
-    )
-    .join("");
-
-  const chars = element.querySelectorAll(".reveal-char");
   return gsap.fromTo(
-    chars,
-    { y: "110%", opacity: 0 },
+    element,
+    { y: 12, autoAlpha: 0 },
     rm({
-      y: "0%",
-      opacity: 1,
-      duration: 0.6,
-      stagger: 0.018,
+      y: 0,
+      autoAlpha: 1,
+      duration: 0.5,
       ease: "power3.out",
       delay: options.delay || 0,
       ...options,
@@ -369,7 +347,9 @@ export const animateTextReveal = (element, options = {}) => {
 export const initNavbarScrollEffect = (navEl, threshold = 40) => {
   if (!navEl) return () => { };
 
+  let scheduledFrame = 0;
   const update = () => {
+    scheduledFrame = 0;
     const scrolled = window.scrollY > threshold;
     if (scrolled) {
       navEl.setAttribute("data-scrolled", "true");
@@ -377,10 +357,18 @@ export const initNavbarScrollEffect = (navEl, threshold = 40) => {
       navEl.removeAttribute("data-scrolled");
     }
   };
+  const onScroll = () => {
+    if (!scheduledFrame) {
+      scheduledFrame = window.requestAnimationFrame(update);
+    }
+  };
 
   update(); // sync immediately on mount
-  window.addEventListener("scroll", update, { passive: true });
-  return () => window.removeEventListener("scroll", update);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  return () => {
+    window.removeEventListener("scroll", onScroll);
+    if (scheduledFrame) window.cancelAnimationFrame(scheduledFrame);
+  };
 };
 
 /**
@@ -420,7 +408,7 @@ export const animatePageIn = (containerEl) => {
     if (containerEl) gsap.set(containerEl, { opacity: 1, y: 0 });
     return;
   }
-  gsap.fromTo(
+  return gsap.fromTo(
     containerEl,
     { opacity: 0, y: 12 },
     { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }
